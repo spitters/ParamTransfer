@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Repo pre-commit hook. Enable once per clone with:
+#   git config core.hooksPath scripts/githooks
+exec "$(git rev-parse --show-toplevel)/scripts/check-prose.sh"

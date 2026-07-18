@@ -1,0 +1,8 @@
+/.lake/
+.lake/
+*.olean
+*.ilean
+# Rendered Verso manual output (regenerate with: cd docs && lake exe transfer-manual --output _out)
+_out/
+# Local editor / assistant session state
+.claude/

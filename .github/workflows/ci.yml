@@ -1,0 +1,177 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (Transfer + ReprTransfer + ReprTransferExpr)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache .lake
+        uses: actions/cache@v4
+        with:
+          path: .lake
+          key: lake-${{ hashFiles('lean-toolchain', 'lakefile.lean', 'lake-manifest.json') }}
+          restore-keys: lake-
+
+      - name: Fetch prebuilt Mathlib (no source rebuild)
+        run: lake exe cache get || true
+
+      - name: Build the library
+        run: lake build Transfer ReprTransfer ReprTransferExpr
+
+      - name: Axiom ledger (no sorry / no native_decide drift)
+        run: lake build Transfer.Audit
+
+  docs:
+    name: Manual (Verso) — render + upload artifact
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache docs .lake
+        uses: actions/cache@v4
+        with:
+          path: docs/.lake
+          key: docs-lake-${{ hashFiles('docs/lean-toolchain', 'docs/lakefile.lean', 'docs/lake-manifest.json') }}
+          restore-keys: docs-lake-
+
+      - name: Build and render the manual
+        run: |
+          lake build transfer-manual
+          lake exe transfer-manual --output _out
+
+      - name: Upload rendered manual
+        uses: actions/upload-artifact@v4
+        with:
+          name: ParamTransfer-manual
+          path: docs/_out/html-single
+
+  apidocs:
+    name: API reference (doc-gen4) — build + upload artifact
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docbuild
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free up disk space
+        # doc-gen4 over the full Mathlib closure fills the runner disk (oleans + doc
+        # HTML for ~20k modules). Without headroom the doc build succeeds but the cache
+        # tarball fails to write (`zstd: No space left on device`), so nothing persists
+        # and every run re-documents Mathlib cold. Reclaim the ~20-30 GB of preinstalled
+        # toolchains this job never uses.
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/local/lib/android /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache docbuild .lake
+        uses: actions/cache@v4
+        with:
+          path: docbuild/.lake
+          # Reuse doc-gen4's Mathlib output across builds. The exact key is per-run
+          # (github.run_id), so every run SAVES a fresh cache; restore-keys then falls
+          # back to the newest cache with the same toolchain + dependency versions
+          # (i.e. the same Mathlib). So the multi-hour Mathlib re-documentation runs
+          # only on a toolchain/dependency bump — an ordinary source or docs change
+          # restores those pages and re-documents just the changed modules
+          # incrementally (the coverage guard below catches any that slip). This is
+          # `leanprover-community/docgen-action`'s caching strategy. The version-pinned
+          # prefix (first restore-key) only ever restores same-Mathlib pages. The bare
+          # `docbuild-lake-` prefix (second) bootstraps off the newest existing cache
+          # even across a toolchain/dependency change — safe because Lake re-documents
+          # any module whose olean changed and the coverage guard catches misses, so at
+          # worst a post-bump restore costs a re-documentation, never a wrong page.
+          key: docbuild-lake-${{ hashFiles('docbuild/lakefile.toml', 'docbuild/lean-toolchain', 'lake-manifest.json') }}-${{ github.run_id }}
+          restore-keys: |
+            docbuild-lake-${{ hashFiles('docbuild/lakefile.toml', 'docbuild/lean-toolchain', 'lake-manifest.json') }}
+            docbuild-lake-
+
+      - name: Resolve doc-gen4 + Mathlib (Mathlib versions win)
+        run: MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
+
+      - name: Fetch prebuilt Mathlib (so doc extraction does not rebuild it)
+        run: lake exe cache get || true
+
+      - name: Build the API reference
+        # Both libraries: the core `Transfer` engine and the `TransferCoqEAL`
+        # example suite (a separate lib so its CompPoly dep stays out of the core
+        # graph). Their pages merge into the same .lake/build/doc/ output.
+        run: lake build Transfer:docs TransferCoqEAL:docs
+
+      - name: Guard — every library module has an API page
+        run: bash ../scripts/check-apidoc-coverage.sh .lake/build/doc
+
+      - name: Upload API reference
+        uses: actions/upload-artifact@v4
+        with:
+          name: ParamTransfer-apidocs
+          path: docbuild/.lake/build/doc
+
+  deploy:
+    name: Deploy docs to GitHub Pages
+    needs: [docs, apidocs]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Manual at the site root, doc-gen4 API reference under api/ — so the
+      # manual's `api/index.html` links resolve.
+      - uses: actions/download-artifact@v4
+        with:
+          name: ParamTransfer-manual
+          path: site
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ParamTransfer-apidocs
+          path: site/api
+
+      # Keep the public Pages site out of search-engine indexes: a blanket
+      # robots.txt plus a noindex meta on every page. Advisory only — this
+      # un-indexes the site, it does not restrict access.
+      - name: Add robots.txt and noindex meta
+        run: |
+          printf 'User-agent: *\nDisallow: /\n' > site/robots.txt
+          find site -name '*.html' -exec \
+            sed -i 's|<head>|<head><meta name="robots" content="noindex, nofollow">|' {} +
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
