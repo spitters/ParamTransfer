@@ -28,7 +28,10 @@ while IFS= read -r f; do
     echo "MISSING API page: $page  (module $rel)"
     missing=$((missing + 1))
   fi
-done < <(find "$ROOT/Transfer" -name '*.lean')
+done < <(find "$ROOT/Transfer" -name '*.lean' -not -path "$ROOT/Transfer/Audit.lean")
+# Transfer/Audit.lean is the CI axiom-ledger tripwire (only `#print axioms` /
+# `#guard_msgs` commands, no declarations), so doc-gen4 emits no page for it and it
+# is not part of the public API — exclude it from the coverage guard.
 # Transfer/Examples/CoqEAL/* is the separate `TransferCoqEAL` lib (depends on
 # CompPoly). The API job builds `TransferCoqEAL:docs` alongside `Transfer:docs`, so
 # its pages land in the same doc output and are covered by this guard too.
