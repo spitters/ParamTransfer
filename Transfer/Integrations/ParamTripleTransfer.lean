@@ -50,12 +50,19 @@ for a whole do-block can be assembled structurally from witnesses for its
 leaves — exactly the abstraction-theorem discipline `ParamTransfer` runs for
 `∀`-statements, here for stateful/partial `SPComp` programs.
 
-## Concrete `SPComp` instance
+## Worked examples
 
-`SPComp.RComp_pure` / `SPComp.triple_transfer` instantiate the principle on the
-project's probabilistic monad through the `StdDoBridge` `WPMonad SPComp
-spPostShape` instance, and `SPComp.transfer_pure_example` applies it end-to-end on
-a `Bool`-valued `SPComp.pure` triple.
+Two self-contained examples exercise the principle end-to-end over `Id`:
+
+* `Examples/HexEffectful.lean` — a Bareiss-style elimination step: the source
+  triple is proved by `mvcgen`, then `triple_transfer` moves it across a storage
+  change (dense list ↦ Mathlib vector) at the same value type;
+* `Examples/EffectfulTransfer.lean` — a `do`-block whose value *type* changes
+  (`ℕ ↦ ℤ` along the cast relation), again `mvcgen` for the source and
+  `triple_transfer` for the target.
+
+`RComp.forIn_list` (`Integrations/ParamForIn.lean`) extends both to `for` / `do`
+loops with early exit.
 
 ## Scope
 
@@ -65,7 +72,8 @@ Proved (univalence-free, `Prop`-predicate triples only):
   — the compositional core of the abstraction theorem at the monad level;
 * `triple_transfer`, transferring `Triple c P (Q, E)` to `Triple c' P (Q', E)`
   along any `RComp`-witness;
-* a concrete `SPComp` instantiation via `StdDoBridge`.
+* two worked `Id` examples (`HexEffectful`, `EffectfulTransfer`), each with an
+  `mvcgen`-proved source triple transferred across a change of representation.
 
 Not implemented here:
 

@@ -327,6 +327,11 @@ an inline recursion translation. This is the mechanism for reasoning about
 hax-extracted code up to its representation: the extracted `Std.Do` program and its
 abstract spec are related at value equality, and the triple transfers.
 
+`Transfer/Examples/EffectfulTransfer.lean` is a companion where the value _type_
+changes: a `do`-block over `ℕ` transfers to the same computation over `ℤ` along the
+cast relation, `mvcgen` proving the source triple and `triple_transfer` deriving
+the target — the effectful analogue of the `ℤ ↠ ZMod p` retraction.
+
 ## Data refinement
 
 The third application is CoqEAL-style data refinement: a computational

@@ -62,6 +62,7 @@ import Transfer.Examples.ParamRetraction     -- non-diagonal ZMod p retraction d
 import Transfer.Examples.MachineLimbField     -- machine limbs ↔ prime field: strong non-diagonal heterogeneous dependent (multi-limb) example
 import Transfer.Examples.StrongExamples       -- native-tactic-beating demos over non-diagonal domains
 import Transfer.Examples.Trocq                -- the Trocq example suite (index + summable)
+import Transfer.Examples.EffectfulTransfer    -- effectful triple transfer across a value-type change (ℕ↔ℤ), by mvcgen
 -- Retrofit onto `leanprover/hex`'s verified computational algebra (README §Hex):
 import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathlib correspondence, generated
 import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
