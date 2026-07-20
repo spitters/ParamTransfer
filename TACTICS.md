@@ -16,6 +16,11 @@ tactic does decomposes into three rule kinds over `R`:
   applications (this is where cross-head `f ≠ g` lives);
 * **equivalence** — reflexivity, symmetry, transitivity of `R`.
 
+The default entry point, `param_auto`, coordinates all of them: it dispatches to
+each surface below, so one name closes goals living in different relations. The
+families are what it routes to — and what to name when you want one strategy by
+hand.
+
 There are four families:
 
 | Family | What it does | Section |
@@ -36,6 +41,43 @@ Namespaces: the `Param`-engine entry points live in
 `Transfer.Param`; the `Related`-engine congruence tactics
 (`transfer`, `rcongr`, `hgcongr`, `param_cc`, `param_solve`) live in
 `Transfer`.
+
+---
+
+## The default coordinator — `param_auto`
+
+One name over every surface below. Reach for it first; drop to a specialized
+tactic only when you want one strategy by name.
+
+1. **Purpose.** A single stable call site dispatching to the whole family — the
+   engine tactics and the native relational tactics — so one name closes goals
+   living in *different* relations.
+2. **Applies to / produces.** Any relational goal. A `first`-cascade tries, in
+   order, `rfl`, `param_solve` (descent + closure), `rcongr` (cross-head
+   descent), `norm_cast` (the cast graph), `gcongr` (ordered congruence),
+   `grind` (`Eq` closure), `assumption`; the first applicable surface closes the
+   goal.
+3. **Example.** One tactic, four relations:
+   ```lean
+   example (a : Nat) : a + 0 = a := by param_auto                    -- Eq
+   example (a b : Nat) (h : a ≤ b) : a + 1 ≤ b + 1 := by param_auto  -- ≤, via gcongr
+   example (a b : Nat) :                                             -- cast graph, via norm_cast
+       ((a + b : Nat) : Int) = (a : Int) + b := by param_auto
+   example (a b c : F) :                                             -- registered rep. change, via rcongr
+       a * b + c = bbFieldAdd (bbFieldMul a b) c := by param_auto
+   ```
+4. **When to use vs alternatives.** The default when the closing strategy is
+   unclear, or to keep a call site stable while the dispatch is tuned. Name a
+   specific tactic (`param_solve`, `rcongr`, `param_cc`, `hgcongr`, …) for a
+   single strategy — faster, with predictable subgoals. For a goal needing *two*
+   extensions at once — cross-head descent **and** a native-cascade leaf —
+   `param_compose` (`ParamCompose.lean`) is the composer.
+5. **Gotchas.** The dispatch is a `first`-cascade today; alternative order is the
+   only routing (a goal-directed router that inspects the relation head is a
+   drop-in behind the same name). It never fabricates: an unhandled goal is left
+   untouched rather than erroring. It inherits each surface's limits (e.g.
+   `grind` timeouts on heavy arithmetic).
+6. **File.** `ParamAuto.lean`.
 
 ---
 
@@ -658,6 +700,7 @@ Notes:
 
 | Given | Use |
 |---|---|
+| a relational goal, closing strategy unclear (or a stable call site wanted) | `param_auto` |
 | a fixed equation between two representations (cross-head op-tree) | `rcongr` (or `param_solve`) |
 | a relatedness goal needing transitivity / context-hypothesis chaining | `param_cc` (or `param_solve`) |
 | a goal that might need either descent or chaining (don't know which) | `param_solve` |

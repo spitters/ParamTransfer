@@ -13,7 +13,8 @@ description-based deriving), heterogeneous congruence (the set-level form of cub
 automation (`grind`, `gcongr`, `simp`/`norm_cast`, type classes, `conv`, `aesop`,
 `mvcgen`). These are one inference rule seen from different sides — the unifying rule
 below. **Trocq** is the largest single influence; the synthesis and the single auto
-tactic that dispatches to all of the surfaces above are the library's contribution.
+tactic (`param_auto`) that dispatches to all of the surfaces above are the
+library's contribution.
 
 **Applications.** **Compiler verification** — the CatCrypt compiler, relating emitted
 low-level code to its clean algebraic spec — and **program verification**: `mvcgen` /
@@ -95,7 +96,7 @@ This single rule is, simultaneously:
   `→`, `×`, and inductive types,
 * and **heterogeneous congruence** — the general `R_forall` relates outputs of
   *different* fiber types across a representation change (`hcongr_hetero`,
-  `HCongrConnection`), univalence-free except at the `map4` universe fiber.
+  `HCongrConnection`).
 
 Trocq, the congruence tactics, AdapTT, and cubical `hcongr` are four views of
 the same rule. The rest of the library is *where each use bottoms out*: type
@@ -106,6 +107,25 @@ it plugs into.
 Two axes: a **vertical** one — transfer *across* representations (parametricity)
 — and a **horizontal** one — congruence *within* a representation, meeting at the
 functoriality rule above.
+
+## The one tactic — `param_auto`
+
+One coordinator dispatches to every surface above, so a single call site closes
+goals living in *different* relations — it routes each to the tactic that closes
+it (`param_solve`, `rcongr`, `norm_cast`, `gcongr`, `grind`):
+
+```lean
+example (a : Nat) : a + 0 = a := by param_auto                    -- Eq
+example (a b : Nat) (h : a ≤ b) : a + 1 ≤ b + 1 := by param_auto  -- ≤, via gcongr
+example (a b : Nat) :                                             -- cast graph, via norm_cast
+    ((a + b : Nat) : Int) = (a : Int) + b := by param_auto
+example (a b c : F) :                                             -- registered rep. change, via rcongr
+    a * b + c = bbFieldAdd (bbFieldMul a b) c := by param_auto
+```
+
+The call site is stable: the dispatch strategy underneath can be reordered or
+made goal-directed without touching any proof. The specialized tactics below
+stay available when a proof wants one strategy by name.
 
 ## The relation, graded
 
@@ -141,7 +161,7 @@ What makes transfer *compositional* and *extensible*:
   (e.g. CatCrypt's dialect-chain transport). The **dependent** formers extend the
   non-dependent `→`/`×`/`List` laws: `paramForall` (Π) and `paramSigma` (Σ,
   `sigma_cast_eq` = `Adapt Σ = Σ Adapt`) carry the same functoriality into the
-  dependent world, univalence-free below the universe.
+  dependent world.
 * **inductive `R` is derived** — `deriving Param` reads an inductive's
   constructor signature (AdapTT's `IndDesc`), generates its constructor-wise
   relation and a full `Param` instance, and rejects mixed-variance inductives

@@ -17,17 +17,18 @@ congruence — emitting kernel-checked proof terms throughout.
 
 The design synthesizes several lines of work: modular parametricity (Trocq's
 lattice and combinators — the largest single influence), relational transfer and
-data refinement (CoqEAL), set-level heterogeneous congruence from cubical type
+data refinement ([CoqEAL](https://github.com/coq-community/coqeal)), set-level
+heterogeneous congruence from cubical type
 theory (Gjørup–Spitters), and congruence-closure algorithms. From that synthesis
 comes one auto tactic that unifies the native Lean relational tactics —
 `congr`/`gcongr`, `norm_cast`, cast-`rw`, `conv`, `aesop`/`grind` — behind a
 single inference rule. Two application domains drive the framework: compiler
 verification (the CatCrypt compiler) and program verification (`mvcgen` / `Std.Do`
-triples and hax-extracted code).
+triples and [hax](https://github.com/cryspen/hax)-extracted code).
 
 Single entry point: `import Transfer`. Released under LGPL-3.0.
 
-🚧 **Under construction.** This manual is being expanded — some sections are still
+🚧 *Under construction.* This manual is being expanded — some sections are still
 growing, and details may change. Feedback is welcome.
 
 Each code block below transcribes a library declaration and names its source file,
@@ -56,11 +57,11 @@ closes the goal by congruence over it.
 
 ## Three operations from one registration
 
-Registering `R` once gives three operations on the *same* object. Build a witness,
+Registering `R` once gives three operations on the _same_ object. Build a witness,
 transfer a statement across it, or decide it structurally — each is one instance of
 a single inference step.
 
-**Build `R a b` — synthesis.** Find or compose a witness by type-class resolution:
+*Build `R a b` — synthesis.* Find or compose a witness by type-class resolution:
 `Related` / `HasParam` instance search composes registered witnesses through the
 structure of a term (the analogue of Trocq's Elpi search).
 
@@ -69,7 +70,7 @@ example (a b c : F) :
     Related (id : F → F) (a * b + c) (bbFieldAdd (bbFieldMul a b) c) := by param_solve
 ```
 
-**Transfer a goal along `R` — parametricity.** Move a `∀`-statement to the other
+*Transfer a goal along `R` — parametricity.* Move a `∀`-statement to the other
 representation with `param_transfer`, or emit a term's `⟦·⟧` translation with
 `#transfer`.
 
@@ -85,7 +86,7 @@ example (p : ℕ) [NeZero p] :
 #transfer (fun x : Nat => Nat.succ x * x)
 ```
 
-**Decide `R a b` structurally — congruence.** Relate two structurally similar
+*Decide `R a b` structurally — congruence.* Relate two structurally similar
 terms by relational congruence closure.
 
 ```
@@ -98,24 +99,46 @@ unpacks that rule and the tactic that dispatches to it.
 
 ## The unifying auto tactic
 
-Each native Lean relational tactic is congruence for one *fixed* relation. The
+Each native Lean relational tactic is congruence for one _fixed_ relation. The
 framework generalizes that rule to a registered relation and exposes one call site.
 
-| native tactic | its fixed relation | what the one rule adds |
-|---|---|---|
-| `congr` / `HEq` | `Eq` / `HEq` | relates values in *different* fiber types |
-| `gcongr` | `≤` / `⊆`, same head | changes representation across a cross-head op-tree |
-| `norm_cast` | the scalar cast graph | transports a *dependent family* of casts |
-| cast-`rw` | a single coercion lemma | any registered `Param` witness |
-| `conv` | focused rewriting | focused sub-term *transfer* (`transferConv`) |
-| `aesop` / `grind` | `Eq` congruence closure | closure over a registered `R` (`param_cc`) |
+:::table +header
+*
+  * native tactic
+  * its fixed relation
+  * what the one rule adds
+*
+  * `congr` / `HEq`
+  * `Eq` / `HEq`
+  * relates values in _different_ fiber types
+*
+  * `gcongr`
+  * `≤` / `⊆`, same head
+  * changes representation across a cross-head op-tree
+*
+  * `norm_cast`
+  * the scalar cast graph
+  * transports a _dependent family_ of casts
+*
+  * cast-`rw`
+  * a single coercion lemma
+  * any registered `Param` witness
+*
+  * `conv`
+  * focused rewriting
+  * focused sub-term _transfer_ (`transferConv`)
+*
+  * `aesop` / `grind`
+  * `Eq` congruence closure
+  * closure over a registered `R` (`param_cc`)
+:::
 
 `param_auto` (`Congruence/ParamAuto.lean`) is the coordinator: a stable call site
 that dispatches to all of these surfaces — the engine tactics (`param_solve`,
 `rcongr`) and the native ones (`norm_cast`, `gcongr`, `grind`). The dispatch
 strategy underneath — currently a `first`-cascade, later a goal-directed router —
 can change without touching any call site. `param_compose` (`ParamCompose.lean`) is
-the composer for goals needing *two* extensions at once: it descends a `Related`
+the composer for goals needing _two_ extensions at once: it descends a `Related`
 op-tree with the cross-head rule `rcongrBinOp` and closes each residual leaf with
 the full native cascade (`param_leaf`), the niche where neither a native tactic nor
 the engine alone suffices.
@@ -123,7 +146,7 @@ the engine alone suffices.
 Each example in `Examples/StrongExamples.lean` beats a specific native tactic on an
 axis that tactic structurally cannot cross. Over the genuinely
 non-diagonal encoding `Nat.cast : ℕ → ℤ`, `rcongr` descends the cross-head op-tree
-*and* changes representation (`natCastAdd` / `natCastMul` register the two commuting
+_and_ changes representation (`natCastAdd` / `natCastMul` register the two commuting
 squares; `transferRel` extracts the equation `↑(a*b+c) = ↑a*↑b+↑c`) — a move
 `gcongr` rejects. Across `Fin (a+1) ↔ ℕ`, the heterogeneous rule relates values in
 different fiber types where `congr` forces the types equal. And a dependent family
@@ -143,7 +166,7 @@ six-point lattice `map0 ≤ … ≤ map4`:
 * `map1` — a map in that direction;
 * `map2a` / `map2b` — a map whose graph is contained in `R`, respectively contains
   `R` (the two are incomparable);
-* `map3` — a map whose graph *is* `R` (both inclusions);
+* `map3` — a map whose graph _is_ `R` (both inclusions);
 * `map4` — `map3` with an added coherence on top.
 
 So `(map0, map0)` relates values sharing no maps; a forward cast `A → B` is
@@ -232,9 +255,9 @@ The single-limb split surjection `BitVec 64 ↠ ZMod p` is a retraction
 ```
 def limbFieldParam (p : ℕ) [NeZero p] (hp : p ≤ 2 ^ 64) :
     Param .map0 .map2a (BitVec 64) (ZMod p) where
-  R := fun w x => ((w.toNat : ZMod p) = x)
-  fwd := ⟨⟩
-  bwd := ⟨fun x => BitVec.ofNat 64 x.val, …⟩
+  R   := fun w x => ((w.toNat : ZMod p) = x)  -- the decoder's graph
+  fwd := ⟨⟩                                   -- map0: no forward map
+  bwd := ⟨fun x => BitVec.ofNat 64 x.val, …⟩  -- map2a: section + retraction proof (elided)
 ```
 
 Forward is the trivial `map0` (the relation is the decoder's graph). Backward is
@@ -278,19 +301,27 @@ The second application transfers program correctness across a change of
 representation. The `Transfer/Examples/HexEffectful.lean` example transfers a Hoare triple: a
 Bareiss-style elimination step written as a `do`-block moves its triple across a
 storage change via the Kleisli relation `RComp` and `triple_transfer`
-(`Integrations/ParamTripleTransfer`). The `RComp` witness is assembled leaf by leaf
-from `RComp.pure` / `RComp.bind`, mirroring the do-block:
+(`Integrations/ParamTripleTransfer`). The concrete step's triple is proved by
+`mvcgen`; the abstract step's triple is not re-proved but _derived_ from it by
+`triple_transfer`, which carries the correctness across the storage change along an
+`RComp` witness (assembled leaf-by-leaf from `RComp.pure` / `RComp.bind`, mirroring
+the do-block):
 
 ```
-theorem hexStep_RComp {n : ℕ} (l : List ℤ) (v : Fin (n + 2) → ℤ) … :
-    RComp (M := Id) (fun a a' => a = a') (hexStep l) (absStep v) :=
-  RComp.bind (RComp.pure _ h0) (fun a a' ha =>
-    RComp.bind (RComp.pure _ h1) (fun b b' hb =>
-      RComp.pure _ (by rw [ha, hb])))
+theorem hexStep_spec (l : List ℤ) :
+    ⦃⌜True⌝⦄ (hexStep l) ⦃⇓r => ⌜r = l.getD 0 0 - l.getD 1 0⌝⦄ := by
+  mvcgen [hexStep]
+
+theorem absStep_spec {n : ℕ} (l : List ℤ) (v : Fin (n + 2) → ℤ)
+    (h0 : l.getD 0 0 = v 0) (h1 : l.getD 1 0 = v 1) :
+    ⦃⌜True⌝⦄ (absStep v) ⦃⇓r => ⌜r = v 0 - v 1⌝⦄ := by
+  refine triple_transfer (Rα := fun a a' => a = a') (hexStep_RComp l v h0 h1)
+    ?_ (hexStep_spec l)
+  intro a a' (haa : a = a') hc
+  subst haa; rw [← h0, ← h1]; exact hc
 ```
 
-The source triple is proved by `mvcgen`; `triple_transfer` moves it to the target
-representation. The `do` / `for` loops ride `RComp.forIn_list` (effects plus early
+The `do` / `for` loops ride `RComp.forIn_list` (effects plus early
 exit), so a loop-shaped program transfers through one combinator lemma rather than
 an inline recursion translation. This is the mechanism for reasoning about
 hax-extracted code up to its representation: the extracted `Std.Do` program and its
@@ -306,7 +337,7 @@ The [`leanprover/hex`](https://github.com/leanprover/hex) retrofit models `hex`'
 verified computational-algebra carriers and drives them through the engine, one file
 per axis. Dense storage
 (`List ℤ` / `List (List ℤ)`) refines a Mathlib vector / matrix as a
-`Param .map0 .map2a`, and `param_transfer` *generates* the correspondence rather
+`Param .map0 .map2a`, and `param_transfer` _generates_ the correspondence rather
 than hand-proving it per operation (`HexMatrixCorrespondence`). The seq-polynomial
 refinement is non-injective — trailing zeros mean `[1,2]` and `[1,2,0]` both denote
 `2X+1` — reaching `map2a` but provably not `map2b`, a refinement the graded engine
@@ -336,7 +367,7 @@ Each tactic reads the registered relation; they differ in direction and discharg
 * `param_compose` — descend-and-dispatch: descends a `Related` op-tree and closes
   each leaf with the native cascade.
 * `param_cc` — bottom-up relational congruence closure via `grind`. Best when the
-  proof must *chain* known relatednesses.
+  proof must _chain_ known relatednesses.
 * `rcongr` — top-down descent through the registered cross-head op-tree; leaf
   discharger `inferInstance | rfl`.
 * `hgcongr` — heterogeneous, attribute-driven (`@[hgcongr]`) congruence relating
@@ -487,7 +518,7 @@ The framework synthesizes several lines of work:
 * [CoqEAL](https://github.com/coq-community/coqeal) — relational transfer and data
   refinement.
 * the [cubical congruence of Gjørup–Spitters](https://users-cs.au.dk/spitters/Emil.pdf)
-  (*Congruence Closure in Cubical Type Theory*, 2020) — the set-level form of
+  (_Congruence Closure in Cubical Type Theory_, 2020) — the set-level form of
   heterogeneous congruence.
 * [AdapTT](https://arxiv.org/abs/2507.13774) — functorial casts and
   description-based deriving.

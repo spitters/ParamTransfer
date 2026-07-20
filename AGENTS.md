@@ -30,6 +30,11 @@ Each boundary marks a natural extension point.
 * **`TransferDom`** covers diagonal domains and retractions (`ℤ ↠ ZMod p`). Other
   non-diagonal domains (`F ↔ limbs`, group ↔ bytes) follow the same shape: a
   registered backward decoder plus the predicate the `∀`-rule emits.
+* **The `param_auto` dispatch strategy** is the coordinator's one tuning point.
+  It is a `first`-cascade today (`rfl`, `param_solve`, `rcongr`, `norm_cast`,
+  `gcongr`, `grind`, `assumption`); a goal-directed router that inspects the
+  relation head and jumps straight to its optimal solver is a drop-in behind the
+  same call site, without touching any proof (`Congruence/ParamAuto.lean`).
 
 ## Related internal material
 
