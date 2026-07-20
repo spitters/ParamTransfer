@@ -204,7 +204,7 @@ witnesses, so a missing witness stays a **visible residual goal** (hence the
 | **`simp` / `norm_cast`** | the closed-equation fast path; a `@[norm_cast]` move-lemma *is* a transfer witness over the cast graph (`ParamNormCast`) |
 | **`conv`** | focused sub-term transfer (`transferConv`) |
 | **`aesop`** | an opt-in `Transfer` rule set bundling the transfer rules |
-| **`Std.Do` / `mvcgen`** | Hoare-triple transfer via the Kleisli relation `RComp` (`ParamTripleTransfer`) |
+| **`Std.Do` / `mvcgen`** | Hoare-triple transfer via the Kleisli relation `RComp` (`ParamTripleTransfer`); `rcomp` (folded into `param_transfer`) assembles the witness |
 | **coercions** | a `Coe`/`CoeTC` derived from a forward map (`ParamCoe`) |
 
 ## Quick start

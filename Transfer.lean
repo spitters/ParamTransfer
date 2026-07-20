@@ -35,6 +35,7 @@ import Transfer.Combinators.ParamData
 import Transfer.Combinators.ParamSigma       -- dependent-pair (Σ) former + AdapTT cast law (Adapt Σ = Σ Adapt)
 import Transfer.Combinators.ParamArray      -- Array container rule + relational foldl transfer (combinator lemma)
 import Transfer.Integrations.ParamForIn      -- forIn/do-loop transfer: foldlR meets RComp (early exit + effects)
+import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp-witness assembly, folded into `param_transfer`
 -- Automation-tactic integrations:
 import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
 import Transfer.Integrations.AesopIntegration -- opt-in `Trocq` aesop rule set (importer-split)

@@ -139,14 +139,47 @@ with its relatedness proof, resolving witnesses from the registries.
 4. **When to use vs alternatives.** The standard entry point for transferring a
    universally-quantified statement. `transfer_auto` is a superset that also
    handles the arrow `app`-rule shape. `#transfer` is for synthesizing a *term*, not
-   reducing a `∀`-goal.
+   reducing a `∀`-goal. On an `RComp` goal `param_transfer` backtracks to `rcomp`
+   (below) — one entry point for the pure and the effectful abstraction theorem.
 5. **Gotchas.** Resolves the domain via `TransferDom`, so the source/target type
    pair must have a `TransferDom` instance — built-in are the diagonal (any `A A`,
    graph `Eq`), `Num ↦ ℕ`, and `ℤ/ℕ ↠ ZMod p`. For a new representation change,
    add a `TransferDom` instance. The pointwise obligation remains to discharge
    (usually by `intro`/`assumption`/`exact`, plus a rewrite along the relation).
 6. **File.** `ParamTransfer.lean` (`param_transfer`, `TransferDom`,
-   `forallTransferAuto`).
+   `forallTransferAuto`); the `RComp` alternative is in `ParamRComp.lean`.
+
+### `rcomp`
+
+1. **Purpose.** Assemble an `RComp` witness — the monad-level abstraction
+   theorem — by structural descent, the effectful analogue of `transfer` /
+   `rcongr`. It automates the hand `RComp.pure` / `RComp.bind` spelling.
+2. **Applies to / produces.** A goal `RComp Rα c c'`. Applies the first matching
+   rule — `RComp.refl` (diagonal), `RComp.pure` (a `pure` leaf, or a
+   pure-reducible `Id` computation collapsed to one leaf), `RComp.bind` (a `bind`
+   node, intermediate relation pinned to `Rα`), `RComp.forIn_list` (a loop) —
+   recursing into the subgoals, and leaves each *value*-relatedness `Rα a a'` as a
+   residual goal.
+3. **Example.**
+   ```lean
+   -- assemble the witness; close the one value leaf (Id collapses to a single leaf)
+   example (n m : Nat) :
+       RComp (M := Id) (fun (a : Nat) (a' : Int) => (a : Int) = a')
+         (natProg n m) (intProg (n : Int) (m : Int)) := by
+     rcomp <;> norm_cast
+   ```
+4. **When to use vs alternatives.** Use to build the `RComp` witness a
+   `triple_transfer` consumes, instead of nesting `RComp.pure` / `RComp.bind` by
+   hand. `param_transfer` calls it automatically on an `RComp` goal. For the
+   `∀`-fragment (not a computation), use `param_transfer`'s `∀`-rule.
+5. **Gotchas.** Descends only a *structurally parallel* pair (shared `pure` /
+   `bind` / `forIn` skeleton, one uniform value relation) — a skeleton mismatch
+   stays a residual `RComp` goal rather than being forced. It leaves the value
+   leaves (non-fabrication); discharge them with the relation's arithmetic
+   (`norm_cast` / `simp_all` / `push_cast; ring`). Over `Id` a pure program
+   collapses to one leaf; a genuinely effectful monad descends its `bind`
+   structure leaf by leaf.
+6. **File.** `ParamRComp.lean` (`rcomp`, `rcompCore`).
 
 ### `transfer_auto`
 
@@ -593,8 +626,9 @@ These expose the engine through `grind`, `aesop`, and `mvcgen`/`Std.Do` wp.
 4. **When to use vs alternatives.** Use to transport a Hoare triple between two
    monadic programs related at the value level — the abstraction theorem at the
    monad level. For pure `∀`-statements, use `param_transfer`.
-5. **Gotchas.** The `RComp`-witness is assembled by hand from `pure`/`bind` here
-   (the `MetaM` synthesizer / full `mvcgen` integration is not provided). Scope is
+5. **Gotchas.** The `RComp`-witness is assembled by `rcomp` (above) — or by hand
+   from `RComp.pure`/`RComp.bind` for a non-structurally-parallel program; full
+   `mvcgen`-driven witness generation is not provided. Scope is
    `Prop`-predicate `wp` triples; the quantitative/`Advantage` route is out of
    scope (expectation transformers are monotone but not conjunctive).
 6. **File.** `ParamTripleTransfer.lean`.
@@ -715,6 +749,7 @@ Notes:
 | compile a whole goal to emitted kernels | `repr_transfer` / `repr_transfer!` |
 | close a transfer leaf equation by congruence closure | `grind` (with `@[grind =]` squares) |
 | the `Param` lift of a data type | `deriving Param` |
+| assemble an `RComp` witness for two structurally parallel programs | `rcomp` (or `param_transfer`) |
 | transfer a Hoare/`wp` triple between related programs | `triple_transfer` (via `RComp`) |
 
 Two cautions that recur:

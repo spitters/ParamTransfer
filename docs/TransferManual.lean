@@ -304,8 +304,10 @@ storage change via the Kleisli relation `RComp` and `triple_transfer`
 (`Integrations/ParamTripleTransfer`). The concrete step's triple is proved by
 `mvcgen`; the abstract step's triple is not re-proved but _derived_ from it by
 `triple_transfer`, which carries the correctness across the storage change along an
-`RComp` witness (assembled leaf-by-leaf from `RComp.pure` / `RComp.bind`, mirroring
-the do-block):
+`RComp` witness. That witness is assembled leaf-by-leaf from `RComp.pure` /
+`RComp.bind` — spelled out by hand below, or built automatically by the `rcomp`
+tactic (folded into `param_transfer`), which descends the two programs' shared
+`pure` / `bind` / `forIn` skeleton and leaves only the value leaves:
 
 ```
 theorem hexStep_spec (l : List ℤ) :
@@ -378,7 +380,10 @@ Each tactic reads the registered relation; they differ in direction and discharg
 * `hgcongr` — heterogeneous, attribute-driven (`@[hgcongr]`) congruence relating
   different head functions `f ≠ g`.
 * `param_transfer` — transfer a `∀`-goal along the relation (the abstraction
-  theorem), leaving per-argument relatedness hypotheses.
+  theorem), leaving per-argument relatedness hypotheses; on an `RComp` goal it
+  backtracks to `rcomp`.
+* `rcomp` — assemble an `RComp` witness (the effectful abstraction theorem) by
+  structural descent over two parallel programs, leaving the value leaves.
 * `transfer` — the term-level elaborator entry point.
 * `#transfer t` — print the translation of a term `t` in the other representation.
 * `auto_weaken` — weaken a `Param (m n)` witness down the lattice (drives

@@ -75,11 +75,16 @@ Proved (univalence-free, `Prop`-predicate triples only):
 * two worked `Id` examples (`HexEffectful`, `EffectfulTransfer`), each with an
   `mvcgen`-proved source triple transferred across a change of representation.
 
+The `rcomp` tactic (`Integrations/ParamRComp.lean`) assembles the `RComp` witness
+by structural descent for the common case — two structurally parallel programs
+(shared `pure` / `bind` / `forIn` skeleton, one uniform value relation) — and is
+folded into `param_transfer`, so the hand `RComp.pure` / `RComp.bind` spelling
+below is the explicit form of what the tactic does.
+
 Not implemented here:
 
-* `MetaM`-level synthesis of the `RComp`-witness for an arbitrary do-block (the
-  `param`/`trocq`-tactic analogue): here the witness is assembled by hand from
-  `RComp.pure`/`RComp.bind`;
+* synthesis for a *non*-structurally-parallel do-block (a skeleton mismatch stays
+  a residual `RComp` goal rather than being forced);
 * full `mvcgen` integration (generating `RComp`-witnesses from `@[spec]`
   lemmas);
 * the quantitative / advantage route is explicitly out of scope: expectation
