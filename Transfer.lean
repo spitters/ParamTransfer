@@ -69,6 +69,7 @@ import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathli
 import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
 import Transfer.Examples.HexEffectful            -- hex elimination-step triple transfer (RComp/Std.Do)
 import Transfer.Examples.HexDecide               -- hex `decide +kernel` side condition via ReprTransfer
+import Transfer.Examples.ZModDecide              -- decide_zmod: ground ZMod m ring identities by bounded residue
 import Transfer.Examples.HexArrayCompute         -- hex `Array` carrier: refinement is carrier-agnostic + @[csimp] verified compute
 
 /-!
