@@ -71,6 +71,7 @@ import Transfer.Examples.HexEffectful            -- hex elimination-step triple 
 import Transfer.Examples.HexDecide               -- hex `decide +kernel` side condition via ReprTransfer
 import Transfer.Examples.ZModDecide              -- decide_zmod: ground ZMod m ring identities by bounded residue
 import Transfer.Examples.ZModPolyDecide          -- decide_zmod_poly: ZMod m polynomial identities by bounded seqpoly
+import Transfer.Examples.ZModPowMod              -- powMod/invMod + Euler-criterion QR decider (binary modular exponentiation)
 import Transfer.Examples.HexArrayCompute         -- hex `Array` carrier: refinement is carrier-agnostic + @[csimp] verified compute
 
 /-!
