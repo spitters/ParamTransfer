@@ -134,6 +134,32 @@ initialize registerBuiltinAttribute {
 
 /-! ## The `hgcongr` tactic -/
 
+/-- Close `mvarId` with `e` applied to exactly `arity` arguments, the arity being
+    supplied rather than inferred from the goal. Instance-implicit arguments that
+    unification left unassigned are synthesized; the metavariables still
+    unassigned afterwards are returned as goals. -/
+def applyAtArity (mvarId : MVarId) (e : Expr) (arity : Nat) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    mvarId.checkNotAssigned `hgcongr
+    let targetType ← mvarId.getType
+    let eType ← inferType e
+    -- `withDefault` so that a semireducible wrapper such as `Monotone` unfolds.
+    let (newMVars, binderInfos, concl) ←
+      withDefault <| forallMetaTelescopeReducing eType arity
+    unless ← approxDefEq (isDefEqGuarded concl targetType) do
+      throwTacticEx `hgcongr mvarId
+        m!"could not unify the conclusion{indentExpr concl}\nwith the goal{indentExpr targetType}"
+    postprocessAppMVars `hgcongr mvarId newMVars binderInfos
+      (synthAssignedInstances := false)
+    let e ← instantiateMVars e
+    mvarId.assign (mkAppN e newMVars)
+    let newMVars ← newMVars.filterM fun mvar => not <$> mvar.mvarId!.isAssigned
+    let newMVarIds := (newMVars.map (·.mvarId!)).toList
+    let otherMVarIds := (← getMVarsNoDelayed e).filter fun m => !newMVarIds.contains m
+    let result := newMVarIds ++ otherMVarIds.toList
+    result.forM (·.headBetaType)
+    return result
+
 /-- The core descent. Mirror of `Lean.MVarId.gcongr` but with the head-**pair**
     lookup. On a goal `R (f a..) (g b..)`:
 
@@ -155,7 +181,7 @@ partial def hgcongrCore (g : MVarId) : MetaM (List MVarId) := g.withContext do
   for lem in lemmas do
     let gs ← try
       let const ← mkConstWithFreshMVarLevels lem.declName
-      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
+      withReducible (applyAtArity g const lem.numHyps)
     catch _ => setMCtx mctx; continue
     let some e ← getExprMVarAssignment? g | do setMCtx mctx; continue
     let args := e.getAppArgs

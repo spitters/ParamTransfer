@@ -456,7 +456,7 @@ def mkParamMap1Cmds (d : IndDesc) (relName : Name) :
     let seq ← `(tacticSeq| $body:tactic)
     rimArms := rimArms.push (← `(Lean.Parser.Tactic.inductionAlt| | $cShort $hIds* => $seq))
   let instDef ← `(command|
-    instance $instId:ident $pbinders:bracketedBinder* :
+    @[reducible] def $instId:ident $pbinders:bracketedBinder* :
         Param .map3 .map0 $tApp $tApp' where
       R := $rTerm
       fwd := {
@@ -605,7 +605,7 @@ def mkParamMapRecCmds (d : IndDesc) (relName : Name) :
     let seq ← `(tacticSeq| $body:tactic)
     rimArms := rimArms.push (← `(Lean.Parser.Tactic.inductionAlt| | $cShort $binders* => $seq))
   let instDef ← `(command|
-    instance $instId:ident $pbinders:bracketedBinder* :
+    @[reducible] def $instId:ident $pbinders:bracketedBinder* :
         Param .map3 .map0 $tApp $tApp' where
       R := $rTerm
       fwd := {
@@ -756,7 +756,7 @@ def mkParamMapNestedCmds (d : IndDesc) (relName : Name) :
   let mutRInMap ← `(command| mutual $rimThm:command $rimLThm:command end)
   -- (4) the instance, wiring the four recursive lemmas.
   let instDef ← `(command|
-    instance $instId:ident $pbinders:bracketedBinder* :
+    @[reducible] def $instId:ident $pbinders:bracketedBinder* :
         Param .map3 .map0 $tApp $tApp' where
       R := $relApp
       fwd := {
