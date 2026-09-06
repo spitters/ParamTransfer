@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Congruence.RCongr
-import Transfer.Integrations.GrindIntegration
+module
+
+public import Transfer.Congruence.RCongr
+public import Transfer.Integrations.GrindIntegration
 
 /-!
 # `param_cc` — relational congruence closure over `Related`
@@ -95,6 +97,8 @@ in for it. The present tactic is the set-level, equational specialization that
 the Trocq `Related` relation admits.
 -/
 
+@[expose] public section
+
 set_option autoImplicit false
 
 namespace Transfer
@@ -116,7 +120,7 @@ open Lean Elab Tactic Meta
 Over the encoding relation this is exactly relational congruence closure:
 congruence (the squares), transitivity/symmetry (`=` on `enc`-images), and
 reflexivity (`rfl`) are all realized by the equational closure. -/
-def paramCCCore : TacticM Unit := withMainContext do
+meta def paramCCCore : TacticM Unit := withMainContext do
   -- Phase 1: surface relatedness facts from the local context as equations.
   for ldecl in (← getLCtx) do
     if ldecl.isImplementationDetail then continue

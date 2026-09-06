@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
 
 /-!
 # The equivalence bridge + `Param` weakening
@@ -27,6 +29,8 @@ weakening maps (forget structure in one direction).
 So a left-inverse encoding is exactly a `Param map3 map2b` — the lattice pins down
 the asymmetry that the coarse `map/embedding/equiv` view hides.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 -- `Param.*` weakening defs live in the `Param` namespace by design (dot-notation

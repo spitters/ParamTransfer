@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Translate.ParamTranslateFull
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Transfer.Translate.ParamTranslateFull
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # `norm_cast` move-lemmas are `Param` relatedness witnesses
@@ -65,6 +67,8 @@ The `n`-ary generalisation is the same spine-stripping the operator rule
 already supports (`ParamTranslateOp`); the same construction applies to any
 registered coercion graph with `@[norm_cast]` move lemmas for its operators.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

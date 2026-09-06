@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
-import Transfer.Combinators.ParamData
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
+public import Transfer.Combinators.ParamData
 
 /-!
 # Toward a `@[derive Param]` handler (two more mechanized
@@ -104,6 +106,8 @@ The reuse is: instantiate `Translate`'s `TranslateData`/`Config` with a
 relatedness-carrying substitution, and let its `transformDeclRec`/`proceedFields`
 do the structural+inductive+projection walk that `ParamTranslate` does by hand.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

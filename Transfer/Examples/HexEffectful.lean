@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Integrations.ParamTripleTransfer
-import Mathlib.Data.List.Basic
+module
+
+public import Transfer.Integrations.ParamTripleTransfer
+public import Mathlib.Data.List.Basic
 
 /-!
 # Transferring a `hex` elimination step across dense storage, effectfully
@@ -42,6 +44,8 @@ the entry equalities. A correctness statement established once over `hex`'s
 concrete storage is transported to the Mathlib specification with no re-proof of
 the loop body.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

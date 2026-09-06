@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
 
 /-!
 # The arrow (`app` / function) parametricity rule
@@ -38,6 +40,8 @@ Recall `PA.bwd : MapHas n (symRel PA.R)`, and `symRel PA.R a' a = PA.R a a'`,
 so `PA.bwd.map : A' → A`, `PA.bwd.map_in_R : ∀ a' a, PA.bwd.map a' = a → PA.R a a'`,
 and `PA.bwd.R_in_map : ∀ a' a, PA.R a a' → PA.bwd.map a' = a`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

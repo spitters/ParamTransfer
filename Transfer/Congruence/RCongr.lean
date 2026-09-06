@@ -3,8 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.TransferTactic
-import Mathlib.Tactic.GCongr
+module
+
+public meta import Transfer.Base.TransferTactic
+public import Transfer.Base.TransferTactic
+public import Mathlib.Tactic.GCongr
 
 /-!
 # `rcongr` — relational (cross-head) congruence descent
@@ -89,6 +92,10 @@ possibly-different relations as it already does. `rcongr` here is the in-tree
 realization of exactly that idea, specialized to the `Related`/`RelatedBinOp`
 database.
 -/
+
+public section
+
+meta section
 
 set_option autoImplicit false
 

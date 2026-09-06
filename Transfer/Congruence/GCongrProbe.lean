@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Probe: whether `@[gcongr]` accepts cross-head realization lemmas
@@ -45,6 +47,8 @@ is not the available hook. A cross-head transfer needs a dedicated congruence
 driver (a custom `Simp`/`Tactic` extension or an explicit relation-respecting
 combinator set), not the `@[gcongr]` attribute.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

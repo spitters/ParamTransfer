@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Tactic.Ring
 
 /-!
 # CoqEAL `binnat`, ported to Lean — `List Bool` refines the natural numbers
@@ -33,6 +35,8 @@ rank, multivariate polynomials, and the normal-form theory (Smith, Jordan,
 Frobenius) — is CoqEAL's research contribution, a much larger development,
 documented as the suite's frontier rather than ported.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

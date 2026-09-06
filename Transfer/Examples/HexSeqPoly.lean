@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransferTac
-import Transfer.Hierarchy.ParamEquiv
-import Mathlib.Data.List.Basic
+module
+
+public import Transfer.Statements.ParamTransferTac
+public import Transfer.Hierarchy.ParamEquiv
+public import Mathlib.Data.List.Basic
 
 /-!
 # `hex`'s dense polynomial storage: a non-injective refinement at `map2a`
@@ -46,6 +48,8 @@ graded hierarchy is the right tool for `hex`'s storage: a two-sided-equivalence
 framework would reject this refinement outright; `map2a` is precisely what
 `forallTransfer`/`TransferDom` consume.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 set_option linter.dupNamespace false

@@ -3,10 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Related
-import Transfer.Base.TransferTactic
-import Transfer.Base.FieldRegistry
-import Lean.Elab.Tactic.Conv
+module
+
+public import Transfer.Base.Related
+public import Transfer.Base.TransferTactic
+public import Transfer.Base.FieldRegistry
+public import Lean.Elab.Tactic.Conv
 
 /-!
 # `conv`-mode transfer
@@ -72,6 +74,8 @@ scope is the closed first-order, identity-encoding op-tree fragment that
 `Related.lean` covers; binder traversal and richer encodings remain the
 whole-goal `transfer`'s job.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

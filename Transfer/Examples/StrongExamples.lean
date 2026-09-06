@@ -3,10 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Congruence.ParamSolve
-import Transfer.Congruence.HCongrConnection
-import Transfer.Base.Related
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Transfer.Congruence.ParamSolve
+public import Transfer.Congruence.HCongrConnection
+public import Transfer.Base.Related
+public import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Strong examples — congruence the native tactics structurally cannot do
@@ -24,6 +26,8 @@ not identity encodings.
 | `gcongr` | `≤`/`⊆`, same head | change of representation | `rcongr_nat_int` |
 | `norm_cast` | the scalar cast graph | a *dependent-family* cast | `dep_family_cast_fin` |
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

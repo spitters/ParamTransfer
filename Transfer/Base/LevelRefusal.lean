@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.RelatedAt
+module
+
+public import Transfer.Base.RelatedAt
 
 /-!
 # The univalence-free refusal guard
@@ -36,6 +38,8 @@ is the abstract form of concrete refusals already in the tree — e.g. the ZX
 `unconditional_localComplement_refused` certificate (the naive
 local-complement rule is unsound and must be refused).
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

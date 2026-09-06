@@ -3,9 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Ring
 
 /-!
 # Strassen one-level 2×2 block multiplication identity
@@ -37,6 +40,8 @@ the recursion bookkeeping is orthogonal library plumbing.
 * `Strassen.result` — the `2×2` matrix recombined from `M1 … M7`.
 * `Strassen.result_eq_mul` — `result A B = A * B` (the verified identity).
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

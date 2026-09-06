@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Univalence in Lean 4 and the Trocq `map4` cap
@@ -49,6 +51,8 @@ makes `propext` safe makes `Type`-level univalence contradictory.
 * No additional axiom completes `Map2a_forall` or the `Type`-valued motive. The cap is
   forced, and `LevelRefusal` refusing `equiv` follows from it.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

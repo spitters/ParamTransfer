@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import ReprTransfer
+module
+
+public import ReprTransfer
 
 /-!
 # The `repr` registry + `repr_transfer` tactic
@@ -19,6 +21,8 @@ layer connections, …) otherwise derive by hand.
 `register_simp_attr` must live in its own module (the attribute is only usable in
 *importing* files), so the tagged lemmas live in `Trocq/FieldRegistry.lean` etc.
 -/
+
+@[expose] public section
 
 /-- The Trocq realization registry: a simp set of `abstract-op = emitted-kernel`
     lemmas. Tag each realization (e.g. `a * b = bbFieldMul a b`) with `@[transfer]`.

@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Combinators.ParamForall
-import Transfer.Examples.PeanoBinNat
+module
+
+public import Transfer.Combinators.ParamForall
+public import Transfer.Examples.PeanoBinNat
 
 /-!
 # `∀`-transfer through the `Param` engine (`Map1_forall`)
@@ -60,6 +62,8 @@ Not implemented here:
   localized and named in `ParamForall.lean`; here we stay at the `Prop` motive,
   which is univalence-free.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,11 +3,13 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Synthesis.ParamSynth
-import Transfer.Combinators.ParamForall
-import Transfer.Hierarchy.ParamEquiv
-import Transfer.Hierarchy.ParamLevel
-import Transfer.Base.Hierarchy
+module
+
+public import Transfer.Synthesis.ParamSynth
+public import Transfer.Combinators.ParamForall
+public import Transfer.Hierarchy.ParamEquiv
+public import Transfer.Hierarchy.ParamLevel
+public import Transfer.Base.Hierarchy
 
 /-!
 # The multi-level `Param`-witness synthesizer
@@ -57,6 +59,8 @@ dedicated `MetaM`/Elpi-`param.db`-analogue solver. This module pins a *finite me
 levels (`(.map1, .map1)` from the core synthesizer, `(.map3, .map0)` here) wired to the
 matching `arrowReq` rows; turning the menu into a search is not done here.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # CoqEAL `seqmatrix`, ported to Lean — `List (List R)` refines the entry function
@@ -23,6 +25,8 @@ same `ReprTransfer` layer; this file is one worked instance over the `seqmatrix`
 representation. `SeqMatrixMul` refines the multiplication; the `CoqEAL`
 aggregator records the suite's frontier.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

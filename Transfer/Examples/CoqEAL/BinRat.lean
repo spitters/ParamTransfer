@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Tactic
 
 /-!
 # CoqEAL `rational`/`binrat`, ported to Lean — num/den pairs refine `ℚ`
@@ -17,6 +19,8 @@ relation is a total map, non-injective). The concrete componentwise product
 *unconditionally*, without a `den ≠ 0` side condition, because `div_mul_div_comm`
 is an identity in a division ring.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 set_option linter.dupNamespace false

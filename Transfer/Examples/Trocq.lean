@@ -3,10 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.PeanoBinNat
-import Transfer.Examples.ExampleField
-import Transfer.Examples.ParamRetraction
-import Transfer.Examples.Trocq.Summable
+module
+
+public import Transfer.Examples.PeanoBinNat
+public import Transfer.Examples.ExampleField
+public import Transfer.Examples.ParamRetraction
+public import Transfer.Examples.Trocq.Summable
 
 /-!
 # The Trocq example suite
@@ -31,3 +33,5 @@ files: `nat_ind` by `Base/TransferInduction` (`natEquivInduction`), `list_option
 `Combinators/ParamData` (`R_list`/`R_option`), and `setoid_rewrite` by `param_cc`
 (the relational congruence closure, shown in `Examples/ExampleField`).
 -/
+
+@[expose] public section

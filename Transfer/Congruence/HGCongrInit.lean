@@ -3,8 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Related
-import Mathlib.Tactic.GCongr
+module
+
+public meta import Transfer.Base.Related
+public import Transfer.Base.Related
+public import Mathlib.Tactic.GCongr
 
 /-!
 # `hgcongr` engine — head-pair-keyed DB, attribute, and tactic
@@ -22,6 +25,10 @@ Mathlib keeps `gcongrExt` in `GCongr/Core.lean`, used only by importers, and the
 reason `ParamDB.lean` is split from its consumers here). See `HGCongr.lean` for
 the design rationale, the `rcongr`/gcongr contrast, and the upstream-patch spec.
 -/
+
+public section
+
+meta section
 
 set_option autoImplicit false
 

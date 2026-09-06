@@ -3,13 +3,15 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
-import Transfer.Combinators.ParamData
-import Transfer.Deriving.ParamDerive
-import Transfer.Combinators.ParamCoherence
-import Lean.Elab.Deriving.Basic
-import Lean.Elab.Deriving.Util
-import Lean.Meta.Inductive
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
+public import Transfer.Combinators.ParamData
+public import Transfer.Deriving.ParamDerive
+public import Transfer.Combinators.ParamCoherence
+public import Lean.Elab.Deriving.Basic
+public import Lean.Elab.Deriving.Util
+public import Lean.Meta.Inductive
 
 /-!
 # The description-based `@[derive Param]` handler
@@ -108,6 +110,8 @@ and the uniform-recursive path generate the relation and the forward `map3`
 `Param` instance with the variance guard; non-uniform recursive map/proof
 synthesis is the labelled residual.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

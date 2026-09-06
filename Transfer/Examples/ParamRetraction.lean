@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransferTac
-import Transfer.Hierarchy.ParamEquiv
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Transfer.Statements.ParamTransferTac
+public import Transfer.Hierarchy.ParamEquiv
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # The `ℤ ↠ ZMod p` retraction transfer domain (non-diagonal)
@@ -46,6 +48,8 @@ result fits `TransferDom ℤ (ZMod p)` directly. No shape gap: the retraction's
 backward `map2a` is precisely what the engine needs, so `param_transfer` resolves
 this non-diagonal domain with no caller-named relation.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 set_option linter.dupNamespace false

@@ -1,4 +1,8 @@
-import Lake
+module
+
+public import Lake
+
+@[expose] public section
 open Lake DSL
 
 -- Documentation package — SEPARATE from the `paramTransfer` library package so the

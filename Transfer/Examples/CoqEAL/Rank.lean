@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib
+module
+
+public import Mathlib
 
 /-!
 # CoqEAL `rank` — matrix rank certified against `Matrix.rank`
@@ -14,6 +16,8 @@ of nonzero entries has full rank. The elimination-based general algorithm is the
 suite's frontier; here the refinement target — `Matrix.rank` — is pinned down on
 the cases where the answer is `Fintype.card`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

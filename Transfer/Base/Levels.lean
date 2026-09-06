@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamLevel
+module
+
+public import Transfer.Hierarchy.ParamLevel
 
 /-!
 # Relatedness levels — the 3-point view of the Trocq lattice
@@ -38,6 +40,8 @@ from sub-transfers) supports only the weakest level of its parts, so the level
 of a composite is the meet (the lower) of the component levels — computed as
 the `MapClass` meet of the images (`toMapClass_meet`).
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

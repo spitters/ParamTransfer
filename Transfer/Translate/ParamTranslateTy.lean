@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Lean
-import Transfer.Translate.ParamTranslate
+module
+
+public import Lean
+public import Transfer.Translate.ParamTranslate
 
 /-!
 # The binder **type-translation** rule (change-of-representation)
@@ -54,6 +56,8 @@ case) likewise remain the univalence-capped boundary, exactly as for
 `ParamTranslate`. This module adds the change-of-representation binder rule
 for the first-order fragment.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

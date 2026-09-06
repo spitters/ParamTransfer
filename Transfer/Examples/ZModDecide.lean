@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import ReprTransfer
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic
+module
+
+public import ReprTransfer
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic
 
 /-!
 # `decide_zmod`: deciding ground ring identities over `ZMod m` by bounded residue computation
@@ -46,6 +48,8 @@ coefficients up.
   `seqpoly` refinement, `HexSeqPoly`) — a separate `decide_zmod_poly` on top of
   this core.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 
@@ -124,7 +128,7 @@ open Lean Elab Tactic Meta RingExpr in
 /-- Reify a ground `ZMod m` expression into a `RingExpr` term. Fails on any leaf
     that is not a numeral (e.g. a free variable), keeping the tactic total on the
     ground fragment it is sound for. -/
-partial def reifyZMod (e : Expr) : MetaM Expr := do
+meta partial def reifyZMod (e : Expr) : MetaM Expr := do
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, a, b]) =>
       return mkApp2 (mkConst ``RingExpr.add) (← reifyZMod a) (← reifyZMod b)

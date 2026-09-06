@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Integrations.ParamTripleTransfer
-import Transfer.Combinators.ParamArray
+module
+
+public import Transfer.Integrations.ParamTripleTransfer
+public import Transfer.Combinators.ParamArray
 
 /-!
 # `forIn` / `do`-loop transfer: `foldlR` meets `RComp`
@@ -29,6 +31,8 @@ folds) and `RComp.pure`/`RComp.bind` (straight-line effects), this closes the
 combinator set a fold-or-loop-shaped hex algorithm needs to transfer without any
 recursor translation.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransfer
+module
+
+public import Transfer.Statements.ParamTransfer
 
 /-!
 # Dependent-Π transfer for **nested** `∀`-statements
@@ -59,6 +61,8 @@ unchanged from `ParamTransfer.lean`:
 Nesting `forallTransfer` covers the *propositional* multi-quantifier fragment
 automatically, which is the bulk of first-order transfer targets.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

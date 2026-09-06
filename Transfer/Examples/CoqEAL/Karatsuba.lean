@@ -3,8 +3,13 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import CompPoly.Univariate.ToPoly.Equiv
-import Transfer.Base.Core
+module
+
+public import CompPoly.Univariate.ToPoly.Equiv
+public import Transfer.Base.Core
+import all CompPoly.Univariate.Basic
+import all CompPoly.Univariate.ToPoly.Equiv
+import all CompPoly.Univariate.ToPoly.Impl
 
 /-!
 # CoqEAL Karatsuba polynomial multiplication, ported to Lean
@@ -58,6 +63,8 @@ product ↦ Karatsuba recombination), so `repr_transfer` automatically rewrites 
 its three-multiplication Karatsuba form. Karatsuba is now a registered
 refinement in the transfer engine.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

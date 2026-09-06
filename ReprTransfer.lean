@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Representation transfer for emit-realization bridges
@@ -43,6 +45,8 @@ emit-realization bridges require.
 * `BinOpRealization.eq_transfer` — the transfer theorem: an abstract equation
   `op a b = op a' b'` holds iff `bop` agrees on the encoded operands.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

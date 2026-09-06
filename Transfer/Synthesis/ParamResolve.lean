@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Synthesis.ParamSynth
-import Transfer.Synthesis.ParamSynthExt
-import Transfer.Hierarchy.ParamWeaken
+module
+
+public import Transfer.Synthesis.ParamSynth
+public import Transfer.Synthesis.ParamSynthExt
+public import Transfer.Hierarchy.ParamWeaken
 
 /-!
 # The upward level search (`param_resolve`)
@@ -33,6 +35,8 @@ unreachable — and, as `UnivalenceStatus` proves, necessarily so (UA is
 inconsistent in Lean). Beyond this lies the full term-level `⟦t⟧`
 over arbitrary (non-type-directed) terms — a separate, larger metaprogram.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

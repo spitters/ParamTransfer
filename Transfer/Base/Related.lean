@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.ExampleField
+module
+
+public import Transfer.Examples.ExampleField
 
 /-!
 # `Related` — transfer by instance resolution
@@ -56,6 +58,8 @@ is closed purely by `(inferInstance : Related id _ _).rel`.
   `Related id a a`) supplies it. Both leaves are `priority := low` so the
   structural `composeBinOp` is preferred and resolution does not loop on a leaf.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Related
-import Transfer.Base.Levels
-import Transfer.Base.Hierarchy
+module
+
+public import Transfer.Base.Related
+public import Transfer.Base.Levels
+public import Transfer.Base.Hierarchy
 
 /-!
 # **Level-annotated** relatedness
@@ -46,6 +48,8 @@ wrapper over this semantics.
 * `RelatedAt.toRelated` — forget the level (always sound: same equation).
 * `Related.toRelatedAtMap` — every transfer is at least `map`-level.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

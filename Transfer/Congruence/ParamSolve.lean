@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Congruence.RCongr
-import Transfer.Congruence.ParamCongrClosure
+module
+
+public import Transfer.Congruence.RCongr
+public import Transfer.Congruence.ParamCongrClosure
 
 /-!
 # `param_solve` — the common generalization of `rcongr` and `param_cc`
@@ -88,6 +90,8 @@ cubical congruence-closure run at the set level) is not implemented here,
 as in `ParamCongrClosure.lean`.
 -/
 
+@[expose] public section
+
 set_option autoImplicit false
 
 namespace Transfer
@@ -111,7 +115,7 @@ open Lean Elab Tactic Meta
 
 Each binary step strips one op layer, so the descent is well-founded on op-tree
 size; the closure leaf is terminal. -/
-partial def paramSolveCore : TacticM Unit := withMainContext do
+meta partial def paramSolveCore : TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← getMainTarget)
   match tgt.getAppFnArgs with
   | (``Related, #[_A, _α, _enc, lhs, _rhs]) =>

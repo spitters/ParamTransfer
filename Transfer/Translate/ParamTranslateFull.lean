@@ -3,9 +3,14 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Translate.ParamDB
-import Transfer.Translate.ParamTranslateTy
-import Transfer.Translate.ParamTranslateOp
+module
+
+public meta import Transfer.Translate.ParamDB
+public import Transfer.Translate.ParamDB
+public meta import Transfer.Translate.ParamTranslateTy
+public import Transfer.Translate.ParamTranslateTy
+public meta import Transfer.Translate.ParamTranslateOp
+public import Transfer.Translate.ParamTranslateOp
 
 /-!
 # The integrated term-level translator `⟦·⟧` (capstone)
@@ -30,6 +35,10 @@ binders). The remaining case — dependent `Π`/recursors and the `Type`-valued
 motive — is the univalence cap, which `UnivalenceStatus.univalence_inconsistent`
 proves is unreachable in Lean by necessity.
 -/
+
+public section
+
+meta section
 
 set_option autoImplicit false
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransfer
-import Std.Do.Triple
+module
+
+public import Transfer.Statements.ParamTransfer
+public import Std.Do.Triple
 
 /-!
 # Transferring a Hoare/`wp` triple through a `Param` relation
@@ -92,6 +94,8 @@ Not implemented here:
   `PredTrans.conjunctiveRaw` (see `StdDoBridge`); quantitative transfer belongs
   to the `Advantage`/`sdist` layer, not to this `Prop`-predicate `wp` principle.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

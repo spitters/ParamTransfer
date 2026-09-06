@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # CoqEAL `seqmatrix` multiplication refinement — `List (List R)` row-col product
@@ -33,6 +35,8 @@ recorded as the specialization `matVec` / `getD_matVec`. The suite's frontier �
 fast matrix multiply (`Strassen`), and the linear-solve, determinant, and
 normal-form developments — is in the `CoqEAL` aggregator.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

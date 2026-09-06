@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Recursive (fuel-driven) Strassen block multiplication
@@ -50,6 +52,8 @@ ragged `Fin (2*n)` data layout are the remaining residual and are not done here.
   identity (the algebraic heart).
 * `strassenRec_eq` — `strassenRec fuel A B = A * B`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

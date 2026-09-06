@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Hierarchy
+module
+
+public import Transfer.Base.Hierarchy
 
 /-!
 # The `Param` relation hierarchy
@@ -39,6 +41,8 @@ component, wider than the paper's `{0,1,2a}`. With `Prop`-valued `R`, proof
 irrelevance makes the map4 coherence `R_in_mapK` automatic, so even `Map4.Has`
 is constructible for these relations.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 -- `Param` (the annotated-relation structure) deliberately lives in the `Param`

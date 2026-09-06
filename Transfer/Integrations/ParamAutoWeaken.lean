@@ -3,9 +3,14 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamWeaken
-import Transfer.Statements.ParamTransferTac
-import Transfer.Synthesis.ParamInfer
+module
+
+public meta import Transfer.Synthesis.ParamInfer
+public meta import Transfer.Hierarchy.ParamWeaken
+public import Transfer.Hierarchy.ParamWeaken
+public meta import Transfer.Statements.ParamTransferTac
+public import Transfer.Statements.ParamTransferTac
+public import Transfer.Synthesis.ParamInfer
 
 /-!
 # Auto-weakening of witnesses + a unified transfer entry
@@ -54,6 +59,8 @@ generalizes the fixed class choice here (its `inferRootClass` is exactly the
 class `transfer_auto` would synthesize at, then `Param.weaken` down). This file
 documents that consumption point; it does not duplicate the solver.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

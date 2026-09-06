@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer
+module
+
+public import Transfer
 
 /-!
 # Axiom ledger — a build-time hygiene tripwire
@@ -18,6 +20,8 @@ boundary, a genuine cross-representation encoding law, and heterogeneous
 congruence over distinct fiber types. The expected axiom set is Lean's standard
 `propext` / `Quot.sound` / `Classical.choice` and nothing else.
 -/
+
+@[expose] public section
 
 /-- info: 'Transfer.UnivalenceStatus.univalence_inconsistent' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in

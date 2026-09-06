@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
-import Transfer.Synthesis.ParamSynth
-import Transfer.Hierarchy.ParamEquiv
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
+public import Transfer.Synthesis.ParamSynth
+public import Transfer.Hierarchy.ParamEquiv
 
 /-!
 # The coercion integration (`Param` witness → `Coe`)
@@ -57,6 +59,8 @@ Two consequences worth stating plainly:
   trade-off is opt-in convenience vs. global safety. A *specific* `Coe`
   (`coeNatWrap` below) is the safest form when a single pair is wanted.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 -- The `Param.*` accessors live in the `Param` namespace by design (dot-notation

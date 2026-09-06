@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Tactic
 
 /-!
 # CoqEAL `bareiss` — a fraction-free determinant certified against `Matrix.det`
@@ -16,6 +18,8 @@ a `ℤ`-only, `#eval`-computable determinant certified equal to Mathlib's
 Sarrus/Bareiss expansion. Both avoid division, and both equal `Matrix.det`
 (`det_fin_two`, `det_fin_three`) — computing the classical determinant in `ℤ`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Aesop
+module
+
+public import Aesop
 
 /-!
 # The `Trocq` aesop rule set — declaration module
@@ -15,5 +17,7 @@ declares the set, so that `Trocq/AesopIntegration.lean` (which imports it) can
 register rules into it *and* invoke `aesop (rule_sets := [Transfer])`, and so the
 named set is usable engine-wide by any downstream file.
 -/
+
+@[expose] public section
 
 declare_aesop_rule_sets [Transfer]

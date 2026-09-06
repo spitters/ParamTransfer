@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Related
-import Transfer.Translate.ParamTranslate
+module
+
+public import Transfer.Base.Related
+public import Transfer.Translate.ParamTranslate
 
 /-!
 # One witness, both engines — `RelatedBinOp` ⇒ `RArrow`
@@ -25,6 +27,8 @@ It is the `RelatedBinOp` companion of `ParamNormCast.paramWitOfCastHom` (which d
 the same for a `@[norm_cast]` move lemma), closing the loop so a realized operation
 is proved once and consumed by every tactic surface.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

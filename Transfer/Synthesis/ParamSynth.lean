@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
-import Transfer.Combinators.ParamArrow
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
+public import Transfer.Combinators.ParamArrow
 
 /-!
 # The `Param`-witness synthesizer
@@ -59,6 +61,8 @@ level-arithmetic relation, or a dedicated `MetaM` solver (the Elpi
 fixed-`(map1, map1)` specialization, which is sound and automates the
 function-rule composition.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

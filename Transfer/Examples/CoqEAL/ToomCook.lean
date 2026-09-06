@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib
+module
+
+public import Mathlib
 
 /-!
 # CoqEAL `toomcook` — the evaluate–multiply–interpolate core
@@ -17,6 +19,8 @@ bounded degree through the sampled points — recovers `p * q`, so the pointwise
 products at enough points determine the product exactly. The general algorithm is
 the suite's frontier; the identity below is its load-bearing core.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Field.Basic
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Field.Basic
 
 /-!
 # A self-contained example field for the Trocq engine demos
@@ -33,6 +35,8 @@ emitted-kernel realization (where `bbFieldMul_eq` is an
 encode/emit/decode theorem) lives in `Bridges/ReprTransferInstances.lean`; the
 engine treats both uniformly.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

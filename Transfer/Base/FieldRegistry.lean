@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Core
-import Transfer.Examples.ExampleField
+module
+
+public import Transfer.Base.Core
+public import Transfer.Examples.ExampleField
 
 /-!
 # The emitted Baby Bear field kernels
@@ -17,6 +19,8 @@ expression — the registry-driven replacement for hand-written field-layer
 connections (sum-check / Spartan / Lasso / STARK / Jolt / Fiat-Shamir all share
 this field).
 -/
+
+@[expose] public section
 
 namespace Transfer
 

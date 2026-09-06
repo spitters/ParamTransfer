@@ -3,8 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.HigherOrderTransfer
-import Transfer.Base.RelatedAt
+module
+
+public meta import Transfer.Base.HigherOrderTransfer
+public import Transfer.Base.HigherOrderTransfer
+public meta import Transfer.Base.RelatedAt
+public import Transfer.Base.RelatedAt
 
 /-!
 # The `transfer` tactic (automatic binder translation)
@@ -53,6 +57,10 @@ is unchanged. This module handles binder translation; the dependent
 motive / recursor transfer (`peano_bin_nat`) and the full `(m,n)` level-inference
 engine are not implemented here.
 -/
+
+public section
+
+meta section
 
 set_option autoImplicit false
 

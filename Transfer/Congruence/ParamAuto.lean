@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Congruence.ParamSolve
-import Transfer.Base.Related
-import Mathlib.Tactic
+module
+
+public import Transfer.Congruence.ParamSolve
+public import Transfer.Base.Related
+public import Mathlib.Tactic
 
 /-!
 # `param_auto` — one coordinator over every congruence surface
@@ -29,6 +31,8 @@ This realizes, as a tactic, the "one engine" picture: the coordinator descends t
 one graded congruence rule and hands each leaf to the fastest available
 decision procedure for that leaf's relation.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

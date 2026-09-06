@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamLevel
-import Transfer.Hierarchy.ParamEquiv
+module
+
+public import Transfer.Hierarchy.ParamLevel
+public import Transfer.Hierarchy.ParamEquiv
 
 /-!
 # The `⊑`-driven `Param` weakening (level navigation)
@@ -41,6 +43,8 @@ combinator and the minimal feasible level before invoking the synthesizer. That
 resolver, `resolveParamLevel`, is the final step; `Param.weaken` lets it
 synthesize high and land at the lower level a goal uses.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

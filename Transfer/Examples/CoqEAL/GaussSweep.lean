@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.CoqEAL.GaussPivotStep
+module
+
+public import Transfer.Examples.CoqEAL.GaussPivotStep
 
 /-!
 # Gaussian elimination: multi-row forward sweep (refinement)
@@ -39,6 +41,8 @@ frontier.
 * `gaussSweep_preserves_solution` — `x` solves the swept system iff it solves
   the original one (solution-set invariance of the whole forward sweep).
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib
+module
+
+public import Mathlib
 
 /-!
 # Trocq `summable` — summability transfers across an equivalence
@@ -14,6 +16,8 @@ directions (`Equiv.summable_iff`), because reindexing a sum by a bijection prese
 it. This is the analytic counterpart of the engine's representation transfers — a
 statement moved across an equivalence — for a `noncomputable`, topological predicate.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

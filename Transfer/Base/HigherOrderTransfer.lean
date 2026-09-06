@@ -4,6 +4,8 @@ Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as describe
 Authors: Bas Spitters
 -/
 
+module
+
 /-!
 # Binder / higher-order / ∀ transfer (as lemmas)
 
@@ -28,6 +30,8 @@ The non-fabrication invariant holds: every lemma takes the commuting
 square (`comm` / the pointwise transfer) as an explicit premise — the bound /
 quantified / aggregated transfer composes a given witness, never invents one.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransfer
-import Transfer.Synthesis.ParamSynth
+module
+
+public import Transfer.Statements.ParamTransfer
+public import Transfer.Synthesis.ParamSynth
 
 /-!
 # `param_transfer`, end-to-end `∀`-transfer
@@ -47,6 +49,8 @@ beyond `∀`-statements, i.e. the `MetaM`/Elpi-style synthesizer that infers the
 `Param` witnesses and per-subterm `(m, n)` levels for *any* term, not just the
 universally-quantified `Prop`-fragment handled here.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

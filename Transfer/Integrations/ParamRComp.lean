@@ -3,8 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: ParamTransfer Contributors
 -/
-import Transfer.Integrations.ParamForIn
-import Transfer.Statements.ParamTransferTac
+module
+
+public meta import Transfer.Integrations.ParamForIn
+public import Transfer.Integrations.ParamForIn
+public meta import Transfer.Statements.ParamTransferTac
+public import Transfer.Statements.ParamTransferTac
 
 /-!
 # `rcomp`: structural assembly of an `RComp` witness
@@ -46,6 +50,10 @@ share a `pure` / `bind` / `forIn` skeleton and a uniform value relation, which i
 the shape every hand-assembled witness has. A structural mismatch stays a residual
 `RComp` goal rather than being forced.
 -/
+
+public section
+
+meta section
 
 set_option autoImplicit false
 

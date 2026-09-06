@@ -3,10 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransferTac
-import Transfer.Combinators.ParamForall
-import Transfer.Congruence.HCongrConnection
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Transfer.Statements.ParamTransferTac
+public import Transfer.Combinators.ParamForall
+public import Transfer.Congruence.HCongrConnection
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Machine limbs ↔ prime field: a strong non-diagonal heterogeneous dependent example
@@ -58,6 +60,8 @@ This is the "Way 2" construction: the no-overflow condition is absorbed into the
 section, which always lands a canonical representative in range, so the section law
 holds unconditionally on the `ZMod p` side.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 set_option linter.dupNamespace false

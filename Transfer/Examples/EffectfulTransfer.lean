@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: ParamTransfer Contributors
 -/
-import Transfer.Integrations.ParamTripleTransfer
-import Mathlib.Tactic
+module
+
+public import Transfer.Integrations.ParamTripleTransfer
+public import Mathlib.Tactic
 
 /-!
 # An effectful transfer across a value-type change, proved by `mvcgen`
@@ -28,6 +30,8 @@ The witness is assembled by hand from the `pure` / `bind` rules — the discipli
 loop rather than straight-line `bind`s) is `RComp.forIn_list` in
 `Integrations/ParamForIn.lean`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

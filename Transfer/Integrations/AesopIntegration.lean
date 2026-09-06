@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.TransferTactic
-import Transfer.Integrations.AesopRuleSet
-import Aesop
+module
+
+public import Transfer.Base.TransferTactic
+public import Transfer.Integrations.AesopRuleSet
+public import Aesop
 
 /-!
 # The `Trocq` aesop rule set
@@ -48,8 +50,10 @@ imports). Consequently:
 ### Importer recipe (for a file that imports this module)
 
 ```
-import Transfer.Integrations.AesopIntegration
+public import Transfer.Integrations.AesopIntegration
 
+
+@[expose] public section
 attribute [aesop safe apply (rule_sets := [Transfer])]
   Transfer.transferGround
 

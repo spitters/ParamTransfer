@@ -3,11 +3,13 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Statements.ParamTransferTac
-import Transfer.Hierarchy.ParamEquiv
-import Transfer.Examples.HexMatrixCorrespondence
-import Mathlib.Tactic
-import Mathlib.Data.List.Basic
+module
+
+public import Transfer.Statements.ParamTransferTac
+public import Transfer.Hierarchy.ParamEquiv
+public import Transfer.Examples.HexMatrixCorrespondence
+public import Mathlib.Tactic
+public import Mathlib.Data.List.Basic
 
 /-!
 # `hex`'s `Array`-backed storage: carrier-agnostic refinement + verified compute
@@ -36,6 +38,8 @@ The `Array` retraction (`decVA (encVA v) = v`) is total and the refinement lands
 at `map2a` (backward section + `map_in_R`), identical to the `List` case — the
 level analysis is a property of the *relation*, not the data structure.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 set_option linter.dupNamespace false

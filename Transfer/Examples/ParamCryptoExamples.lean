@@ -3,10 +3,13 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Combinators.ParamCoherence
-import Transfer.Examples.ParamCryptoDomains
-import Transfer.Deriving.ParamDeriveHandler
-import Transfer.Examples.PeanoBinNat
+module
+
+public meta import Transfer.Deriving.ParamDeriveHandler
+public import Transfer.Combinators.ParamCoherence
+public import Transfer.Examples.ParamCryptoDomains
+public import Transfer.Deriving.ParamDeriveHandler
+public import Transfer.Examples.PeanoBinNat
 
 /-!
 # Crypto/representation examples exercising the new pieces
@@ -65,6 +68,8 @@ The retraction `ℤ → ZMod p` is a surjection with section `ZMod.val ∘ … :
 → ℤ`. Building a `Param`/`TransferDom` witness for it is documented against the
 annotation-inference gap rather than forced; see the section note.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

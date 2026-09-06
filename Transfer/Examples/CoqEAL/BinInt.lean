@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.CoqEAL.BinNat
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Transfer.Examples.CoqEAL.BinNat
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # CoqEAL `binint`, ported to Lean — sign + magnitude refines `ℤ`
@@ -18,6 +20,8 @@ The relation is non-injective (`+0` and `-0` both denote `0`), a map-level
 refinement — the same shape as the companion `binnat`, `seqpoly`, and `seqmatrix`
 data refinements.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 set_option linter.dupNamespace false

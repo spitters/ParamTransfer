@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Hierarchy
-import Transfer.Base.Core
-import Mathlib.Data.Num.Lemmas
+module
+
+public import Transfer.Base.Hierarchy
+public import Transfer.Base.Core
+public import Mathlib.Data.Num.Lemmas
 
 /-!
 # The `peano_bin_nat` flagship, first-order slice
@@ -54,6 +56,8 @@ that computes the minimal relation level each subterm requires. That engine is
 not implemented here (no Lean/Mathlib precedent). This file provides the manual
 recursor transfer; `BinNatInductionTarget` records its statement.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

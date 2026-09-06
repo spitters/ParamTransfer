@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Tactic
 
 /-!
 # `powMod`: binary modular exponentiation for kernel-`decide` modular arithmetic
@@ -39,6 +41,8 @@ Euler's criterion.
   decider: `IsSquare (a : ZMod p)` reduces to a kernel `decide` on
   `powMod a.val (p / 2) p = 1`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

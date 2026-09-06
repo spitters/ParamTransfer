@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.FieldRegistry
+module
+
+public import Transfer.Base.FieldRegistry
 
 /-!
 # `grind` as a transfer leaf discharger
@@ -44,6 +46,8 @@ kernel arithmetic, because the `bbField*` operations are opaque on the right of
 each square. The dual-tag pattern is therefore safe for any carrier whose
 realization lemmas keep the emitted kernel opaque.
 -/
+
+@[expose] public section
 
 namespace Transfer.GrindIntegration
 

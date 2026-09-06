@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Lean
-import Transfer.Combinators.ParamArrow
+module
+
+public import Lean
+public import Transfer.Combinators.ParamArrow
 
 /-!
 # The term-level `⟦·⟧` synthesizer (the parametricity translation)
@@ -56,6 +58,8 @@ relations over registered domains), the type-directed engine (`param_transfer`,
 `forallTransfer`, `param_resolve`) already closes them; this module is the
 term-level companion that exhibits the proof *terms*.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

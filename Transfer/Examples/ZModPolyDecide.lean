@@ -3,10 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import ReprTransfer
-import Transfer.Examples.HexSeqPoly
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic
+module
+
+public import ReprTransfer
+public import Transfer.Examples.HexSeqPoly
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic
 
 /-!
 # `decide_zmod_poly`: deciding univariate polynomial identities over `ZMod m`
@@ -54,6 +56,8 @@ and `native_decide` over `ZMod m` diverge on a high-degree identity.
   of scope.
 * Exponents are literal `ℕ`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 
@@ -288,7 +292,7 @@ open Lean Elab Tactic Meta PolyExpr in
 /-- Reify a `ZMod m` expression into a `PolyExpr`, mapping the free variable
     `xvar` to `PolyExpr.var`. Fails on any leaf that is neither the variable nor a
     numeral. -/
-partial def reifyPoly (xvar : FVarId) (e : Expr) : MetaM Expr := do
+meta partial def reifyPoly (xvar : FVarId) (e : Expr) : MetaM Expr := do
   if let .fvar fid := e then
     if fid == xvar then return mkConst ``PolyExpr.var
   match e.getAppFnArgs with

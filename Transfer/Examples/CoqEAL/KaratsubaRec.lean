@@ -3,7 +3,12 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.CoqEAL.Karatsuba
+module
+
+public import Transfer.Examples.CoqEAL.Karatsuba
+import all CompPoly.Univariate.Basic
+import all CompPoly.Univariate.ToPoly.Equiv
+import all CompPoly.Univariate.ToPoly.Impl
 
 /-!
 # Recursive Karatsuba on `CPolynomial R`
@@ -59,6 +64,8 @@ the recursion carries a `fuel` argument that appears only on the right, the
 rewrite is applied with the fuel supplied (`rw [karatsubaRec_repr fuel]`) rather
 than via bare `repr_transfer`.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

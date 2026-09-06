@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Gaussian elimination: single forward-elimination pivot step (refinement)
@@ -39,6 +41,8 @@ attempted.
 * `pivotStep_preserves_solution` — `x` solves the stepped system iff it solves
   the original one (the solution-set invariance).
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

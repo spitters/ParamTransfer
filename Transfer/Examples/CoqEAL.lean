@@ -3,23 +3,25 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.CoqEAL.ComputePolynomial
-import Transfer.Examples.CoqEAL.SeqPoly
-import Transfer.Examples.CoqEAL.BinNat
-import Transfer.Examples.CoqEAL.BinInt
-import Transfer.Examples.CoqEAL.BinRat
-import Transfer.Examples.CoqEAL.SeqMatrix
-import Transfer.Examples.CoqEAL.SeqMatrixMul
-import Transfer.Examples.CoqEAL.Strassen
-import Transfer.Examples.CoqEAL.StrassenRec
-import Transfer.Examples.CoqEAL.Karatsuba
-import Transfer.Examples.CoqEAL.KaratsubaRec
-import Transfer.Examples.CoqEAL.GaussPivotStep
-import Transfer.Examples.CoqEAL.GaussSweep
-import Transfer.Examples.CoqEAL.BareissDet
-import Transfer.Examples.CoqEAL.Rank
-import Transfer.Examples.CoqEAL.ToomCook
-import Transfer.Examples.CoqEAL.Multipoly
+module
+
+public import Transfer.Examples.CoqEAL.ComputePolynomial
+public import Transfer.Examples.CoqEAL.SeqPoly
+public import Transfer.Examples.CoqEAL.BinNat
+public import Transfer.Examples.CoqEAL.BinInt
+public import Transfer.Examples.CoqEAL.BinRat
+public import Transfer.Examples.CoqEAL.SeqMatrix
+public import Transfer.Examples.CoqEAL.SeqMatrixMul
+public import Transfer.Examples.CoqEAL.Strassen
+public import Transfer.Examples.CoqEAL.StrassenRec
+public import Transfer.Examples.CoqEAL.Karatsuba
+public import Transfer.Examples.CoqEAL.KaratsubaRec
+public import Transfer.Examples.CoqEAL.GaussPivotStep
+public import Transfer.Examples.CoqEAL.GaussSweep
+public import Transfer.Examples.CoqEAL.BareissDet
+public import Transfer.Examples.CoqEAL.Rank
+public import Transfer.Examples.CoqEAL.ToomCook
+public import Transfer.Examples.CoqEAL.Multipoly
 
 /-!
 # The CoqEAL / Trocq example suite
@@ -70,3 +72,5 @@ contribution — recorded here rather than ported:
 Trocq's `setoid_rewrite` (rewriting up to a registered relation) is already
 exercised by `param_cc` in `Examples/ExampleField`.
 -/
+
+@[expose] public section

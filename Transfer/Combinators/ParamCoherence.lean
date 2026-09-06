@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Combinators.ParamTrans
-import Transfer.Combinators.ParamArrow
-import Transfer.Combinators.ParamData
+module
+
+public import Transfer.Combinators.ParamTrans
+public import Transfer.Combinators.ParamArrow
+public import Transfer.Combinators.ParamData
 
 /-!
 # The coherence-law suite (functor laws)
@@ -55,6 +57,8 @@ fragment, exactly the fragment `ParamHierarchy`'s module docstring marks as
 axiom-free in Lean (`funext` is a theorem; only the `map4` *universe* relation
 needs univalence).
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

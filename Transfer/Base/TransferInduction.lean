@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Hierarchy
-import Transfer.Examples.PeanoBinNat
+module
+
+public import Transfer.Base.Hierarchy
+public import Transfer.Examples.PeanoBinNat
 
 /-!
 # Transported induction, the equiv-level combinator
@@ -41,6 +43,8 @@ that computes the minimal relation level each subterm requires. That level-
 inference engine — over an arbitrary base type's recursor — is not implemented here;
 this file closes the equiv/`ℕ` instance of it.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

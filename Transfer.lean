@@ -3,76 +3,79 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
-import Transfer.Hierarchy.ParamLevel
-import Transfer.Hierarchy.ParamWeaken
-import Transfer.Hierarchy.ParamEquiv
-import Transfer.Combinators.ParamArrow
-import Transfer.Combinators.ParamForall
-import Transfer.Synthesis.ParamSynth
-import Transfer.Synthesis.ParamSynthExt
-import Transfer.Synthesis.ParamResolve
-import Transfer.Statements.ParamTransfer
-import Transfer.Statements.ParamForallNested
-import Transfer.Statements.ParamTransferTac
-import Transfer.Translate.ParamTranslate
-import Transfer.Translate.ParamDB
-import Transfer.Translate.ParamTranslateTy
-import Transfer.Translate.ParamTranslateOp
-import Transfer.Translate.ParamTranslateFull
-import Transfer.Base.UnivalenceStatus
-import Transfer.Base.TransferLevel      -- transfer! : level-directed transfer tactic
-import Transfer.Base.LevelRefusal       -- the decidable univalence-free level guard
-import Transfer.Base.TransferInduction  -- natEquivInduction: recursor transfer
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
+public import Transfer.Hierarchy.ParamLevel
+public import Transfer.Hierarchy.ParamWeaken
+public import Transfer.Hierarchy.ParamEquiv
+public import Transfer.Combinators.ParamArrow
+public import Transfer.Combinators.ParamForall
+public import Transfer.Synthesis.ParamSynth
+public import Transfer.Synthesis.ParamSynthExt
+public import Transfer.Synthesis.ParamResolve
+public import Transfer.Statements.ParamTransfer
+public import Transfer.Statements.ParamForallNested
+public import Transfer.Statements.ParamTransferTac
+public import Transfer.Translate.ParamTranslate
+public import Transfer.Translate.ParamDB
+public import Transfer.Translate.ParamTranslateTy
+public import Transfer.Translate.ParamTranslateOp
+public import Transfer.Translate.ParamTranslateFull
+public import Transfer.Base.UnivalenceStatus
+public import Transfer.Base.TransferLevel      -- transfer! : level-directed transfer tactic
+public import Transfer.Base.LevelRefusal       -- the decidable univalence-free level guard
+public import Transfer.Base.TransferInduction  -- natEquivInduction: recursor transfer
 -- Interactions with native Lean mechanisms (see README §Interactions):
-import Transfer.Integrations.ParamNormCast  -- norm_cast move-lemmas are Param witnesses
-import Transfer.Integrations.ParamRelatedBridge -- one witness, both engines: RelatedBinOp ⇒ RArrow
-import Transfer.Integrations.ParamCoe        -- Coe/CoeTC from a Param forward map
-import Transfer.Integrations.ParamConv       -- conv-mode sub-term transfer
+public import Transfer.Integrations.ParamNormCast  -- norm_cast move-lemmas are Param witnesses
+public import Transfer.Integrations.ParamRelatedBridge -- one witness, both engines: RelatedBinOp ⇒ RArrow
+public import Transfer.Integrations.ParamCoe        -- Coe/CoeTC from a Param forward map
+public import Transfer.Integrations.ParamConv       -- conv-mode sub-term transfer
 -- Container relational lift: `Param` for `×`/`Option`/`List` (extends the engine
 -- from `→`/`∀` to data types).
-import Transfer.Combinators.ParamData
-import Transfer.Combinators.ParamSigma       -- dependent-pair (Σ) former + AdapTT cast law (Adapt Σ = Σ Adapt)
-import Transfer.Combinators.ParamArray      -- Array container rule + relational foldl transfer (combinator lemma)
-import Transfer.Integrations.ParamForIn      -- forIn/do-loop transfer: foldlR meets RComp (early exit + effects)
-import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp-witness assembly, folded into `param_transfer`
+public import Transfer.Combinators.ParamData
+public import Transfer.Combinators.ParamSigma       -- dependent-pair (Σ) former + AdapTT cast law (Adapt Σ = Σ Adapt)
+public import Transfer.Combinators.ParamArray      -- Array container rule + relational foldl transfer (combinator lemma)
+public import Transfer.Integrations.ParamForIn      -- forIn/do-loop transfer: foldlR meets RComp (early exit + effects)
+public import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp-witness assembly, folded into `param_transfer`
 -- Automation-tactic integrations:
-import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
-import Transfer.Integrations.AesopIntegration -- opt-in `Trocq` aesop rule set (importer-split)
-import Transfer.Congruence.RCongr            -- rcongr: cross-head congruence descent
-import Transfer.Congruence.HGCongrInit       -- hgcongr engine: env ext + @[hgcongr] attr + tactic
-import Transfer.Congruence.HGCongr           -- hgcongr correspondences + cross-head demos
-import Transfer.Congruence.ParamCongrClosure -- param_cc: relational congruence closure
-import Transfer.Congruence.ParamSolve        -- param_solve: descent + closure-leaf (the union)
-import Transfer.Congruence.ParamAuto         -- param_auto: one coordinator dispatching to every surface
-import Transfer.Congruence.ParamCompose      -- param_compose: descend-and-dispatch (two extensions on one goal)
-import Transfer.Congruence.GCongrProbe        -- gcongr single-head constraint probe
-import Transfer.Congruence.HCongrConnection   -- cubical hcongr ↔ R_forall at the diagonal
+public import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
+public import Transfer.Integrations.AesopIntegration -- opt-in `Trocq` aesop rule set (importer-split)
+public import Transfer.Congruence.RCongr            -- rcongr: cross-head congruence descent
+public import Transfer.Congruence.HGCongrInit       -- hgcongr engine: env ext + @[hgcongr] attr + tactic
+public import Transfer.Congruence.HGCongr           -- hgcongr correspondences + cross-head demos
+public import Transfer.Congruence.ParamCongrClosure -- param_cc: relational congruence closure
+public import Transfer.Congruence.ParamSolve        -- param_solve: descent + closure-leaf (the union)
+public import Transfer.Congruence.ParamAuto         -- param_auto: one coordinator dispatching to every surface
+public import Transfer.Congruence.ParamCompose      -- param_compose: descend-and-dispatch (two extensions on one goal)
+public import Transfer.Congruence.GCongrProbe        -- gcongr single-head constraint probe
+public import Transfer.Congruence.HCongrConnection   -- cubical hcongr ↔ R_forall at the diagonal
 -- Level inference, composition, deriving, crypto domains, and auto-weakening:
-import Transfer.Synthesis.ParamInfer         -- variable-level (m,n) minimal-class inference
-import Transfer.Combinators.ParamTrans       -- Param_trans: relation composition (map0..map3)
-import Transfer.Deriving.ParamDerive         -- toward @[derive Param]: hand-ports + handler spec
-import Transfer.Examples.ParamCryptoDomains  -- Baby Bear @[param] witnesses + TransferDom
-import Transfer.Integrations.ParamAutoWeaken -- auto-weakening of witnesses + transfer_auto
+public import Transfer.Synthesis.ParamInfer         -- variable-level (m,n) minimal-class inference
+public import Transfer.Synthesis.ParamInferMeta      -- its elaboration-time half
+public import Transfer.Combinators.ParamTrans       -- Param_trans: relation composition (map0..map3)
+public import Transfer.Deriving.ParamDerive         -- toward @[derive Param]: hand-ports + handler spec
+public import Transfer.Examples.ParamCryptoDomains  -- Baby Bear @[param] witnesses + TransferDom
+public import Transfer.Integrations.ParamAutoWeaken -- auto-weakening of witnesses + transfer_auto
 -- Coherence laws (AdapTT) + description-based deriving:
-import Transfer.Combinators.ParamCoherence   -- functor laws: cast_trans/cast_id + distributivity
-import Transfer.Deriving.ParamDeriveHandler  -- @[derive Param] handler: IndDesc gen + variance
-import Transfer.Deriving.ParamCongr          -- derive_param_congr: Related-kernel constructor congruence per structure
-import Transfer.Examples.ParamCryptoExamples -- worked examples (cast_trans, derive, transfer)
-import Transfer.Examples.ParamRetraction     -- non-diagonal ZMod p retraction domain (map3 map2a)
-import Transfer.Examples.MachineLimbField     -- machine limbs ↔ prime field: strong non-diagonal heterogeneous dependent (multi-limb) example
-import Transfer.Examples.StrongExamples       -- native-tactic-beating demos over non-diagonal domains
-import Transfer.Examples.Trocq                -- the Trocq example suite (index + summable)
-import Transfer.Examples.EffectfulTransfer    -- effectful triple transfer across a value-type change (ℕ↔ℤ), by mvcgen
+public import Transfer.Combinators.ParamCoherence   -- functor laws: cast_trans/cast_id + distributivity
+public import Transfer.Deriving.ParamDeriveHandler  -- @[derive Param] handler: IndDesc gen + variance
+public import Transfer.Deriving.ParamCongr          -- derive_param_congr: Related-kernel constructor congruence per structure
+public import Transfer.Examples.ParamCryptoExamples -- worked examples (cast_trans, derive, transfer)
+public import Transfer.Examples.ParamRetraction     -- non-diagonal ZMod p retraction domain (map3 map2a)
+public import Transfer.Examples.MachineLimbField     -- machine limbs ↔ prime field: strong non-diagonal heterogeneous dependent (multi-limb) example
+public import Transfer.Examples.StrongExamples       -- native-tactic-beating demos over non-diagonal domains
+public import Transfer.Examples.Trocq                -- the Trocq example suite (index + summable)
+public import Transfer.Examples.EffectfulTransfer    -- effectful triple transfer across a value-type change (ℕ↔ℤ), by mvcgen
 -- Retrofit onto `leanprover/hex`'s verified computational algebra (README §Hex):
-import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathlib correspondence, generated
-import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
-import Transfer.Examples.HexEffectful            -- hex elimination-step triple transfer (RComp/Std.Do)
-import Transfer.Examples.HexDecide               -- hex `decide +kernel` side condition via ReprTransfer
-import Transfer.Examples.ZModDecide              -- decide_zmod: ground ZMod m ring identities by bounded residue
-import Transfer.Examples.ZModPolyDecide          -- decide_zmod_poly: ZMod m polynomial identities by bounded seqpoly
-import Transfer.Examples.ZModPowMod              -- powMod/invMod + Euler-criterion QR decider (binary modular exponentiation)
-import Transfer.Examples.HexArrayCompute         -- hex `Array` carrier: refinement is carrier-agnostic + @[csimp] verified compute
+public import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathlib correspondence, generated
+public import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
+public import Transfer.Examples.HexEffectful            -- hex elimination-step triple transfer (RComp/Std.Do)
+public import Transfer.Examples.HexDecide               -- hex `decide +kernel` side condition via ReprTransfer
+public import Transfer.Examples.ZModDecide              -- decide_zmod: ground ZMod m ring identities by bounded residue
+public import Transfer.Examples.ZModPolyDecide          -- decide_zmod_poly: ZMod m polynomial identities by bounded seqpoly
+public import Transfer.Examples.ZModPowMod              -- powMod/invMod + Euler-criterion QR decider (binary modular exponentiation)
+public import Transfer.Examples.HexArrayCompute         -- hex `Array` carrier: refinement is carrier-agnostic + @[csimp] verified compute
 
 /-!
 # ParamTransfer — the single entry point
@@ -113,3 +116,5 @@ univalence is inconsistent in Lean (`Eq : … → Prop` is proof-irrelevant), so
 here is therefore the entire consistent space — and, since Lean's `funext` is
 free, it is wider than Coq's univalence-free cap.
 -/
+
+@[expose] public section

@@ -3,7 +3,9 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Examples.ZModPolyDecide
+module
+
+public import Transfer.Examples.ZModPolyDecide
 
 /-!
 # BLS12-381 hash-to-curve isogeny identity: bounded per-coefficient probe
@@ -27,6 +29,8 @@ Assembled with the bounded operations `cAddMod` / `cMulMod` / `cSubMod` /
 `cPowMod` (and a local scale-then-reduce), every intermediate coefficient stays
 `< p`, so the check runs on small integers.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

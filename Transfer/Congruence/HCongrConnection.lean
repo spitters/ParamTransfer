@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Combinators.ParamForall
-import Transfer.Base.UnivalenceStatus
+module
+
+public import Transfer.Combinators.ParamForall
+public import Transfer.Base.UnivalenceStatus
 
 /-!
 # A set-level analogue of cubical heterogeneous congruence (`hcongr`)
@@ -94,6 +96,8 @@ fiber types without univalence — the set-level counterpart of the shape
 `hcongr_ideal` discharges with `PathP`. This analogy motivates the design. The
 lemmas below stand on their own; the cubical lemma is cited for context.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

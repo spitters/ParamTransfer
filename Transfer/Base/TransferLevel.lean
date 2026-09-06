@@ -3,8 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.TransferTactic
-import Transfer.Base.LevelRefusal
+module
+
+public meta import Transfer.Base.LevelRefusal
+public import Transfer.Base.TransferTactic
+public import Transfer.Base.LevelRefusal
 
 /-!
 # The level-aware `transfer!` elaborator
@@ -38,6 +41,8 @@ binders) is the larger engine; this version captures the one structural
 rule that matters for the refusal discipline (type-equality ⇒ `equiv`).
 -/
 
+@[expose] public section
+
 set_option autoImplicit false
 
 open Lean Elab Tactic Meta Command
@@ -49,7 +54,7 @@ open Transfer.LevelRefusal
 /-- Infer the minimal `RelLevel` the goal `Expr` needs. See the module docstring
     for the rules. Conservative on leaves (`embedding`); the only `equiv`-forcing
     rule is an equation between `Sort`s (a type equality, needing univalence). -/
-partial def inferGoalLevel (e : Expr) : MetaM RelLevel := do
+meta partial def inferGoalLevel (e : Expr) : MetaM RelLevel := do
   let e ← instantiateMVars e
   match e with
   | .forallE _ _ body _ => inferGoalLevel body

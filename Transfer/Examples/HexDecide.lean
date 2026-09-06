@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import ReprTransfer
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic
+module
+
+public import ReprTransfer
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic
 
 /-!
 # Discharging a `hex` side condition by computation on the concrete rep
@@ -36,6 +38,8 @@ The encoding `ZMod m ↪ ℤ` is injective but not surjective (not every integer
 canonical residue), so the realization sits at the *embedding* level — never the
 equivalence/univalence level — exactly as `ReprTransfer`'s hierarchy note states.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Hierarchy.ParamHierarchy
-import Transfer.Hierarchy.ParamEquiv
+module
+
+public import Transfer.Hierarchy.ParamHierarchy
+public import Transfer.Hierarchy.ParamEquiv
 
 /-!
 # Relation **composition** (`Param_trans`)
@@ -51,6 +53,8 @@ mixes the two witnesses, and recovering `r` needs the equivalence
 coherence (univalence territory). So `map0`–`map3` are fully proved and
 `map4` is documented as the residual, exactly as the arrow/forall/data rules do.
 -/
+
+@[expose] public section
 
 set_option autoImplicit false
 

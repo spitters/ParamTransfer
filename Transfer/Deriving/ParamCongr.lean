@@ -3,8 +3,10 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Base.Related
-import Lean
+module
+
+public import Transfer.Base.Related
+public import Lean
 
 /-!
 # `derive_param_congr` — a constructor-congruence `Related` deriver
@@ -57,6 +59,10 @@ Both route to the same generator, `deriveParamCongrCore`.
   `relatedBinOpOfLeaf` bridge only re-uses an existing `id`-registered square at
   the `ParamEnc`-leaf encoding.
 -/
+
+public section
+
+meta section
 
 set_option autoImplicit false
 

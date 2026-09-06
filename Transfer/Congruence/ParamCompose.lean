@@ -3,9 +3,11 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: Bas Spitters
 -/
-import Transfer.Congruence.ParamAuto
-import Transfer.Congruence.RCongr
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Transfer.Congruence.ParamAuto
+public import Transfer.Congruence.RCongr
+public import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # `param_compose` — descend-and-dispatch congruence
@@ -43,6 +45,8 @@ open goal (it does not fail), so a missing witness stays visible — the engine'
 standing invariant.
 -/
 
+@[expose] public section
+
 set_option autoImplicit false
 
 namespace Transfer
@@ -61,7 +65,7 @@ macro "param_leaf" : tactic => `(tactic|
     *operation* like `a + b : F`) is left for the `id`-bridge. Without this a bare
     `enc t = t'` bridges to `Related id (enc t) t'`, hiding the encoding, and the
     descent cannot use the registered `enc`-squares. -/
-def reshapeEq : TacticM Unit := do
+meta def reshapeEq : TacticM Unit := do
   let g ← getMainGoal
   match (← instantiateMVars (← g.getType)).eq? with
   | some (α, .app f a, rhs) =>
@@ -80,7 +84,7 @@ def reshapeEq : TacticM Unit := do
     encoding-aware `reshapeEq` (a cross-type `enc t = t'` becomes `Related enc t t'`
     so the descent sees the real encoding), else bridge to `Related id` via
     `transferGround`. Leaves nothing that closes as a residual. -/
-partial def paramComposeCore : TacticM Unit := withMainContext do
+meta partial def paramComposeCore : TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← getMainTarget)
   let relLeaf : TacticM Unit := do
     let closed ← (do evalTactic (← `(tactic| exact inferInstance)); pure true) <|> pure false
