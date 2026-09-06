@@ -3,12 +3,8 @@ Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
 Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
 Authors: ParamTransfer Contributors
 -/
-module
+import VersoManual
 
-public import VersoManual
-
-
-@[expose] public section
 open Verso.Genre Manual
 
 #doc (Manual) "ParamTransfer — reasoning up to a registered relation" =>
