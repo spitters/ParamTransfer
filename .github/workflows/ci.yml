@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # The heavy jobs run on this schedule, on demand, and on pull requests;
+  # a push to the default branch runs only the cheap gates (see each job's `if`).
+  schedule:
+    - cron: '0 3 * * 0'
 
 jobs:
   build:
@@ -37,6 +41,7 @@ jobs:
 
   docs:
     name: Manual (Verso) — render + upload artifact
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -69,6 +74,7 @@ jobs:
 
   apidocs:
     name: API reference (doc-gen4) — build + upload artifact
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
