@@ -38,6 +38,7 @@ public import Transfer.Combinators.ParamSigma       -- dependent-pair (Σ) forme
 public import Transfer.Combinators.ParamArray      -- Array container rule + relational foldl transfer (combinator lemma)
 public import Transfer.Integrations.ParamForIn      -- forIn/do-loop transfer: foldlR meets RComp (early exit + effects)
 public import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp-witness assembly, folded into `param_transfer`
+public import Transfer.Integrations.ParamRCompOk    -- `RCompOk`: success-restricted Kleisli relation, transfer, ArrayRel, `rcomp_ok`
 -- Automation-tactic integrations:
 public import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
 public import Transfer.Integrations.AesopIntegration -- opt-in `Trocq` aesop rule set (importer-split)
@@ -67,6 +68,7 @@ public import Transfer.Examples.MachineLimbField     -- machine limbs ↔ prime 
 public import Transfer.Examples.StrongExamples       -- native-tactic-beating demos over non-diagonal domains
 public import Transfer.Examples.Trocq                -- the Trocq example suite (index + summable)
 public import Transfer.Examples.EffectfulTransfer    -- effectful triple transfer across a value-type change (ℕ↔ℤ), by mvcgen
+public import Transfer.Examples.RCompOkExamples    -- `RCompOk` over an ok/fail test monad: rcomp_ok demos, transfer, converse counterexample
 -- Retrofit onto `leanprover/hex`'s verified computational algebra (README §Hex):
 public import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathlib correspondence, generated
 public import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a

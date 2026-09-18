@@ -177,9 +177,52 @@ with its relatedness proof, resolving witnesses from the registries.
    stays a residual `RComp` goal rather than being forced. It leaves the value
    leaves (non-fabrication); discharge them with the relation's arithmetic
    (`norm_cast` / `simp_all` / `push_cast; ring`). Over `Id` a pure program
-   collapses to one leaf; a genuinely effectful monad descends its `bind`
+   collapses to one leaf; an effectful monad descends its `bind`
    structure leaf by leaf.
 6. **File.** `ParamRComp.lean` (`rcomp`, `rcompCore`).
+
+### `rcomp_ok`
+
+1. **Purpose.** Assemble an `RCompOk` witness by structural descent. `RCompOk Rα
+   c c'` relates a computation `c` in a monad whose postcondition shape may carry
+   exceptions (a model that fails) to a computation `c'` in a monad of shape
+   `.pure` (a total model such as `Id`): every successful result of `c` is
+   `Rα`-related to a result of `c'`.
+2. **Applies to / produces.** A goal `RCompOk Rα c c'`. After introducing binders
+   and `dsimp only`, it tries the supplied lemmas (`exact`, then `apply`), then
+   the rule for the head of `c`: `RCompOk.bind` (intermediate relation from
+   `using`, then from the enclosing goals, then equality), `RCompOk.ite` /
+   `RCompOk.dite` when `c'` has the same head, `RCompOk.ite_left` /
+   `RCompOk.dite_left` otherwise, `RCompOk.forIn_range` / `RCompOk.forIn_rco` /
+   `RCompOk.forIn_list` for a loop, and `RCompOk.pure` otherwise. It recurses
+   into the resulting `RCompOk` goals, closes `b ↔ b'` by `Iff.rfl` when
+   possible, reduces an `RForInStep R` leaf on two `yield` steps to `R`, and
+   leaves the value-relation leaves.
+3. **Example.**
+   ```lean
+   -- a checked addition on the failing side, unbounded addition on the Id side
+   theorem addChk_rcompOk {a b : Nat} {x y : Int} (hx : (a : Int) = x) (hy : (b : Int) = y) :
+       RCompOk castRel (addChk a b) (pure (x + y) : Id Int) := by
+     unfold addChk
+     rcomp_ok [OkFail.rcompOk_fail]
+     simp [castRel, ← hx, ← hy]
+   ```
+4. **When to use vs alternatives.** Use when the left program can fail and the
+   right one cannot; the witness feeds `RCompOk.transfer`, which moves a
+   total-correctness fact about `c'` to every successful execution of `c` (the
+   converse direction does not hold). For two programs in one monad sharing the
+   failure barrel, use `rcomp`. `param_transfer` calls `rcomp_ok` on an
+   `RCompOk` goal.
+5. **Gotchas.** `rcomp_ok [h₁, …]` is the way to pass specifications of called
+   functions and of failing primitives (`RCompOk.of_wp_false`); a lemma whose
+   conclusion matches every goal (such as `RCompOk.mono`) is applied again at
+   every node and the descent does not terminate, so pass leaf specifications
+   only. A computation on the failing side with no
+   counterpart on the total side other than a conditional (an assertion bound by
+   `>>=`) needs `RCompOk.bind_left` by hand. `forIn_rco` applies only to monads
+   on `Type`.
+6. **File.** `ParamRCompOk.lean` (`rcomp_ok`, `rcompOkCore`); examples in
+   `Examples/RCompOkExamples.lean`.
 
 ### `transfer_auto`
 
@@ -751,6 +794,7 @@ Notes:
 | the `Param` lift of a data type | `deriving Param` |
 | assemble an `RComp` witness for two structurally parallel programs | `rcomp` (or `param_transfer`) |
 | transfer a Hoare/`wp` triple between related programs | `triple_transfer` (via `RComp`) |
+| relate a failing program to a total one, success-restricted | `rcomp_ok` (or `param_transfer`), then `RCompOk.transfer` |
 
 Two cautions that recur:
 
