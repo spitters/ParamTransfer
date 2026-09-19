@@ -39,6 +39,7 @@ public import Transfer.Combinators.ParamArray      -- Array container rule + rel
 public import Transfer.Integrations.ParamForIn      -- forIn/do-loop transfer: foldlR meets RComp (early exit + effects)
 public import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp-witness assembly, folded into `param_transfer`
 public import Transfer.Integrations.ParamRCompOk    -- `RCompOk`: success-restricted Kleisli relation, transfer, ArrayRel, `rcomp_ok`
+public import Transfer.Integrations.ParamRCompParam -- `RComp`/`RCompOk` as `Param` instances; `RComp.trans`/`RCompOk.trans` composition
 -- Automation-tactic integrations:
 public import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
 public import Transfer.Integrations.AesopIntegration -- opt-in `Trocq` aesop rule set (importer-split)
