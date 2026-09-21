@@ -7,7 +7,19 @@ module
 
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.Tactic
+-- What this file uses, named rather than taken from the `Mathlib.Tactic`
+-- umbrella: `ZMod.euler_criterion`, then the tactics. `PrattCertificate`
+-- imports this module for `powMod` and its three lemmas, so the umbrella
+-- reached the trusted primality path and, through `P256Verified`, every
+-- consumer of it -- 1137 modules of import closure against one module of
+-- mathematics. `decide`, `simp`, `simpa`, `omega` and `induction` need no
+-- Mathlib import; `norm_num` needs its `Prime` extension for the two
+-- `Fact (Nat.Prime _)` instances below, not the base tactic alone.
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Push
 
 /-!
 # `powMod`: binary modular exponentiation for kernel-`decide` modular arithmetic
