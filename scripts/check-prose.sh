@@ -7,8 +7,8 @@
 #   1. changelog / self-talk / roadmap-marker phrasing  (high-precision patterns)
 #   2. citation authors not present in ATTRIBUTION.md    (the verified bibliography)
 #
-# A shell hook cannot judge subtle tone or verify a citation is real. For tone,
-# run  /writing-clearly-and-concisely  and  /cleanup . For citations, the rule is
+# A shell hook cannot judge subtle tone or verify a citation is real. Tone is a
+# matter for review. For citations, the rule is
 # that ATTRIBUTION.md is the single human-verified reference list: any author named
 # in a docstring must appear there, so a fabricated name (e.g. an LLM-invented
 # author) is blocked until someone adds — and thereby checks — the real reference.
@@ -66,7 +66,7 @@ fi
 
 if [ "$fail" -ne 0 ]; then
   echo "" >&2
-  echo "Run /writing-clearly-and-concisely and /cleanup, then re-stage." >&2
+  echo "Revise the flagged lines, then re-stage." >&2
   echo "(Override a false positive with: git commit --no-verify)" >&2
   exit 1
 fi
