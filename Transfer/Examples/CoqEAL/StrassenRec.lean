@@ -134,7 +134,7 @@ theorem strassenRec_eq (m₀ : Type*) [Fintype m₀] [DecidableEq m₀] :
   | 0, A, B => rfl
   | (k + 1), A, B => by
     simp only [strassenRec, strassenRec_eq m₀ k]
-    rw [strassen_blocks_eq, Matrix.fromBlocks_toBlocks, Matrix.fromBlocks_toBlocks]
-    rfl
+    rw [strassen_blocks_eq]
+    exact congrArg₂ (· * ·) (Matrix.fromBlocks_toBlocks A) (Matrix.fromBlocks_toBlocks B)
 
 end Transfer.Examples.CoqEAL.StrassenRec
