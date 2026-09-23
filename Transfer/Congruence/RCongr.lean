@@ -17,7 +17,7 @@ public import Mathlib.Tactic.GCongr
 relatedness is the opposite shape — it relates two different functions, a
 source operation `op` and its target realization `bop`, by a registered
 commuting square `enc (op x y) = bop (enc x) (enc y)` (`RelatedBinOp`). `gcongr`
-cannot descend such a goal (see the gcongr verdict below).
+cannot descend such a goal (see "Scope: `gcongr` cannot be made cross-head" below).
 
 `rcongr` is the relational analogue: a `TacticM` recursion on a goal
 `Related enc t t'` (or an `=` bridged to one) that, when `t = op a b` and

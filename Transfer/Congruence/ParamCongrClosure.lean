@@ -62,7 +62,7 @@ Concretely, `param_cc`:
    so the *registered* leaf facts need no surfacing.)
 2. reduces the goal `Related enc s t` to its equation `enc s = t` (constructor),
    leaving a goal already in `=`-form when the goal was an equation;
-3. closes by `grind`, whose congruence closure now composes the squares and the
+3. closes by `grind`, whose congruence closure composes the squares and the
    surfaced hypothesis-equations transitively to a fixpoint.
 
 This is the realization: relational-CC over the encoding relation =

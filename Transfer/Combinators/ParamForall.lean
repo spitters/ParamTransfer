@@ -10,7 +10,7 @@ public import Transfer.Hierarchy.ParamHierarchy
 /-!
 # The dependent-Π (`∀` / forall) parametricity rule
 
-A faithful Lean port of Trocq's `std/Param_forall.v` (`coq-community/trocq`):
+A Lean port of Trocq's `std/Param_forall.v` (<https://github.com/rocq-community/trocq>):
 the combinators that build a `Param` annotated relation on a **dependent**
 function space `(∀ a, B a)` from a `Param` relation `PA` on the domain and a
 *family* `PB` of `Param` relations on the codomain, one for each pair of

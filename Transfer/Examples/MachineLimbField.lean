@@ -17,7 +17,7 @@ This module is a worked end-to-end example of the `Param` engine on a *real cryp
 representation change*: the machine-limb view of a prime field element and its
 abstract `ZMod p` view. It exercises the engine at full strength — the domain is
 
-* **non-diagonal** (the two sides are genuinely different types: `BitVec 64` /
+* **non-diagonal** (the two sides are different types: `BitVec 64` /
   `Fin n → BitVec 64` on the left, `ZMod p` on the right),
 * **heterogeneous** (the value leaf relates terms living in *different* types via a
   decoder, closed by `hcongr_hetero`, not native `congr`), and
@@ -333,7 +333,7 @@ of stores `S : E → (Fin n → BitVec 64)` (a whole limb array per environment)
 its abstract field view `X : E → ZMod p`, related over the `multiLimbFieldParam`
 fiber, exhibit the machine-store↔field-value relation
 `((limbVal n (S e) : ZMod p) = X e)` as `hcongr_hetero` across the
-multi-limb-array→field change of representation (a genuinely different source
+multi-limb-array→field change of representation (a different source
 type `Fin n → BitVec 64` on the left). -/
 
 /-- The multi-limb store-refinement relation: an environment-indexed limb store

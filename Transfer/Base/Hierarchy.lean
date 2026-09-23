@@ -23,7 +23,7 @@ The hierarchy bottoms out below equivalence: the crypto encodings are embeddings
 equality-transfer level is `ReprEmbeddingClass`, and the layer never requires —
 nor incurs the TCB cost of — univalence. The per-operation realizations
 (`BinOpRealization` / `EndoOpRealization` / `BinOpHomOn` in `ReprTransfer`) are
-the op-level instances built over these levels; the `repr` registry (`Trocq/Core`)
+the op-level instances built over these levels; the `repr` registry (`Transfer.Base.Core`)
 indexes them.
 -/
 

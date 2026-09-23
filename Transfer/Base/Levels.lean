@@ -35,7 +35,7 @@ lattice meet under this view; the original three-point tables are recovered as
 theorems (`le_iff_toNat`, `meet_eq_min`), so every consumer of the 3-point API
 keeps its statements while the arithmetic is computed in the lattice.
 
-The crucial operation is `meet`: a composite transfer (an op-tree assembled
+The central operation is `meet`: a composite transfer (an op-tree assembled
 from sub-transfers) supports only the weakest level of its parts, so the level
 of a composite is the meet (the lower) of the component levels — computed as
 the `MapClass` meet of the images (`toMapClass_meet`).

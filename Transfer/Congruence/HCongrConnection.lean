@@ -24,8 +24,8 @@ hcongr_ideal :
   PathP (λ i → C i (ab i)) (f a) (g b)
 ```
 
-This file makes the structural correspondence to the CatCrypt Trocq port
-(`ParamForall.lean`) concrete: `hcongr_ideal` is exactly Trocq's dependent-Π
+This file makes the structural correspondence to this library's port of
+Trocq's dependent-Π rule (`ParamForall.lean`) concrete: `hcongr_ideal` is exactly Trocq's dependent-Π
 relational combinator `R_forall` with the relation taken to be a `PathP`
 (identity/equivalence) instead of a general `(m, n)` Param relation. Lining up
 the three slots:
@@ -45,7 +45,7 @@ substituted for `PA.R` and `(PB …).R`.
 
 The *full* `hcongr_ideal` over `PathP` needs cubical/computational univalence:
 its `PathP A a b` is the **univalent** identity, and a varying type-family path
-(`A i`, `C i` genuinely depending on the interval `i`) requires transporting the
+(`A i`, `C i` depending on the interval `i`) requires transporting the
 motive along an equivalence-as-equality. Lean's built-in `Eq` cannot be that
 identity — `univalence_inconsistent` (`UnivalenceStatus.lean`) shows UA stated
 via `Eq` is `False`, because `Eq`'s definitional proof irrelevance makes type
@@ -76,7 +76,7 @@ Trocq's own move is to reason with an equivalence's *data* instead of a type
 *equality* — that is what makes transfer free below the universe. Applied here:
 replace the fiber `HEq` with a graded `Param`, and the block disappears. The
 engine's *general* dependent-Π relation `R_forall PA PB` (`ParamForall.lean`)
-already relates fibers `B a`, `B' a'` that are **genuinely different types**, tied
+already relates fibers `B a`, `B' a'` that are **different types**, tied
 by an arbitrary `Param mB nB (B a) (B' a')` rather than by `HEq`. That plays the
 role of heterogeneous congruence across a change of representation, with
 equivalence data in place of a type equality — and it needs no univalence.
@@ -87,11 +87,11 @@ The only residual univalence is the **universe-valued fiber** — heterogeneous
 congruence over a family whose fibers are `Type` itself, i.e. `map4`
 (`Param_Type`). That is the same `map3`-reachable / `map4`-capped boundary the
 whole engine lives on (`univalence_inconsistent`), not a boundary special to
-`hcongr`. So the honest reading is coverage, not impossibility: the UA-free
-fragment of `hcongr` is `R_forall` at a graded `Param`; only the universe-valued
-case is out of reach, and for the same reason as everything else.
+`hcongr`. The UA-free fragment of `hcongr` is therefore `R_forall` at a graded
+`Param`; only the universe-valued case is out of reach, for the same reason as
+the rest of the `map4` level.
 
-`R_forall` at a graded `Param` discharges congruence over genuinely different
+`R_forall` at a graded `Param` discharges congruence over different
 fiber types without univalence — the set-level counterpart of the shape
 `hcongr_ideal` discharges with `PathP`. This analogy motivates the design. The
 lemmas below stand on their own; the cubical lemma is cited for context.
@@ -175,7 +175,7 @@ def paramHEqFam {T : Type u} (C : T → Type u) :
   fun _ _ (h : _ = _) => { R := fun x y => HEq x y, fwd := ⟨fun x => h ▸ x⟩, bwd := ⟨⟩ }
 
 /-- The dependent `hcongr_ideal` shadow (constant type-family path). Over a
-    genuine dependent codomain `C : T → Type`, `R_forall`-relatedness at the
+    dependent codomain `C : T → Type`, `R_forall`-relatedness at the
     diagonal plus an argument equality `a = b` give `HEq (f a) (g b)`. This is
     `hcongr_ideal` with the ambient and fiber paths reflexive (`A i ≡ A`,
     `C i ≡ C`), `Eq` for the argument `PathP`, and `HEq` for the result
@@ -209,7 +209,8 @@ variable {A A' : Type u} {B : A → Type u} {B' : A' → Type u}
     `f a : B a` and `g a' : B' a'` — living in *different* types — are related by
     the fiber `Param`. This is `R_forall`'s defining clause read as a congruence
     rule; unlike `hcongr_of_R_forall` it does not force the fibers equal, so it is
-    genuine cross-representation congruence, not native `congr`. All levels are
+    congruence across a change of representation, which native `congr` does not
+    express. All levels are
     polymorphic; axiom-free. -/
 theorem hcongr_hetero {mA nA mB nB : MapClass} (PA : Param mA nA A A')
     (PB : ∀ a a', PA.R a a' → Param mB nB (B a) (B' a'))
@@ -230,7 +231,7 @@ theorem hcongr_hetero_transport {mA nA nB : MapClass} (PA : Param mA nA A A')
     (PB a a' aR).fwd.map (f a) = g a' :=
   (PB a a' aR).fwd.R_in_map (f a) (g a') (hfg a a' aR)
 
-/-! ### Demo: genuinely different fiber types (`Fin (n+1)` ↔ ℕ)
+/-! ### Demo: different fiber types (`Fin (n+1)` ↔ ℕ)
 
 The fibers on the two sides are *distinct types* — `Fin (a+1)` and `ℕ` — related
 by the forward map `Fin.val`. Native `congr` cannot relate `f a : Fin (a+1)` to
@@ -241,7 +242,7 @@ transport form recovers the `Fin.val` equation. -/
 def finZero (n : ℕ) : Fin (n + 1) := ⟨0, Nat.succ_pos n⟩
 
 /-- The fiber family `Fin (a+1) ↦ ℕ` at level `map2b`: forward map `Fin.val`,
-    relation its graph. A genuine change of representation (different types). -/
+    relation its graph. A change of representation between different types. -/
 def finValFam : ∀ a a', (paramEqDom ℕ).R a a' → Param .map2b .map0 (Fin (a + 1)) ℕ :=
   fun _ _ _ => { R := fun x y => x.val = y, fwd := ⟨Fin.val, fun _ _ h => h⟩, bwd := ⟨⟩ }
 

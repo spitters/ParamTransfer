@@ -15,7 +15,7 @@ import all CompPoly.Univariate.ToPoly.Impl
 
 This file extends the one-level Karatsuba step of `Karatsuba.lean` to the **full
 recursion**. Where `karatsubaMul` takes the four already-split halves as explicit
-arguments, `karatsubaRec` is a genuine binary multiply `CPolynomial R →
+arguments, `karatsubaRec` is a binary multiply `CPolynomial R →
 CPolynomial R → CPolynomial R` that splits each input itself, recurses on the
 three Karatsuba subproducts, and recombines.
 

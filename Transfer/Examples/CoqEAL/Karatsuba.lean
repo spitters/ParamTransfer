@@ -33,7 +33,7 @@ three multiplications instead of four. `karatsubaMul` is exactly this
 recombination on the four halves, and `karatsubaMul_eq` proves it equals the
 product of the two reconstructed polynomials.
 
-The proof is genuine: it transfers the goal across CompPoly's `RingEquiv`
+The proof transfers the goal across CompPoly's `RingEquiv`
 `CPolynomial R ≃+* Polynomial R` (`CPolynomial.ringEquiv`, whose underlying map
 `toPoly` is injective) to Mathlib's `Polynomial R`, where the recombination
 identity is a commutative-ring fact discharged by `ring`. The transfer is sound
@@ -42,26 +42,25 @@ because `toPoly` is a ring homomorphism on `+`, `-`, `*`, `^` (CompPoly's
 reasoning is duplicated and canonicalization (trailing-zero trimming) is handled
 inside those CompPoly lemmas.
 
-## Scope — the residual is the *recursion*, not the identity
+## Scope
 
 This is the **one-level** Karatsuba step, taking the four halves as explicit
 arguments. A full `karatsubaMul' : CPolynomial R → CPolynomial R → CPolynomial R`
 would (a) split each input at a chosen degree `k` (a `divByMonic`/`modByMonic`
 or array-`extract` operation on the canonical representation), (b) recurse on
 the three half-products, and (c) terminate by a decreasing-degree measure with a
-base case below a cutoff. The *splitting* and the *recursion/termination* are the
-genuine library tail (matching CoqEAL's `Rmorph_karatsuba` over MathComp
-`{poly R}`); they are **not** built here. What is delivered is the proven
-algebraic identity plus `karatsubaMul = (· * ·)` for the structured (already
-split) case. `KaratsubaRec` supplies the splitting and the fuel recursion.
+base case below a cutoff. The *splitting* and the *recursion/termination* (matching CoqEAL's
+`Rmorph_karatsuba` over MathComp `{poly R}`) are not part of this file, which
+proves the algebraic identity and `karatsubaMul = (· * ·)` for the structured
+(already split) case. `KaratsubaRec` supplies the splitting and the fuel
+recursion.
 
 ## Registry entry
 
 `karatsuba_repr` is tagged `@[transfer]` in the *refine* direction (structured
 product ↦ Karatsuba recombination), so `repr_transfer` automatically rewrites a
 `CPolynomial` product presented in split form `(lo + Xᵏ·hi)·(lo' + Xᵏ·hi')` to
-its three-multiplication Karatsuba form. Karatsuba is now a registered
-refinement in the transfer engine.
+its three-multiplication Karatsuba form.
 -/
 
 @[expose] public section

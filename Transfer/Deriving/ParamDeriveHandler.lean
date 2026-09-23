@@ -100,7 +100,7 @@ What the map-instance synthesis covers, and the boundary:
   occurrence *nested* under another type former (`List (T A)`), applied to
   *different* arguments, *under an arrow* (higher-order recursion), or an
   *indexed* family. `isUniformRecursive` returns `false`, so the uniform map path
-  does not apply. (For genuinely nested recursion the relation generator itself
+  does not apply. (For nested recursion the relation generator itself
   does not apply — its `other`-by-equality lift is ill-typed across the two
   parameter instantiations — and the registered handler declines `iv.isNested`
   inductives up front.)
@@ -808,7 +808,7 @@ def elabAtRoot (cmd : TSyntax `command) : CommandElabM Unit :=
 /-- The deriving handler for `Param`. Generates, for each named simple inductive,
     its relational lift `R_<T>` uniformly from the constructor signatures, with
     the mixed-variance guard. Returns `false` (unhandled) for inductives the
-    uniform generator does not yet cover (nested / reflexive / indexed families),
+    uniform generator does not cover (nested / reflexive / indexed families),
     so other handlers / a manual derivation can take over. -/
 def mkParamInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
   for declName in declNames do
@@ -1102,7 +1102,7 @@ A recursive occurrence nested under another type former (`List (Rose A)`),
 applied to different arguments, under an arrow, or in an indexed family is
 non-uniform: the structural forward map / its proofs are out of scope.
 `isUniformRecursive` is the gate — it returns `false`, so the uniform-recursive
-map path does not apply. (For genuinely nested recursion such as `Rose` below the
+map path does not apply. (For nested recursion such as `Rose` below the
 relation generator itself does not apply either — its `other`-by-equality lift is
 ill-typed across the two parameter instantiations, and the registered handler
 declines such inductives up front via `iv.isNested`. The labelled residual is

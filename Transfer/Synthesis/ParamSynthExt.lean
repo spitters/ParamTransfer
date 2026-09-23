@@ -196,7 +196,7 @@ example {A A' C C' : Type u}
 
 /-! ### Dependent ∀ synthesis (combinator, not pure `inferInstance`)
 
-`synthForall` builds a `Param` for a genuine `∀`-type from a domain `Param` and
+`synthForall` builds a `Param` for a dependent `∀`-type from a domain `Param` and
 a witness-indexed codomain family. (The family is not a typeclass-resolvable
 shape, hence a `def`, not an instance — see `paramUnit`/`paramBoolFam` in
 `ParamForall.lean` for the concrete inputs.) -/

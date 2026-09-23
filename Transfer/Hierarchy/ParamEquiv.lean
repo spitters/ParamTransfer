@@ -10,7 +10,7 @@ public import Transfer.Hierarchy.ParamHierarchy
 /-!
 # The equivalence bridge + `Param` weakening
 
-Lifts the relation-hierarchy classes (`Trocq/Hierarchy.lean`) into the
+Lifts the relation-hierarchy classes (`Transfer/Base/Hierarchy.lean`) into the
 `Param (m,n)` lattice (`ParamHierarchy.lean`) and provides the `Param`-level
 weakening maps (forget structure in one direction).
 

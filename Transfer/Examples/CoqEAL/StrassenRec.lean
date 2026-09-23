@@ -12,8 +12,8 @@ public import Mathlib.Tactic.NoncommRing
 /-!
 # Recursive (fuel-driven) Strassen block multiplication
 
-`Strassen.lean` proved the **one-level** `2×2` Strassen identity over a
-commutative ring. This file lifts it to a genuinely **recursive** Strassen
+`Strassen.lean` proves the **one-level** `2×2` Strassen identity over a
+commutative ring. This file lifts it to a **recursive** Strassen
 multiply on block matrices: a matrix on a doubled index type `B ⊕ B` is split
 into four `B`-indexed blocks, the seven Strassen products are computed by
 *recursive* sub-multiplications (one fuel level down), and the four result
@@ -37,12 +37,12 @@ blocks are recombined via `Matrix.fromBlocks`.
   blocks form a *non-commutative* matrix ring, and the Strassen recombination is
   order-preserving, so it holds over that ring).
 
-## Scope and the named residual
+## Scope
 
-This is the genuine recursion (real sub-multiplications down the fuel tower),
-generalizing one level. The complexity/termination *accounting* (that fuel `k`
-uses `7^k` base multiplications, the `O(n^log₂7)` bound) and pivoting to the
-ragged `Fin (2*n)` data layout are the remaining residual and are not done here.
+The recursion performs actual sub-multiplications at every fuel level. The
+complexity *accounting* (that fuel `k` uses `7^k` base multiplications, the
+`O(n^log₂7)` bound) and the `Fin (2*n)` data layout are outside the scope of
+this file.
 
 ## API
 

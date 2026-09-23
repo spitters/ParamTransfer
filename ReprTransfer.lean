@@ -9,17 +9,15 @@ public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Equiv.Defs
 
 /-!
-# Representation transfer for emit-realization bridges
+# Representation transfer for realization bridges
 
-A small, protocol-agnostic proof-transfer layer for a recurring CatCrypt
-pattern: a security proof quantifies over an abstract (often `noncomputable`,
-classical) operation, while the emitted/compiled artifact computes a
-computational (byte-level) operation, and a chosen encoding ties the two. Each
-such bridge — KZG's byte↔group pairing
-(`Bridges/ArkLibKZGDemo/ByteGroupRealization.lean`), and the analogous
-ML-KEM/ML-DSA/STARK emit-realization ties — is written by hand as a bespoke
-`structure` + `iff`. This module factors out the shared content: the relation
-structure and the generic transfer theorem.
+A small proof-transfer layer for the following situation: a proof quantifies
+over an abstract (often `noncomputable`, classical) operation, a compiled
+artifact computes a concrete (for example byte-level) operation, and a chosen
+encoding relates the two. Examples are a byte-level realization of a group
+pairing and the byte-level realizations of lattice or hash-based primitives.
+This module provides the relation structure and the generic transfer theorem
+that such a realization instantiates.
 
 ## Lineage
 
@@ -32,10 +30,11 @@ structures performs "a fine-grained analysis of the properties required for a
 given proof of relatedness." This file identifies the minimal level for
 transferring a decidable equation: the domains need only a map, and the codomain
 needs an embedding (an equality-reflecting, i.e. injective, encoding) — no
-equivalence, no univalence. Mathlib's `@[to_additive]` is the only built-in Lean
-transfer mechanism, but it is single-axis (multiplicative↔additive); this layer
-handles an arbitrary user-supplied representation relation, which the
-emit-realization bridges require.
+equivalence, no univalence. The transfer mechanisms built into Lean and Mathlib
+(`norm_cast`, and the name-translation attributes `@[to_additive]` and
+`@[to_dual]`) each act along a fixed axis (casts, multiplicative↔additive,
+order duality); this layer takes an arbitrary user-supplied representation
+relation.
 
 ## Main definitions
 
@@ -107,7 +106,7 @@ variable {A B C : Type u} {α β γ : Type u} {op : A → B → C} {bop : α →
 
     A verification predicate phrased as `op a b = op a' b'` (e.g. a pairing-check
     `e(X,Y) = e(X',Y')`) is decided, equivalently, by the byte-level comparison the
-    emitted code computes. -/
+    compiled code computes. -/
 theorem eq_transfer (R : BinOpRealization op bop) (a a' : A) (b b' : B) :
     op a b = op a' b' ↔
       bop (R.encA a) (R.encB b) = bop (R.encA a') (R.encB b') := by
@@ -143,7 +142,7 @@ Which transfer needs which structure:
   layer never requires it and never incurs univalence. -/
 
 /-- Top of the hierarchy: a representation equivalence (bijection). Refines
-    to an embedding. Recorded for completeness; the emit-realization bridges do
+    to an embedding. Recorded for completeness; the realization bridges do
     not use this level (their encodings are embeddings, not bijections),
     which is why they stay univalence-free. -/
 abbrev ReprEquiv (C : Type u) (γ : Type u) := C ≃ γ
@@ -154,8 +153,8 @@ def ReprEquiv.toReprEmbedding {C γ : Type u} (e : ReprEquiv C γ) : ReprEmbeddi
 
 /-! ## Domain-restricted operation homomorphism (the map-level transfer)
 
-The emitted-field-arithmetic realizations (STARK / ML-KEM Baby Bear / `Fp`
-kernels) are not codomain-embedding equality transfers; they are homomorphisms
+Realizations of field arithmetic by compiled kernels (Baby Bear or `Fp`
+arithmetic on machine words) are not codomain-embedding equality transfers; they are homomorphisms
 along a decoding map `φ`, valid on a canonical sub-domain (e.g. words `< p`).
 This is a strictly weaker hierarchy level than `BinOpRealization` — map-only, no
 injectivity — and packaging it here lets those bridges share the layer. -/

@@ -12,7 +12,7 @@ public import Mathlib.Data.List.Forall2
 /-!
 # The data-type (`×` / `Option` / `List`) parametricity rules
 
-A faithful Lean port of Trocq's container relational lift (`coq-community/trocq`,
+A Lean port of Trocq's container relational lift (<https://github.com/rocq-community/trocq>,
 `generic/Param_prod.v`, `generic/Param_option.v`, `generic/Param_list.v`): the
 combinators that build a `Param` annotated relation on a *container* type
 (`A × B`, `Option A`, `List A`) from `Param` relations on its element type(s).

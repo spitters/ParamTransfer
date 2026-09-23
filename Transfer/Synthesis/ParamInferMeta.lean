@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 CatCrypt Contributors. All rights reserved.
-Released under MIT license as described in the file LICENSE.
-Authors: CatCrypt Contributors
+Copyright (c) 2026 ParamTransfer Contributors. All rights reserved.
+Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as described in the file LICENSE.
+Authors: Bas Spitters
 -/
 module
 
@@ -38,7 +38,7 @@ which the existing `genFrom`/`solve` core then consumes unchanged. The walk:
 * `Expr.forallE _ dom body _` with `body` not depending on the bound variable
   (checked by `Expr.hasLooseBVar body 0`) ⇒ a non-dependent `arrow` node (`arrowReq`
   arithmetic). Both `dom` and `body` are recursed.
-* `Expr.forallE _ dom body _` with a genuine dependency ⇒ a dependent `forallT` node
+* `Expr.forallE _ dom body _` whose body uses the bound variable ⇒ a dependent `forallT` node
   (`forallReq` arithmetic). The bound variable is instantiated with a fresh local
   (`withLocalDecl`) before recursing into the instantiated body, so loose bvars never
   escape into the recursion.
@@ -71,7 +71,7 @@ def constLB (override : Std.HashMap Lean.Name MapClass) (n : Lean.Name) :
 
 open Lean Meta in
 /-- Walk a real Lean type `Expr` into a `TyShape` (the full-`Expr` front-end).
-    Non-dependent `→` ⇒ `arrow`; genuine dependent `Π` ⇒ `forallT` (bound variable
+    Non-dependent `→` ⇒ `arrow`; dependent `Π` ⇒ `forallT` (bound variable
     instantiated with a fresh fvar before recursing); constant/application head ⇒
     `base` leaf with its registry lower bound; everything else ⇒ `base none`. The
     resulting `TyShape` is consumed by the unchanged `genFrom`/`solve` core. -/
@@ -88,7 +88,7 @@ partial def exprToTyShape (override : Std.HashMap Lean.Name MapClass) : Expr →
           -- arrow shape as its monomorphic instances.
           withLocalDecl nm bi dom fun x => exprToTyShape override (body.instantiate1 x)
         else
-          -- genuine dependent Π over a value: instantiate the binder with a fresh
+          -- dependent Π over a value: instantiate the binder with a fresh
           -- local first.
           withLocalDecl nm bi dom fun x => do
             let domShape ← exprToTyShape override dom
@@ -181,7 +181,7 @@ run_meta do
   let c ← inferRootClassExpr ∅ e
   logInfo m!"Expr ℕ → ℕ → Prop root class = {repr c}"
 
--- (b) Genuine dependent `Π`: `∀ n : ℕ, n = n`. The body depends on the bound var,
+-- (b) Dependent `Π`: `∀ n : ℕ, n = n`. The body depends on the bound var,
 -- so this is a `forallT` node. The domain (`ℕ`) is an unconstrained leaf, so the
 -- `∀`-root minimizes to `map0` (forallReq map0 = map0; nothing forces the domain up).
 /-- info: Expr (∀ n, n = n) root class = Transfer.Param.MapClass.map0 -/

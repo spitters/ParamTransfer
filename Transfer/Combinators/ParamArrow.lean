@@ -10,7 +10,7 @@ public import Transfer.Hierarchy.ParamHierarchy
 /-!
 # The arrow (`app` / function) parametricity rule
 
-A faithful Lean port of Trocq's `std/Param_arrow.v` (`coq-community/trocq`):
+A Lean port of Trocq's `std/Param_arrow.v` (<https://github.com/rocq-community/trocq>):
 the combinators that build a `Param` annotated relation on a function space
 `(A → B)` from `Param` relations on the domain `A` and codomain `B`.
 

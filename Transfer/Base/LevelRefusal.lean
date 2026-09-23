@@ -27,16 +27,13 @@ the view of that lattice guard through `RelLevel.toMapClass`
 derived form of refusing `map4`. This guard makes the discipline enforceable
 and distinguishes this cap from full Coq-Trocq.
 
-## The discipline (mapped to CatCrypt's axes)
+## The discipline
 
 The permitted `(m,n)` slice on the lattice is `map0`–`map3`; in the 3-point
 view: `map` (transfers `=` forward), `embedding` (`+ injective`, transfers `=`
 both ways), and the refused `equiv` (image `map4`, needs UA). The crypto
 encodings (point/`Fp¹²`/word serializations) are embeddings, not bijections,
-so a goal that would need `equiv` is one this layer declines. The same guard
-is the abstract form of concrete refusals already in the tree — e.g. the ZX
-`unconditional_localComplement_refused` certificate (the naive
-local-complement rule is unsound and must be refused).
+so a goal that would need `equiv` is one this layer declines.
 -/
 
 @[expose] public section
@@ -250,7 +247,7 @@ theorem inferAndClassify_forallBwd_surjective :
     inferAndClassify (.forallBwd (.leafEq .embedding true)) = .ok .embedding :=
   rfl
 
-/-- The key refusal. A backward `∀` over a non-surjective embedding leaf
+/-- The central refusal. A backward `∀` over a non-surjective embedding leaf
     (the crypto encoding case) infers `equiv`, so the end-to-end guard refuses
     — the engine declines exactly when a subterm forces the equivalence level. -/
 theorem inferAndClassify_forallBwd_nonsurjective_refused :

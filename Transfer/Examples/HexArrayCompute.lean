@@ -62,8 +62,8 @@ theorem getD_ofFnA {α : Type} {n : ℕ} (f : Fin n → α) (i : Fin n) (d : α)
 abbrev HVecA : Type := Array ℤ
 
 /-- Decoder `HVecA → AVec n` (dense read, out-of-range default `0`). `AVec` is
-    shared with `HexMatrixCorrespondence` — the same abstract carrier, now
-    refined by `Array` instead of `List`. -/
+    shared with `HexMatrixCorrespondence` — the same abstract carrier,
+    here refined by `Array` in place of `List`. -/
 def decVA (n : ℕ) (a : HVecA) : AVec n := fun i => a.getD i 0
 
 /-- Section `AVec n → HVecA` (dense write). -/

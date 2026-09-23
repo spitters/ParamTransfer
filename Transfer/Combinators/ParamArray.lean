@@ -12,7 +12,7 @@ public import Transfer.Combinators.ParamData
 
 `ParamData.lean` lifts `Param` through `×`/`Option`/`List`. This module adds the
 **`Array`** container — the carrier `leanprover/hex`'s computational cores use for
-O(1) dense access — and, crucially, the **relational `foldl` transfer** that makes
+O(1) dense access — and the **relational `foldl` transfer** that makes
 `Array`- (or `List`-) *carried folds* transfer generically.
 
 ## Why this is the recursion story

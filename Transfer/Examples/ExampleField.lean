@@ -16,24 +16,17 @@ the `transfer`/`rcongr`/`param_*` tactics, the `@[transfer]`/`@[param]` database
 is field-agnostic: it transfers any registered commuting square `enc (op x y)
 = bop (enc x) (enc y)` regardless of what the carrier is.
 
-To exercise that engine the demos need one concrete field with two registered
-operations. Drawing those from the CatCrypt-specific emitted Baby Bear kernels
-(`ReprTransferInstances.bbFieldMul`/`bbFieldAdd`, backed by the emitted
-Poseidon2/Barrett arithmetic) couples the otherwise self-contained engine to the
-whole STARK field-realization stack.
-
-This module avoids that coupling. It provides the same names the demos use —
-`F`, `bbFieldMul`, `bbFieldAdd`, `bbFieldMul_eq`, `bbFieldAdd_eq` — built only
-from `Mathlib`. `F` is `ZMod p` for the Baby Bear prime `p = 2^31 - 2^27 + 1`,
+The demos need one concrete field with two registered operations. This module
+provides them — `F`, `bbFieldMul`, `bbFieldAdd`, `bbFieldMul_eq`,
+`bbFieldAdd_eq` — built only from `Mathlib`. `F` is `ZMod p` for the Baby Bear prime `p = 2^31 - 2^27 + 1`,
 and the two example operations are named op-tree heads distinct from the abstract
 `*`/`+`, each *proved equal* to the abstract operation — exactly the shape the
 transfer engine consumes.
 
-The operations here are not an emitted kernel — they are a
-pedagogical placeholder whose only job is to be a registered `RelatedBinOp`. The
-emitted-kernel realization (where `bbFieldMul_eq` is an
-encode/emit/decode theorem) lives in `Bridges/ReprTransferInstances.lean`; the
-engine treats both uniformly.
+The operations here are an illustrative instance of a registered
+`RelatedBinOp`. A realization by compiled machine-word arithmetic, where
+`bbFieldMul_eq` is an encode/compute/decode theorem, has the same shape, and the
+engine treats it in the same way.
 -/
 
 @[expose] public section
@@ -42,8 +35,7 @@ set_option autoImplicit false
 
 namespace Transfer.ExampleField
 
-/-- The Baby Bear prime `2^31 - 2^27 + 1`, defined locally (no dependency on the
-    CatCrypt Poseidon2 field). -/
+/-- The Baby Bear prime `2^31 - 2^27 + 1`. -/
 def exampleFieldPrime : ℕ := 2013265921
 
 instance : NeZero exampleFieldPrime := ⟨by unfold exampleFieldPrime; decide⟩

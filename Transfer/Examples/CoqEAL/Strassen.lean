@@ -25,14 +25,12 @@ multiply refinement of `SeqMatrixMul.lean`: that file establishes the *naive*
 row-col multiply refinement square; here we record the *fast* (Strassen)
 recombination identity for the base `2×2` case.
 
-## Scope and the named residual
+## Scope
 
-We prove only the **one-level** `2×2` block identity. Genuine recursive
-Strassen — recursing on `2×2` *block* matrices down to a base case, with the
-associated termination/complexity argument — is the named residual and is **not**
-attempted here. The one-level identity is the algebraic heart of the recursion
-(at the leaf the blocks are scalars), so it is the right deliverable to check;
-the recursion bookkeeping is orthogonal library plumbing.
+This file proves only the **one-level** `2×2` block identity. Recursive
+Strassen — recursing on `2×2` *block* matrices down to a base case — is in
+`StrassenRec.lean`. The one-level identity is the algebraic step of the
+recursion (at the leaf the blocks are scalars).
 
 ## API
 

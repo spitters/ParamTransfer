@@ -155,11 +155,10 @@ instance : ReprEquivClass Num ℕ where
 
 `BinNatInductionTarget` names the `Num` induction principle as a proposition;
 `binNatInduction` below proves it by transferring `Nat`'s recursor across the
-`Num ≃ ℕ` equivalence. What is not done here is the MetaM motive synthesis
-that would emit this proof automatically for an
-arbitrary dependent motive (the Trocq `peano_bin_nat` one-liner), which needs
-the relation on `Num → Type` and the `(m,n)` level inference `transfer` cannot
-yet synthesize. -/
+`Num ≃ ℕ` equivalence. The library does not synthesize this proof automatically
+for an arbitrary dependent motive (the Trocq `peano_bin_nat` one-liner); that
+requires the relation on `Num → Type` and an `(m,n)` level inference that
+`transfer` does not perform. -/
 
 /-- The `Num` induction principle, named as a proposition. Proved below as
     `binNatInduction` by the manual recursor transfer across `Num ≃ ℕ`. -/

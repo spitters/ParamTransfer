@@ -10,9 +10,9 @@ public import Transfer.Examples.CoqEAL.GaussPivotStep
 /-!
 # Gaussian elimination: multi-row forward sweep (refinement)
 
-`GaussPivotStep.lean` discharged a **single** forward-elimination pivot step and
-proved it preserves the solution set of `A · x = b`. This file iterates that
-step across a **list of target rows** — the genuine *forward sweep* that
+`GaussPivotStep.lean` treats a **single** forward-elimination pivot step and
+proves it preserves the solution set of `A · x = b`. This file iterates that
+step across a **list of target rows** — the *forward sweep* that
 eliminates one fixed pivot column from each of a batch of rows — and proves the
 whole sweep preserves the solution set, by induction over the row list using the
 single-step lemma.

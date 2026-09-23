@@ -58,7 +58,7 @@ Not implemented here:
   the `Param` witnesses and the `(m,n)` levels per subterm;
 * the `Type`-valued motive — transferring `∀ a, B a` with `B : A → Type`
   (not `Prop`) needs `Map2a_forall`, whose domain `Param` must be at `map4`
-  (`Param04` = a genuine equivalence), i.e. **univalence**. That step is already
+  (`Param04` = an equivalence), i.e. **univalence**. That step is
   localized and named in `ParamForall.lean`; here we stay at the `Prop` motive,
   which is univalence-free.
 -/

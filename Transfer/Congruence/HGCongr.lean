@@ -57,15 +57,15 @@ with the relational congruence closure `param_cc` as the leaf discharger.
 `hgcongr` here is a standalone in-tree realization; the same change applies
 upstream by relaxing the single-head constraint at the three enforcing sites.
 Quoting the identifiers/lines of
-`Mathlib/Tactic/GCongr/Core.lean` (as read for this file):
+`Mathlib/Tactic/GCongr/Core.lean`:
 
 1. **`GCongrKey`** (lines 147-156). Keys on one `head : Name`. Add a
    second head and key on the pair:
    ```
    structure GCongrKey where
      relName : Name
-     lhsHead : Name   -- was `head`
-     rhsHead : Name   -- NEW
+     lhsHead : Name   -- Mathlib's `head`, renamed
+     rhsHead : Name   -- the added second head
      arity   : Nat
    ```
    The `Ord`/`BEq` instances (lines 156-159) extend componentwise. Backward

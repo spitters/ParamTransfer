@@ -12,7 +12,7 @@ public import Mathlib.Tactic
 # CoqEAL `bareiss` — a fraction-free determinant certified against `Matrix.det`
 
 CoqEAL's `bareiss` computes an exact integer determinant by fraction-free
-elimination, never leaving `ℤ`. This file gives the refinement at the base sizes:
+elimination, never leaving `ℤ`. This file proves the refinement at the base sizes:
 a `ℤ`-only, `#eval`-computable determinant certified equal to Mathlib's
 `Matrix.det`. At `2×2` the formula is `a*d - b*c`; at `3×3` it is the
 Sarrus/Bareiss expansion. Both avoid division, and both equal `Matrix.det`

@@ -11,8 +11,8 @@ public import Transfer.Hierarchy.ParamEquiv
 /-!
 # Relation **composition** (`Param_trans`)
 
-A faithful Lean port of Trocq's `std/generic/Param_trans.v`
-(`coq-community/trocq`) — the rule that composes two annotated relations
+A Lean port of Trocq's `std/generic/Param_trans.v`
+(<https://github.com/rocq-community/trocq>) — the rule that composes two annotated relations
 `Param m n A B` and `Param m n B C` into one on `A C`. It is the transitivity
 half of the relational-PER structure (`Param.symm` in `ParamHierarchy.lean` is
 the symmetry half), and the mechanism behind the paper's bitvector-encoding

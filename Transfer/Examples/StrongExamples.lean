@@ -16,9 +16,9 @@ public import Mathlib.Data.Nat.Cast.Basic
 Each native Lean relational tactic is congruence for one *fixed* relation, and the
 engine generalizes it along two axes those tactics cannot cross: relating sides of
 *different types* (heterogeneous) and relating them across a *change of
-representation* (non-diagonal). This file collects worked examples that each beat a
-specific native tactic on one of those axes — over genuinely non-diagonal domains,
-not identity encodings.
+representation* (non-diagonal). This file collects worked examples that each close a
+goal a specific native tactic cannot close on one of those axes, over
+non-diagonal domains (encodings other than the identity).
 
 | native tactic | its fixed relation | axis it cannot cross | example here |
 |---|---|---|---|
@@ -49,7 +49,7 @@ example (a b : ℕ) (h : a = b) : (Fin.last a).val = (fun n => n) b := by
 
 /-! ## `gcongr` cannot change representation — `rcongr` does
 
-The encoding is genuinely non-diagonal: `Nat.cast : ℕ → ℤ` (`enc ≠ id`). Registering
+The encoding is non-diagonal: `Nat.cast : ℕ → ℤ` (`enc ≠ id`). Registering
 the two commuting squares once (`RelatedBinOp`) lets `rcongr` descend the cross-head
 op-tree *and* change representation ℕ → ℤ — a move `gcongr` structurally rejects
 (it needs both sides in the same type with the same head). -/

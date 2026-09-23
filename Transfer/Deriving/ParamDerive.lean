@@ -9,10 +9,9 @@ public import Transfer.Hierarchy.ParamHierarchy
 public import Transfer.Combinators.ParamData
 
 /-!
-# Toward a `@[derive Param]` handler (two more mechanized
-inductives + the deriving-handler design)
+# Hand-written `Param` lifts for sum and `Nat`, and the `@[derive Param]` design
 
-`ParamData.lean` hand-ported the relational lift for the three representative
+`ParamData.lean` hand-ports the relational lift for the three representative
 inductive shapes Trocq's Elpi generates one file per: binary product, optional,
 recursive list. This file does two things.
 
@@ -27,9 +26,9 @@ recursive list. This file does two things.
    procedure a `DerivingHandler` would run to emit these files
    automatically — what Trocq's Elpi does in Coq.
 
-Implemented: the two hand-ported inductives (fully proved,
-`#print axioms`-clean) plus the design note. The full `DerivingHandler`
-elaborator is specified, not implemented.
+This file contains the two hand-ported inductives (fully proved,
+`#print axioms`-clean) and the design note. The `DerivingHandler` elaborator
+that follows this design is `ParamDeriveHandler.lean`.
 
 ## Design note — the `@[derive Param]` handler algorithm
 

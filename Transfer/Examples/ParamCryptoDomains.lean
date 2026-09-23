@@ -15,9 +15,9 @@ public import Transfer.Integrations.ParamRelatedBridge
 # The Baby Bear field as a first-class transfer domain (stack fusion)
 
 The other `Param`-engine domains are small: the diagonal `Eq` and the
-`Num ↦ ℕ` change-of-representation (`ParamTrocq.instTransferDomNumNat`). This
+`Num ↦ ℕ` change-of-representation (`Transfer.Param.instTransferDomNumNat`). This
 module promotes a crypto carrier — the
-emitted Baby Bear field kernels (`bbFieldMul`/`bbFieldAdd`, proved equal to the
+computational Baby Bear field operations (`bbFieldMul`/`bbFieldAdd`, proved equal to the
 abstract `*`/`+` via `bbFieldMul_eq`/`bbFieldAdd_eq`) — into first-class
 transfer data, and fuses the two transfer stacks over the same field:
 
@@ -27,7 +27,7 @@ transfer data, and fuses the two transfer stacks over the same field:
   extracted by `transferRel`/`.rel`. Driven by `rcongr`/`param_solve`.
 * Stack A (`Param`). `ParamDB` resolves `@[param]`-registered
   `RArrow PA PB c c'` witnesses for the term-level translation `⟦·⟧`
-  (`#transfer`/`translateAll`); `ParamTrocq.TransferDom` resolves the domain for
+  (`#transfer`/`translateAll`); `Transfer.Param.TransferDom` resolves the domain for
   the `∀`-rule (`param_transfer`/`forallTransferAuto`).
 
 Without this file these two stacks share a field but not a registry: the Baby
@@ -46,7 +46,7 @@ single field operation is usable by both engines.
    `param_transfer` transfers `∀ (x : F), P x`-style statements over the field.
    It is the diagonal domain (graph `Eq` on `F`) — see the *non-diagonal
    case* below for why a field↔limb domain needs more than the
-   current `TransferDom` shape can express.
+   `TransferDom` shape expresses.
 
 ## The non-diagonal case
 
@@ -56,10 +56,10 @@ single field operation is usable by both engines.
 `TransferDom F BitVec`-style domain would need that backward decoder packaged at
 `map2a` (it exists — `bbToF_bbEncode` is the round-trip), but the `∀`-rule then
 delivers a *pointwise* obligation phrased against the *limb* predicate `P'`,
-which the caller must supply by hand. The annotation-inference gap (`ParamTrocq`
-module docstring's note on the full `⟦t⟧` over arbitrary terms with
-per-subterm levels) is exactly what would let the engine infer that limb
-predicate instead. So this file registers the diagonal field domain (complete
+which the caller must supply by hand. Inferring that limb predicate requires
+the annotation inference described in the `ParamTransferTac` module docstring
+(the full `⟦t⟧` over arbitrary terms with per-subterm levels). This file
+therefore registers the diagonal field domain (complete
 for same-representation field transfer) and the op-level
 representation change lives in the `@[param]`/`RelatedBinOp` op witnesses, which
 carry the `F ↔ bbField*` change.

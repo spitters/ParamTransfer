@@ -99,7 +99,7 @@ theorem sigma_cast_eq {nA : MapClass} (PA : Param .map2a nA A A')
          (PB p.1 (PA.fwd.map p.1) (PA.fwd.map_in_R p.1 (PA.fwd.map p.1) rfl)).fwd.map p.2⟩ :=
   rfl
 
-/-! ## Demo: a genuinely dependent cast (`Σ n, Fin (n+1)` → `Σ n, ℕ`)
+/-! ## Demo: a dependent cast (`Σ n, Fin (n+1)` → `Σ n, ℕ`)
 
 The fiber type `Fin (n+1)` depends on the base `n`, and the two sides' fibers are
 *different types* (`Fin (n+1)` vs `ℕ`), bridged by `Fin.val`. The Σ-cast carries
@@ -158,7 +158,7 @@ relations. Its dependent analogue would ask for a composed fiber *family*
 `Param` produced from the base's composed relation. But that relation is the
 existential glue `∃ b, PA.R a b ∧ QA.R b c`, a `Prop`, and producing a `Type` from
 it is large elimination of `Exists`, which Lean forbids. So the dependent
-composition genuinely *cannot* be phrased as a composed fiber family over the glued
+composition *cannot* be phrased as a composed fiber family over the glued
 base relation — it must compose the `Param`s (which carry the fibers as data), as
 `paramSigmaTrans` does. This is a shadow of the same `Prop`/`Type` boundary that
 caps the universe fiber (`map4`) by `UnivalenceStatus.univalence_inconsistent`.

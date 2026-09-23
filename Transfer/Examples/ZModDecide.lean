@@ -166,7 +166,7 @@ elab "decide_zmod" : tactic => do
 
 /-! ## Examples -/
 
-/-- `HexDecide`'s example, now fully automated. -/
+/-- `HexDecide`'s example, closed by `decide_zmod` alone. -/
 example : (2 * 3 : ZMod 5) = (1 * 1 : ZMod 5) := by decide_zmod
 
 /-- A deeper tree — `+`, `-`, `^`, and a large modulus — still one kernel `decide`. -/

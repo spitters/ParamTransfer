@@ -23,8 +23,8 @@ functoriality of each type former over those adapters. AdapTT secures them
 already function composition, so composition through nested type formers is
 automatic and the "stuck adapter" gap Trocq's `stuck.v` documents does not arise;
 they need not be *cited*, but they *certify* the functor laws hold, and are used
-explicitly where a coercion chain is built by hand (e.g. CatCrypt's dialect-chain
-transport). The **relational-form** law (`prod_trans_rel`) is the one proved
+explicitly where a coercion chain is built by hand (e.g. a transport along a chain
+of intermediate representations). The **relational-form** law (`prod_trans_rel`) is the one proved
 propositionally (`funext`/`propext`). The dependent type formers extend the
 non-dependent `→`/`×`/`List`/`Option` laws here: `paramForall` (Π,
 `ParamForall.lean`) and `paramSigma` (Σ, `ParamSigma.lean`, `sigma_cast_eq` =

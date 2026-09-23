@@ -26,7 +26,7 @@ public import Transfer.Base.UnivalenceStatus
 public import Transfer.Base.TransferLevel      -- transfer! : level-directed transfer tactic
 public import Transfer.Base.LevelRefusal       -- the decidable univalence-free level guard
 public import Transfer.Base.TransferInduction  -- natEquivInduction: recursor transfer
--- Interactions with native Lean mechanisms (see README §Interactions):
+-- Interactions with native Lean mechanisms (see README, "Plugging into Lean"):
 public import Transfer.Integrations.ParamNormCast  -- norm_cast move-lemmas are Param witnesses
 public import Transfer.Integrations.ParamRelatedBridge -- one witness, both engines: RelatedBinOp ⇒ RArrow
 public import Transfer.Integrations.ParamCoe        -- Coe/CoeTC from a Param forward map
@@ -42,7 +42,7 @@ public import Transfer.Integrations.ParamRCompOk    -- `RCompOk`: success-restri
 public import Transfer.Integrations.ParamRCompParam -- `RComp`/`RCompOk` as `Param` instances; `RComp.trans`/`RCompOk.trans` composition
 -- Automation-tactic integrations:
 public import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
-public import Transfer.Integrations.AesopIntegration -- opt-in `Trocq` aesop rule set (importer-split)
+public import Transfer.Integrations.AesopIntegration -- opt-in `Transfer` aesop rule set (importer-split)
 public import Transfer.Congruence.RCongr            -- rcongr: cross-head congruence descent
 public import Transfer.Congruence.HGCongrInit       -- hgcongr engine: env ext + @[hgcongr] attr + tactic
 public import Transfer.Congruence.HGCongr           -- hgcongr correspondences + cross-head demos
@@ -56,7 +56,7 @@ public import Transfer.Congruence.HCongrConnection   -- cubical hcongr ↔ R_for
 public import Transfer.Synthesis.ParamInfer         -- variable-level (m,n) minimal-class inference
 public import Transfer.Synthesis.ParamInferMeta      -- its elaboration-time half
 public import Transfer.Combinators.ParamTrans       -- Param_trans: relation composition (map0..map3)
-public import Transfer.Deriving.ParamDerive         -- toward @[derive Param]: hand-ports + handler spec
+public import Transfer.Deriving.ParamDerive         -- hand-written Param instances + the @[derive Param] handler spec
 public import Transfer.Examples.ParamCryptoDomains  -- Baby Bear @[param] witnesses + TransferDom
 public import Transfer.Integrations.ParamAutoWeaken -- auto-weakening of witnesses + transfer_auto
 -- Coherence laws (AdapTT) + description-based deriving:
@@ -70,7 +70,7 @@ public import Transfer.Examples.StrongExamples       -- native-tactic-beating de
 public import Transfer.Examples.Trocq                -- the Trocq example suite (index + summable)
 public import Transfer.Examples.EffectfulTransfer    -- effectful triple transfer across a value-type change (ℕ↔ℤ), by mvcgen
 public import Transfer.Examples.RCompOkExamples    -- `RCompOk` over an ok/fail test monad: rcomp_ok demos, transfer, converse counterexample
--- Retrofit onto `leanprover/hex`'s verified computational algebra (README §Hex):
+-- Instances over `leanprover/hex`'s verified computational algebra:
 public import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathlib correspondence, generated
 public import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
 public import Transfer.Examples.HexEffectful            -- hex elimination-step triple transfer (RComp/Std.Do)
@@ -85,14 +85,15 @@ public import Transfer.Examples.HexArrayCompute         -- hex `Array` carrier: 
 
 `import Transfer` loads the whole engine: a Lean 4 framework for reasoning up to a
 registered relation. It draws on modular parametricity
-([Trocq](https://github.com/coq-community/trocq)'s graded map-class lattice and
+([Trocq](https://github.com/rocq-community/trocq)'s graded map-class lattice and
 combinators), relational transfer and data refinement (CoqEAL), heterogeneous
 congruence from cubical type theory (the set-level form; Gjørup–Spitters), and
 congruence-closure algorithms. On top of these it provides one auto tactic that
 unifies several native Lean relational tactics (`congr`/`gcongr`, `norm_cast`,
 cast-`rw`, `transfer`, `conv`, `aesop`/`grind`) behind a single inference rule.
-Trocq is the largest single influence. The framework verifies compilers (the
-CatCrypt compiler) and programs (`mvcgen` / `Std.Do` triples, hax-extracted code).
+Trocq is the largest single influence. The framework applies to compiler
+verification and to program verification (`mvcgen` / `Std.Do` triples,
+hax-extracted code).
 Full overview, file map and usage: [`README.md`](./README.md).
 
 ## The five layers (bottom-up; see the README table for the file map)
@@ -106,7 +107,7 @@ Full overview, file map and usage: [`README.md`](./README.md).
 2. **Synthesis** — `ParamSynth`(`Ext`) (`HasParam`: resolution = Elpi search) +
    `ParamResolve` (`param_resolve`, the level-directed search).
 3. **Transfer** — `ParamTransfer` / `ParamForallNested` (`forallTransfer`),
-   `ParamTrocq` (`param_transfer`, auto-resolved domain).
+   `ParamTransferTac` (`param_transfer`, auto-resolved domain).
 4. **Term-level `⟦·⟧`** — `ParamTranslate` (core), `ParamDB` (`@[param]` registry),
    `ParamTranslateTy` (change-of-rep binders), `ParamTranslateOp` (operators),
    `ParamTranslateFull` (the integrated translator + `#transfer`).

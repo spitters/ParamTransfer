@@ -10,13 +10,13 @@ public import Transfer
 /-!
 # Axiom ledger — a build-time hygiene tripwire
 
-`#guard_msgs`-pinned `#print axioms` for a curated set of load-bearing public
+`#guard_msgs`-pinned `#print axioms` for a curated set of central public
 results. Building this module fails if any of them gains an unexpected axiom —
 in particular `sorryAx` (a `sorry`) or a `native_decide` axiom (`Lean.ofReduceBool`).
 CI builds this module (`lake build Transfer.Audit`), so such drift breaks the build.
 
 The pinned set spans the three claims the library rests on: the univalence
-boundary, a genuine cross-representation encoding law, and heterogeneous
+boundary, a cross-representation encoding law between distinct types, and heterogeneous
 congruence over distinct fiber types. The expected axiom set is Lean's standard
 `propext` / `Quot.sound` / `Classical.choice` and nothing else.
 -/

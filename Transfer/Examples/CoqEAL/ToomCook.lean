@@ -16,8 +16,9 @@ multiplying the values pointwise, and **interpolating** the product back. The
 soundness of the evaluate-multiply step is that evaluation is a ring
 homomorphism: `(p * q)(t) = p(t) · q(t)`. Interpolation — the unique polynomial of
 bounded degree through the sampled points — recovers `p * q`, so the pointwise
-products at enough points determine the product exactly. The general algorithm is
-the suite's frontier; the identity below is its load-bearing core.
+products at enough points determine the product exactly. This file proves
+the evaluate–multiply identity and the three-point case for linear
+polynomials; the general algorithm is not formalized here.
 -/
 
 @[expose] public section

@@ -12,7 +12,7 @@ public import Transfer.Combinators.ParamArrow
 # The `Param`-witness synthesizer
 
 This module is the Lean-idiomatic analogue of Trocq's Elpi logic-program search
-(`coq-community/trocq`, the `param.db` / `solve` Elpi predicates): it composes
+(<https://github.com/rocq-community/trocq>, the `param.db` / `solve` Elpi predicates): it composes
 `Param` annotated relations for closed type structure by typeclass
 resolution. Where Trocq drives an Elpi program that, given a goal type, picks
 the parametricity combinator (`app` / arrow / `∀`) and recurses on the

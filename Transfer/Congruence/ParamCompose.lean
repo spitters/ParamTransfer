@@ -61,7 +61,7 @@ macro "param_leaf" : tactic => `(tactic|
 
 /-- Preprocessing: reshape a bare equation `enc t = t'` into `Related enc t t'`,
     reading the encoding off the LHS head. Fires **only** when `enc : A → α` is a
-    genuine cross-representation encoding (`A ≠ α`) — a same-type application (an
+    cross-representation encoding (`A ≠ α`) — a same-type application (an
     *operation* like `a + b : F`) is left for the `id`-bridge. Without this a bare
     `enc t = t'` bridges to `Related id (enc t) t'`, hiding the encoding, and the
     descent cannot use the registered `enc`-squares. -/
@@ -141,7 +141,7 @@ end
 
 /-! ## The preprocessing: a bare cross-type equation `enc t = t'`
 
-`Nat.cast : ℕ → ℤ` is a genuine cross-type encoding, so a bare `↑t = t'` is
+`Nat.cast : ℕ → ℤ` is a cross-type encoding, so a bare `↑t = t'` is
 reshaped to `Related Nat.cast t t'` — the descent then sees the registered cast
 squares. Without the reshape it would bridge to `Related id (↑t) t'` and fail.
 This is the shape of the ascent's word-value leaves (`wEnc t = t'`). -/

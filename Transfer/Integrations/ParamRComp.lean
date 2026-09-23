@@ -35,7 +35,7 @@ On a goal `RComp Rα c c'` it tries, in order:
 The value leaves (`Rα a a'`, the arithmetic content) are left for the caller — the
 same non-fabrication discipline `transfer` follows. A pure computation over `Id`
 collapses to a single leaf (`pure` reduces definitionally), discharged with
-`norm_cast` / `simp_all`; a genuinely effectful monad descends its `bind`
+`norm_cast` / `simp_all`; an effectful monad descends its `bind`
 structure leaf by leaf.
 
 ## Folded into `param_transfer`

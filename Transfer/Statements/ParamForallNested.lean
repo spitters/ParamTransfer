@@ -97,7 +97,7 @@ def forallTransfer2 {A A' B B' : Type u}
 
 /-! ## Three-binder transfer
 
-The nesting generalizes cleanly: the outer `forallTransfer PA` now runs at the
+The nesting generalizes: the outer `forallTransfer PA` runs at the
 2-binder motive `fun a => ∀ b c, P a b c`, whose per-pair obligation is exactly
 a `forallTransfer2 PB PC`. -/
 

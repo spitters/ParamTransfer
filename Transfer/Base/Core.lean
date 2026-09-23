@@ -19,7 +19,7 @@ emitted-kernel form automatically — deriving what the per-protocol bridges
 layer connections, …) otherwise derive by hand.
 
 `register_simp_attr` must live in its own module (the attribute is only usable in
-*importing* files), so the tagged lemmas live in `Trocq/FieldRegistry.lean` etc.
+*importing* files), so the tagged lemmas live in `Transfer/Base/FieldRegistry.lean` and similar modules.
 -/
 
 @[expose] public section

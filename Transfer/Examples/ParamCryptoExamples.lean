@@ -12,10 +12,10 @@ public import Transfer.Deriving.ParamDeriveHandler
 public import Transfer.Examples.PeanoBinNat
 
 /-!
-# Crypto/representation examples exercising the new pieces
+# Crypto/representation examples for coherence and deriving
 
-This file maps the Trocq paper's worked examples onto CatCrypt's setting and
-exercises the two pieces — the coherence-law suite
+This file maps the Trocq paper's worked examples onto cryptographic carriers
+(a prime field, ciphertext and signature records) and exercises two pieces — the coherence-law suite
 (`ParamCoherence`: `castViaParam`, `cast_trans`, `cast_id`, the combinator
 functor laws) and the description-based `@[derive Param]` handler
 (`ParamDeriveHandler`) — together with the term-level engine
@@ -228,7 +228,7 @@ theorem num_to_nat_forall_transfer : (∀ n : Num, 0 ≤ n) → (∀ k : ℕ, 0 
 theorem num_distrib_transferred (a b c : Num) : a * (b + c) = a * b + a * c :=
   PeanoBinNat.num_mul_add a b c
 
-/-! ## §4 `Int ↔ ZMod p` retraction — documented, not fabricated
+/-! ## §4 `Int ↔ ZMod p` retraction (described, no instance)
 
 The ring-quotient `ℤ ↠ ZMod p` is the paper's retraction pattern: `Int.cast :
 ℤ → ZMod p` is surjective with section `(ZMod.val · : ZMod p → ℤ)` (for `p`
@@ -241,14 +241,13 @@ This is therefore a retraction, not an equivalence: it sits at the
 `ZMod p → ℤ` direction. A `TransferDom (ZMod p) ℤ` would deliver a pointwise
 obligation phrased against the *integer* predicate, which — exactly as
 `ParamCryptoDomains`'s "non-diagonal case" note records for the field↔limb
-decoder — the caller must currently supply by hand; the engine cannot yet infer
-it. The missing capability is the annotation inference described in
-`ParamTrocq`'s module docstring (full `⟦t⟧` with per-subterm levels), not a
-missing Mathlib primitive. The witness shape is documented here rather than
-providing a `TransferDom` whose pointwise obligation is trivial/vacuous.
+decoder — the caller supplies by hand; the engine does not infer it. Inferring
+it requires the annotation inference described in `ParamTransferTac`'s module
+docstring (full `⟦t⟧` with per-subterm levels). This section describes the
+witness shape and provides no `TransferDom` instance, since one whose pointwise
+obligation is trivial would be vacuous.
 
-§5 (the `Summable`/`SPComp` transfer) is the heavy-crypto analogue of the same
-pattern and is likewise not handled here.
+The paper's summability transfer is in `Examples/Trocq/Summable`.
 -/
 
 /-! ## Axiom audit

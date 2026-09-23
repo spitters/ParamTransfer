@@ -26,7 +26,7 @@ composing the registered squares through `grind`'s congruence closure.
 
 ## Scope
 
-This validates two design points from the Trocq tactic-interactions design:
+This module covers two uses of `grind` in the transfer engine:
 
 1. **`grind` as a final leaf-discharger in `transfer`'s cascade.** Once the
    foundation realization lemmas are in the `grind` database, a single `grind`

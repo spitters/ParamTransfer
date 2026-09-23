@@ -17,7 +17,7 @@ lifting) stores a polynomial as a **dense coefficient list** — the CoqEAL
 `seqpoly` representation. That storage is *not injective* as a refinement of the
 mathematical polynomial: trailing zeros are redundant, so `[1,2]` and `[1,2,0]`
 denote the same polynomial `2X + 1`. This module builds that refinement and
-pins down the exact `Param` level it reaches (`possibility 2`): a genuinely
+pins down the exact `Param` level it reaches (`possibility 2`): a
 **non-bijective** refinement lands at forward/backward `map2a`, the graded
 engine's sweet spot, and provably *cannot* reach `map2b`/`map3`/`map4` — the
 levels an `Equiv`-based or univalent transfer would demand.

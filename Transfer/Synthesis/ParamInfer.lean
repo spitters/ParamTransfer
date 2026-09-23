@@ -20,7 +20,7 @@ front and try a hardcoded list.
 
 This module provides the constraint-graph minimal-class
 solver, the Lean analogue of upstream Trocq's level-inference pass
-(`coq-community/trocq`, paper §4.4): *"the [parametricity] class chosen must remain
+(<https://github.com/rocq-community/trocq>, paper §4.4): *"the [parametricity] class chosen must remain
 a variable until the end; a reduction algorithm determines the minimal acceptable
 class."* Each `Type`-occurrence gets a class variable whose value is determined
 by least-fixpoint propagation over the `MapClass` lattice (`ParamLevel.lean`'s

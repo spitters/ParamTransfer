@@ -165,8 +165,8 @@ theorem getD_matVec (p : ℕ) (A : List (List R)) (v : List R) (i : ℕ)
 /-! ## Agreement with Mathlib `Matrix.mulVec`
 
 The matrix-vector refinement square above (`getD_matVec`) relates the concrete
-`List`-rep `matVec` to a raw `Finset` sum `∑ k, A_{i,k} v_k`. We now turn that
-into the *real linear-algebra operation*: the abstract matrix-vector product
+`List`-rep `matVec` to a raw `Finset` sum `∑ k, A_{i,k} v_k`. This section
+relates that sum to the linear-algebra operation: the abstract matrix-vector product
 `Matrix.mulVec` of Mathlib, under the canonical conversion from the seq-matrix
 representation to a `Matrix (Fin m) (Fin p) R` and from the coefficient `List`
 to a `Fin p → R` vector.

@@ -45,8 +45,8 @@ by *the same lemma applied twice* (rows are `List.ofFn`, entries are `List.ofFn`
 This is the point of generating the correspondence from a primitive refinement:
 `decM_encM` reuses `getD_ofFn` at both nesting levels, and the matrix
 `TransferDom` is built with no new arithmetic. Transferring the abstract
-statement across this one refinement replaces the hand-written `hex-mathlib`
-correspondence for each matrix operation.
+statement across this one refinement yields, for each matrix operation, the
+correspondence that `hex-mathlib` states by hand.
 -/
 
 @[expose] public section
@@ -169,7 +169,7 @@ instance instTransferDomHMat (m n : ℕ) : TransferDom HMat (AMat m n) where
     surjective onto `AMat m n` — every abstract matrix is realised by some dense
     row-list — obtained by the engine from the reflexive source fact. This stands
     in for the `hex-mathlib` correspondence lemmas (`hexOp` realises the abstract
-    `Matrix` op), now produced by transfer rather than by hand. -/
+    `Matrix` op), here produced by transfer. -/
 example (m n : ℕ) :
     (∀ rows : HMat, decM m n rows = decM m n rows) →
       (∀ M : AMat m n, ∃ rows : HMat, decM m n rows = M) := by
