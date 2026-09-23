@@ -17,7 +17,7 @@ non-HoTT) variant of **Trocq**:
 - Cyril Cohen, Enzo Crance, Assia Mahboubi.
   *Trocq: Proof Transfer for Free, Beyond Equivalence and Univalence.*
   ACM TOPLAS, 2025. [doi:10.1145/3737283](https://doi.org/10.1145/3737283).
-- Implementation: [`rocq-community/trocq`](https://github.com/rocq-community/trocq).
+- Implementation: [`https://github.com/rocq-community/trocq`](https://github.com/rocq-community/trocq).
 
 The map-class hierarchy (`map0`–`map4`), the `(m,n)` annotation lattice, the
 weakening calculus, the `R_arrow`/`R_forall` combinators, the `@[param]` registry
@@ -76,8 +76,8 @@ on Coq-Elpi, the Lean realization uses typeclass resolution and `MetaM`.
 
 ## Lean / Mathlib mechanisms it integrates with or mirrors
 
-The library is designed to cooperate with native Lean 4 + Mathlib machinery
-(see `README.md` §"Interactions with Lean mechanisms"):
+The library cooperates with native Lean 4 + Mathlib machinery (see the section
+"Plugging into Lean" of `README.md`):
 
 - **`Mathlib.Tactic.Translate`** (the generic name-mapping term-translation
   framework underlying `@[to_additive]` / `@[to_dual]`) — the mature analogue of
@@ -88,7 +88,7 @@ The library is designed to cooperate with native Lean 4 + Mathlib machinery
   carries the upstream patch.
 - **`grind`** — the congruence-closure backend for `param_cc`; foundation squares
   are dual-tagged `@[grind =]`.
-- **`aesop`** — the opt-in `Trocq` rule set bundles the transfer rules.
+- **`aesop`** — the opt-in `Transfer` rule set bundles the transfer rules.
 - **`norm_cast` / `push_cast`** — `@[norm_cast]` move-lemmas are recognized as
   embedding-level `Param` witnesses over the cast graph.
 - **`Std.Do` / `mvcgen`** (`Triple`/`wp`) — `ParamTripleTransfer` lifts transfer

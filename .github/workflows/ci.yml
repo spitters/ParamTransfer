@@ -34,7 +34,7 @@ jobs:
         run: lake exe cache get || true
 
       - name: Build the library
-        run: lake build Transfer ReprTransfer ReprTransferExpr
+        run: lake build Transfer ReprTransfer ReprTransferExpr TransferCoqEAL TransferReadme
 
       - name: Axiom ledger (no sorry / no native_decide drift)
         run: lake build Transfer.Audit

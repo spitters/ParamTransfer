@@ -7,7 +7,8 @@ require mathlib from git
 -- CompPoly provides a computable (array-backed `Raw`) univariate polynomial with a
 -- `RingEquiv` to Mathlib's noncomputable `Polynomial`. The `Examples/CoqEAL/` suite
 -- uses it to *compute* with `Polynomial` through the refinement — the CoqEAL /
--- Kaliszyk–O'Connor "refinements for free" pattern. Same toolchain (v4.30.0).
+-- Kaliszyk–O'Connor "refinements for free" pattern. Pinned at the same tag as
+-- Mathlib (v4.33.1).
 require CompPoly from git
   "https://github.com/Verified-zkEVM/CompPoly.git" @ "v4.33.1"
 
@@ -32,6 +33,10 @@ lean_lib Transfer where
 
 lean_lib ReprTransfer where
 lean_lib ReprTransferExpr where
+
+-- The examples of README.md, compiled so that every code block there checks.
+lean_lib TransferReadme where
+  roots := #[`Transfer.Examples.Readme]
 
 -- The CoqEAL/Trocq example suite. A separate library so its CompPoly dependency
 -- stays out of the core `Transfer` graph — a consumer of the engine does not build

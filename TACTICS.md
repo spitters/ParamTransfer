@@ -21,7 +21,8 @@ each surface below, so one name closes goals living in different relations. The
 families are what it routes to — and what to name when you want one strategy by
 hand.
 
-There are four families:
+There are four families, followed by the decision procedures and the deriving
+and level-inference commands:
 
 | Family | What it does | Section |
 |---|---|---|
@@ -29,9 +30,11 @@ There are four families:
 | **Congruence** | discharge a *fixed* `Related`/`=` representation-change goal structurally | [↓](#congruence-family) |
 | **Conv / cast / coe** | plug transfer into native rewriting and elaboration | [↓](#conv--cast--coe-family) |
 | **Automation integration** | expose the engine through `grind` / `aesop` / `mvcgen` | [↓](#automation-integration-family) |
+| **Decision** | decide `ZMod m` identities by bounded computation | [↓](#decision-by-bounded-computation) |
+| **Deriving and level inference** | generate relations for data types; report and check goal levels | [↓](#deriving-and-level-inference) |
 
 Two relations coexist. The **`Param` engine** (`Param .map_k .map_l A B`, on
-`RArrow`/`Param`) is the faithful Coq-Trocq port carrying the term translation
+`RArrow`/`Param`) follows Coq-Trocq's design and carries the term translation
 `⟦·⟧`. The **`Related` engine** (`Related enc a b`, definitionally `enc a = b`)
 serves the encoding-relation case. They meet in the example domains, where the
 same operations are registered as both `@[param]` witnesses and `RelatedBinOp`
@@ -72,9 +75,9 @@ tactic only when you want one strategy by name.
    single strategy — faster, with predictable subgoals. For a goal needing *two*
    extensions at once — cross-head descent **and** a native-cascade leaf —
    `param_compose` (`ParamCompose.lean`) is the composer.
-5. **Gotchas.** The dispatch is a `first`-cascade today; alternative order is the
-   only routing (a goal-directed router that inspects the relation head is a
-   drop-in behind the same name). It never fabricates: an unhandled goal is left
+5. **Gotchas.** The dispatch is a `first`-cascade, so the order of the
+   alternatives is the only routing. A goal-directed router that inspects the
+   relation head can replace it behind the same name. It never fabricates: an unhandled goal is left
    untouched rather than erroring. It inherits each surface's limits (e.g.
    `grind` timeouts on heavy arithmetic).
 6. **File.** `ParamAuto.lean`.
@@ -301,6 +304,49 @@ with its relatedness proof, resolving witnesses from the registries.
 6. **File.** `ParamAutoWeaken.lean` (`auto_weaken`, `RegisteredParam`,
    `allWeakenings`).
 
+### `synth_param`
+
+1. **Purpose.** Close a closed-type `Param` goal by type-class synthesis, the
+   Lean analogue of Trocq's automatic witness generation.
+2. **Applies to / produces.** A goal `Param .map1 .map1 A B`. Expands to
+   `exact (inferInstance : HasParam _ _ _ _).param`: the resolver composes the
+   `HasParam` witness and the tactic projects its `.param` field.
+3. **Example.**
+   ```lean
+   example : Param .map1 .map1 (Nat → Nat → Bool) (Nat → Nat → Bool) := by
+     synth_param
+   ```
+4. **When to use vs alternatives.** Use for a witness at the fixed
+   `(map1, map1)` level of the `HasParam` resolver. For another level, use
+   `param_resolve` or `auto_weaken`.
+5. **Gotchas.** Fixed to `(map1, map1)`; fails when `HasParam` resolution finds no
+   instance for the type.
+6. **File.** `ParamSynth.lean`.
+
+### `transfer_induction`
+
+1. **Purpose.** Transported induction: prove a `∀ a : A, P a` goal by induction
+   on `ℕ` through an equivalence `A ≃ ℕ`.
+2. **Applies to / produces.** A goal `∀ a : A, P a` where `A` carries a
+   `ReprEquivClass A ℕ`. Expands to `refine natEquivInduction _ ?_ ?_` and leaves
+   two subgoals stated through the decoder: `h0` (the decoded zero) and `hs` (the
+   decoded successor step).
+3. **Example.**
+   ```lean
+   theorem demo_num_zero_le : ∀ n : Num, 0 ≤ n := by
+     transfer_induction
+     · rw [PeanoBinNat.num_le_iff_to_nat_le]; simp
+     · intro k _; rw [PeanoBinNat.num_le_iff_to_nat_le]; simp
+   ```
+4. **When to use vs alternatives.** Use to obtain the induction principle of a
+   representation (`Num`, binary naturals) from that of `ℕ` without restating the
+   combinator. The base and step subgoals are closed with the automation of the
+   base type.
+5. **Gotchas.** Requires a `ReprEquivClass A ℕ` instance (the equiv level); the
+   decoder appears in both subgoals, so the base type's lemmas are applied after
+   rewriting through it.
+6. **File.** `TransferInduction.lean` (`natEquivInduction`, `transfer_induction`).
+
 ### `transfer`
 
 1. **Purpose.** Automatic binder traversal plus per-leaf dispatch to the
@@ -469,6 +515,49 @@ shape of what closes the goal.
    pluggable general form but is not the default.
 6. **File.** `ParamSolve.lean` (`param_solve`, `paramSolveCore`).
 
+### `param_leaf`
+
+1. **Purpose.** The per-leaf discharger of `param_compose`: a native cascade in
+   which every alternative must **close** the goal.
+2. **Applies to / produces.** Any goal. Expands to
+   `first | rfl | assumption | (simp; done) | grind | ring | (gcongr <;> done) | (norm_cast; done)`.
+   The progress-only tactics are `done`-gated, so `first` cannot commit to an
+   alternative that only made progress.
+3. **Example.** `param_compose` descends a cross-head op-tree with `rcongrBinOp`
+   and calls `param_leaf` on each leaf; `by param_leaf` also closes a leaf goal
+   directly.
+4. **When to use vs alternatives.** Use for a leaf that a native tactic closes
+   but that the fixed registry/`grind` leaf of `param_solve` does not. For a whole
+   op-tree whose leaves need native tactics, use `param_compose`.
+5. **Gotchas.** A leaf that no alternative closes makes `param_leaf` fail;
+   `param_compose` then leaves that leaf as an open goal.
+6. **File.** `ParamCompose.lean` (`param_leaf`, `param_compose`).
+
+### `hcongr_dep` / `hcongr_transport`
+
+1. **Purpose.** Dependent heterogeneous congruence: reduce an applied-output goal
+   across a representation change to its domain witness.
+2. **Applies to / produces.** Given `h : R_forall PA PB f g`:
+   `hcongr_dep h` reduces the relation form `(PB a a' aR).R (f a) (g a')` to
+   `PA.R a a'` (`refine hcongr_hetero _ _ h ?_`); `hcongr_transport h` reduces the
+   transport form `(PB a a' aR).fwd.map (f a) = g a'` (fiber `map2b` or above) to
+   the same domain witness (`refine hcongr_hetero_transport _ _ h ?_`).
+3. **Example.**
+   ```lean
+   example (a b : ℕ) (h : a = b) : (Fin.last a).val = (fun n => n) b := by
+     hcongr_dep finLastWitness
+     exact h
+   example (a b : ℕ) (h : a = b) : Fin.val (Fin.last a) = (fun n => n) b := by
+     hcongr_transport finLastWitness
+     exact h
+   ```
+4. **When to use vs alternatives.** Use when the two sides of an application live
+   in *different* fiber types, where `congr`/`gcongr` do not apply. The residual
+   domain-witness goal composes with `param_solve`/`rcongr`/`assumption`.
+5. **Gotchas.** The witness `h` is passed explicitly; it pins `PA`, `PB`, `f`, `g`,
+   so no higher-order unification is needed.
+6. **File.** `HCongrConnection.lean`.
+
 ### The same-head restriction in `gcongr` — `GCongrProbe`
 
 `@[gcongr]` accepts **only** same-head monotonicity lemmas `f x₁…xₙ ∼ f x₁'…xₙ'`.
@@ -588,7 +677,7 @@ witnesses, and into elaboration-time coercion.
    example (a : Nat) : Wrap := a              -- Wrap.mk inserted by the elaborator
    example (a : Nat) : ((a : Wrap)) = Wrap.mk a := rfl
    ```
-   The scoped blanket fires under `open scoped …Trocq.Param`:
+   The scoped blanket fires under `open scoped Transfer.Param`:
    `example (b : Boxed) : Nat := b`.
 4. **When to use vs alternatives.** Use for transparent, per-pair representation
    insertion at elaboration. To *also* keep the relatedness proof (not just the
@@ -628,7 +717,7 @@ These expose the engine through `grind`, `aesop`, and `mvcgen`/`Std.Do` wp.
    which it can time out on). The dual-tag pattern is per realization lemma.
 6. **File.** `GrindIntegration.lean`.
 
-### The `Trocq` aesop rule set
+### The `Transfer` aesop rule set
 
 1. **Purpose.** An opt-in aesop rule set bundling the transfer machinery as
    aesop rules.
@@ -675,6 +764,52 @@ These expose the engine through `grind`, `aesop`, and `mvcgen`/`Std.Do` wp.
    `Prop`-predicate `wp` triples; the quantitative/`Advantage` route is out of
    scope (expectation transformers are monotone but not conjunctive).
 6. **File.** `ParamTripleTransfer.lean`.
+
+---
+
+## Decision by bounded computation
+
+These tactics decide identities over `ZMod m` by transferring them to a bounded
+computation on integer representatives and checking it with a kernel `decide`.
+Neither uses `Lean.ofReduceBool`.
+
+### `decide_zmod`
+
+1. **Purpose.** Close a ground ring identity over `ZMod m` by bounded residue
+   computation.
+2. **Applies to / produces.** An equation between two closed `ZMod m` terms built
+   from numerals, `+`, `-`, `*`, negation and `^` with a literal exponent. Reifies
+   both sides into `RingExpr` and discharges the goal through
+   `RingExpr.decide_transfer` and a kernel `decide` on the reduced integer
+   residues.
+3. **Example.**
+   ```lean
+   example : (((2 : ZMod 7) ^ 3 + 3 * 4) - 5 : ZMod 7) = (1 : ZMod 7) := by decide_zmod
+   ```
+4. **When to use vs alternatives.** Use for a ground modular identity whose
+   modulus or operands are too large for `decide` on `ZMod m` itself. For an
+   identity with a variable, use `decide_zmod_poly`.
+5. **Gotchas.** Every leaf must be a numeral; a free `ZMod m` variable or a
+   non-literal exponent is rejected.
+6. **File.** `Examples/ZModDecide.lean`.
+
+### `decide_zmod_poly`
+
+1. **Purpose.** Close a univariate polynomial identity over `ZMod m` by bounded
+   coefficient-list computation.
+2. **Applies to / produces.** A goal `∀ x : ZMod m, p x = q x`. Introduces `x`,
+   reifies both sides into `PolyExpr`, and discharges the goal through
+   `PolyExpr.decide_transfer_poly` and a kernel `decide` on the reduced
+   coefficient lists.
+3. **Example.**
+   ```lean
+   example : ∀ x : ZMod 13, (x - 3) * (x + 3) = x ^ 2 - 9 := by decide_zmod_poly
+   ```
+4. **When to use vs alternatives.** Use for a polynomial identity in one variable
+   over a concrete modulus. For a ground identity, `decide_zmod` is sufficient.
+5. **Gotchas.** Every leaf must be the bound variable or a numeral, and exponents
+   must be literals.
+6. **File.** `Examples/ZModPolyDecide.lean`.
 
 ---
 
@@ -736,11 +871,54 @@ These expose the engine through `grind`, `aesop`, and `mvcgen`/`Std.Do` wp.
    class, then `Param.weaken`/`auto_weaken` down. This generalizes the fixed
    output class of `transfer_auto`.
 5. **Gotchas.** An unconstrained shape minimizes to `map0` (never the inconsistent
-   `map4`). Not yet walked: operator/higher-order application spines (the head is
-   a leaf) and universe polymorphism (`Sort` levels are `map0` leaves); a
+   `map4`). The traversal treats an operator or higher-order application spine as
+   a leaf at its head, and a `Sort` level as a `map0` leaf; a
    registered head with no machine-readable class defaults to `map1`
    (override-refinable via the `Std.HashMap Name MapClass` override).
 6. **File.** `ParamInfer.lean`.
+
+### `derive_param_congr T` / `deriving ParamCongr`
+
+1. **Purpose.** Generate the constructor congruence that lets the `Related`
+   kernel cross a structure boundary.
+2. **Applies to / produces.** A command on a single-constructor, non-indexed
+   structure `T` with at least one field. Reads the constructor's fields and emits
+   a `ParamEnc T α` instance, the product encoding
+   `enc x = (ParamEnc.enc x.f₁, …, ParamEnc.enc x.fₙ)`, and the constructor
+   congruence `Related ParamEnc.enc (T.mk a₁ … aₙ) (a₁', …, aₙ')` from the
+   per-field `Related ParamEnc.enc aᵢ aᵢ'` facts. Field encodings resolve through
+   `ParamEnc`, so nested derived structures compose.
+3. **Example.** `derive_param_congr T` in the file that declares `T`, or
+   `deriving instance ParamCongr for T` in a downstream file; instance resolution
+   then transports a value of `T` with the constructor congruence on top and the
+   `RelatedBinOp` squares of the field carrier underneath.
+4. **When to use vs alternatives.** Use for the `Related` engine. For the `Param`
+   engine's constructor-wise relation, use `deriving Param`.
+5. **Gotchas.** Declines a multi-constructor or indexed inductive and a structure
+   with no fields. The `deriving` form is available only in files that import
+   `ParamCongr.lean`.
+6. **File.** `Deriving/ParamCongr.lean`.
+
+### `#transfer_level t` and `transfer!`
+
+1. **Purpose.** Report, and act on, the relatedness level a goal requires.
+2. **Applies to / produces.** `#transfer_level t` is a command on a type `t`: it
+   infers the goal's level from its `Expr` and logs the level and whether the
+   univalence-free guard permits it. `transfer!` is the tactic form: it infers the
+   level of the current goal and either refuses with the guard's report or logs
+   the level and runs `transfer`.
+3. **Example.**
+   ```lean
+   #transfer_level (∀ a b : Nat, a + b = b + a)
+   #transfer_level ((ULift.{0} Bool) = Bool)
+   example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by transfer!
+   ```
+4. **When to use vs alternatives.** Use `#transfer_level` to inspect a goal
+   without running a proof, and `transfer!` in place of `transfer` when a goal at
+   the refused `map4` level should fail with a report.
+5. **Gotchas.** The guard refuses the `equiv` level (`map4`), where type-level
+   univalence stated through `Eq` is inconsistent (`LevelRefusal.lean`).
+6. **File.** `Base/TransferLevel.lean`.
 
 ---
 
@@ -753,7 +931,7 @@ These expose the engine through `grind`, `aesop`, and `mvcgen`/`Std.Do` wp.
 | `@[hgcongr]` | a cross-head congruence lemma `R (f a..) (g b..)`, keyed on the head pair `(f, g)` + relation | `hgcongr` | `HGCongrInit.lean` |
 | `@[grind =]` (dual-tag) | a realization square into `grind`'s rewrite DB | `grind`, `param_cc`'s closure leaf | `GrindIntegration.lean` |
 | `deriving Param` / `@[derive Param]` | the constructor-wise lift `T.R_param` (+ `Param .map3 .map0` instance for non/uniform-recursive) | downstream uses of the generated relation/instance | `ParamDeriveHandler.lean` |
-| `Trocq` aesop rule set | `transferGround` (safe apply) + `transferCore` (unsafe tactic) | `aesop (rule_sets := [Transfer])` | `AesopRuleSet.lean` (decl), `AesopIntegration.lean` (rules) |
+| `Transfer` aesop rule set | `transferGround` (safe apply) + `transferCore` (unsafe tactic) | `aesop (rule_sets := [Transfer])` | `AesopRuleSet.lean` (decl), `AesopIntegration.lean` (rules) |
 | `RegisteredParam` instance | one `Param m n A B` witness at its strongest class (`(m,n)` an `outParam`) | `auto_weaken` | `ParamAutoWeaken.lean` |
 | `TransferDom` instance | the domain `Param .map0 .map2a A A'` for a representation change | `param_transfer` / `transfer_auto` | `ParamTransfer.lean`, `ParamRetraction.lean` |
 
@@ -762,7 +940,8 @@ Notes:
 * `@[param]` peels the `RArrow PA PB c c'` from the lemma type's last two of its
   eight application arguments; the lemma type must be a literal `RArrow …` (it is
   not `whnf`'d). The DB is cross-file persistent.
-* `@[transfer]` is named `trocq` (not `repr`) to avoid clashing with `Repr.repr`.
+* The simp attribute is named `transfer` (not `repr`) to avoid clashing with
+  `Repr.repr` (`register_simp_attr transfer`, `Core.lean`).
 * `@[hgcongr]` rejects a lemma with no varying-argument hypothesis. The diagonal
   pair `(f, f)` is exactly a `@[gcongr]`-shaped lemma, so `@[hgcongr]` subsumes
   the homogeneous case.
@@ -795,6 +974,13 @@ Notes:
 | assemble an `RComp` witness for two structurally parallel programs | `rcomp` (or `param_transfer`) |
 | transfer a Hoare/`wp` triple between related programs | `triple_transfer` (via `RComp`) |
 | relate a failing program to a total one, success-restricted | `rcomp_ok` (or `param_transfer`), then `RCompOk.transfer` |
+| a `Param .map1 .map1` witness for a closed type | `synth_param` |
+| induction on a representation equivalent to `ℕ` | `transfer_induction` |
+| a leaf closed by a native tactic, inside a cross-head descent | `param_leaf` / `param_compose` |
+| congruence across *different* fiber types | `hcongr_dep` / `hcongr_transport` |
+| a ground or univariate polynomial identity over `ZMod m` | `decide_zmod` / `decide_zmod_poly` |
+| constructor congruence for the `Related` engine | `derive_param_congr` |
+| the level a goal requires | `#transfer_level` / `transfer!` |
 
 Two cautions that recur:
 
