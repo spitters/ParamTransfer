@@ -15,24 +15,24 @@ representation of it; the framework then synthesizes witnesses of that relation,
 transfers statements and terms across it, and decides it structurally by
 congruence — emitting kernel-checked proof terms throughout.
 
-The design synthesizes several lines of work: modular parametricity (Trocq's
-lattice and combinators — the largest single influence), relational transfer and
-data refinement ([CoqEAL](https://github.com/coq-community/coqeal)), set-level
-heterogeneous congruence from cubical type
-theory (Gjørup–Spitters), and congruence-closure algorithms. From that synthesis
-comes one auto tactic that unifies the native Lean relational tactics —
-`congr`/`gcongr`, `norm_cast`, cast-`rw`, `conv`, `aesop`/`grind` — behind a
-single inference rule. Two application domains drive the framework: compiler
-verification (the CatCrypt compiler) and program verification (`mvcgen` / `Std.Do`
-triples and [hax](https://github.com/cryspen/hax)-extracted code).
+The design draws on several lines of work: modular parametricity (the lattice and
+combinators of [Trocq](https://github.com/rocq-community/trocq), the largest single
+influence), relational transfer and data refinement
+([CoqEAL](https://github.com/coq-community/coqeal)), set-level heterogeneous
+congruence from cubical type theory (Gjørup–Spitters), and congruence-closure
+algorithms. On this basis the library provides one automation tactic that places
+the native Lean relational tactics — `congr`/`gcongr`, `norm_cast`, cast-`rw`,
+`conv`, `aesop`/`grind` — under a single inference rule. Two application domains
+motivate the framework: compiler verification, including a downstream verified
+cryptographic compiler, and program verification of `mvcgen` / `Std.Do` triples and
+[hax](https://github.com/cryspen/hax)-extracted code.
 
-Single entry point: `import Transfer`. Released under LGPL-3.0.
+The library has a single entry point, `import Transfer`, and is released under
+LGPL-3.0.
 
-🚧 *Under construction.* This manual is being expanded — some sections are still
-growing, and details may change. Feedback is welcome.
-
-Each code block below transcribes a library declaration and names its source file,
-where the compiler-checked original lives.
+The code blocks in this manual are transcriptions of library declarations; the
+manual build does not elaborate them. The surrounding text names the source file
+that holds each checked original.
 
 # Part I — The idea
 
@@ -43,7 +43,7 @@ representation of it — `Related enc a b` (the encoding view, `enc a = b`) or,
 graded, `Param (m n) A B` (relation plus maps). The relation `R` is registered once,
 through attributes and instances (`@[param]`, `@[transfer]`, `RelatedBinOp`
 instances, `deriving Param`); every tactic and translator in this manual reads that
-registration. Setup and build instructions live in the repository's `BUILDING.md`.
+registration. The repository's `BUILDING.md` gives setup and build instructions.
 
 The smallest transfer decides that two structurally similar terms are related,
 where `bbFieldMul` / `bbFieldAdd` are registered as realizing `*` / `+`:
@@ -52,14 +52,14 @@ where `bbFieldMul` / `bbFieldAdd` are registered as realizing `*` / `+`:
 example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by param_solve
 ```
 
-That is the whole loop in miniature: a registered relation, and one tactic that
-closes the goal by congruence over it.
+The example uses one registered relation and one tactic, which closes the goal by
+congruence over that relation.
 
 ## Three operations from one registration
 
-Registering `R` once gives three operations on the _same_ object. Build a witness,
-transfer a statement across it, or decide it structurally — each is one instance of
-a single inference step.
+A single registration of `R` supports three operations on the same relation:
+synthesis of a witness, transfer of a statement, and structural decision. Each
+operation is an instance of one inference step.
 
 *Build `R a b` — synthesis.* Find or compose a witness by type-class resolution:
 `Related` / `HasParam` instance search composes registered witnesses through the
@@ -95,7 +95,8 @@ example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by param_cc
 
 All three run on one inference rule — related arguments give related applications,
 from `R aᵢ bᵢ` infer `R (f a…) (g b…)` (`R_arrow` / `R_forall`). The next section
-unpacks that rule and the tactic that dispatches to it.
+relates this rule to the native tactics and describes the tactic that dispatches to
+it.
 
 ## The unifying auto tactic
 
@@ -133,19 +134,18 @@ framework generalizes that rule to a registered relation and exposes one call si
   * closure over a registered `R` (`param_cc`)
 :::
 
-`param_auto` (`Congruence/ParamAuto.lean`) is the coordinator: a stable call site
-that dispatches to all of these surfaces — the engine tactics (`param_solve`,
-`rcongr`) and the native ones (`norm_cast`, `gcongr`, `grind`). The dispatch
-strategy underneath — currently a `first`-cascade, later a goal-directed router —
-can change without touching any call site. `param_compose` (`ParamCompose.lean`) is
-the composer for goals needing _two_ extensions at once: it descends a `Related`
-op-tree with the cross-head rule `rcongrBinOp` and closes each residual leaf with
-the full native cascade (`param_leaf`), the niche where neither a native tactic nor
-the engine alone suffices.
+`param_auto` (`Congruence/ParamAuto.lean`) is the coordinator: one tactic name that
+dispatches to the engine tactics (`param_solve`, `rcongr`) and the native ones
+(`norm_cast`, `gcongr`, `grind`). The dispatch is a `first`-cascade; call sites
+depend only on the tactic name, so the dispatch strategy can change without editing
+them. `param_compose` (`ParamCompose.lean`) handles goals that need _two_
+extensions at once: it descends a `Related` op-tree with the cross-head rule
+`rcongrBinOp` and closes each residual leaf with the full native cascade
+(`param_leaf`). Neither a native tactic nor the engine alone closes such goals.
 
-Each example in `Examples/StrongExamples.lean` beats a specific native tactic on an
-axis that tactic structurally cannot cross. Over the genuinely
-non-diagonal encoding `Nat.cast : ℕ → ℤ`, `rcongr` descends the cross-head op-tree
+Each example in `Examples/StrongExamples.lean` closes a goal that a specific native
+tactic rejects. Over the non-diagonal encoding `Nat.cast : ℕ → ℤ`, `rcongr`
+descends the cross-head op-tree
 _and_ changes representation (`natCastAdd` / `natCastMul` register the two commuting
 squares; `transferRel` extracts the equation `↑(a*b+c) = ↑a*↑b+↑c`) — a move
 `gcongr` rejects. Across `Fin (a+1) ↔ ℕ`, the heterogeneous rule relates values in
@@ -171,7 +171,7 @@ six-point lattice `map0 ≤ … ≤ map4`:
 
 So `(map0, map0)` relates values sharing no maps; a forward cast `A → B` is
 `m = map1`. A backward decoder whose graph is contained in the relation — a
-retraction such as `ℤ ↠ ZMod p` — is `n = map2a`: the engine ships it as
+retraction such as `ℤ ↠ ZMod p` — is `n = map2a`: the library defines it as
 `intZModParam : Param .map3 .map2a ℤ (ZMod p)`. A left-inverse encoding reaches
 `n = map2b`, and a two-sided equivalence reaches `(map3, map3)`. A transfer needs
 only as much structure as the goal touches: register `R` at the provable `(m, n)`,
@@ -180,11 +180,13 @@ weakening down the lattice (`ParamWeaken`, `auto_weaken`).
 
 ## Combinators and the congruence layer
 
-The `R_arrow` / `R_forall` combinators carry `R` through `→` and `Π`; their
-coherence (`ParamCoherence`) makes composition well-behaved, and the container
-rules `ParamData` (`×` / `Option` / `List`) and `ParamArray` (`Array`) extend `R`
-structurally. On top of them sit four congruence tactics — one relation, two
-strategies plus their union:
+A relation registered on base types must extend to function types, dependent
+products and containers. The `R_arrow` / `R_forall` combinators carry `R` through
+`→` and `Π`; their coherence lemmas (`ParamCoherence`) relate them to composition,
+and the container rules `ParamData` (`×` / `Option` / `List`) and `ParamArray`
+(`Array`) extend `R` structurally. Four congruence tactics build on the
+combinators; they implement two strategies over one relation and the union of the
+two:
 
 * `rcongr` / `hgcongr` — top-down descent through a registered cross-head op-tree,
   leaving per-argument relatedness subgoals;
@@ -195,12 +197,13 @@ strategies plus their union:
 
 `hgcongr` is the heterogeneous generalization of `gcongr`: an attribute-driven
 (`@[hgcongr]`), head-pair-keyed congruence relating different head functions
-`f ≠ g`. It carries the exact upstream `Mathlib.Tactic.GCongr.Core` patch that
-would lift this.
+`f ≠ g`. The module `HGCongr` specifies a patch to `Mathlib.Tactic.GCongr.Core`
+that relaxes the single-head constraint of `gcongr` at the three sites that
+enforce it.
 
 ## Composition and derivation
 
-What makes transfer compositional and extensible:
+Transfer is compositional and extensible through three constructions:
 
 * `R` composes — `Param_trans` glues `A↔B` and `B↔C` into `A↔C`.
 * casts compose and preserve identity — `cast_trans` (AdapTT's `AdaptComp`:
@@ -222,9 +225,8 @@ inductive RoseT (A : Type) | node : A → List (RoseT A) → RoseT A
 
 ## Integration with native machinery
 
-The framework cooperates with native machinery and reuses it. Transfer is only as
-sound as the registered witnesses, so a missing witness stays a visible residual
-goal.
+The framework delegates to the following native mechanisms. A goal for which no
+witness is registered remains as a visible residual goal.
 
 * type classes — the synthesis engine (`Related` / `HasParam` resolution);
 * `grind` — the equational congruence-closure backend for `param_cc`;
@@ -240,10 +242,10 @@ goal.
 
 ## Compiler verification
 
-The lead application relates emitted low-level code to a clean algebraic
+The first application relates emitted low-level code to an algebraic
 specification. The principal example is `Transfer/Examples/MachineLimbField.lean`:
-the machine-limb view of a prime-field element and its abstract `ZMod p` view,
-exercised at full strength. The domain is non-diagonal (`BitVec 64` /
+the machine-limb view of a prime-field element and its abstract `ZMod p` view. The
+domain is non-diagonal (`BitVec 64` /
 `Fin n → BitVec 64` on the left, `ZMod p` on the right), heterogeneous (the value
 leaf relates terms in different types via a decoder), and dependent (the multi-limb
 section is the `R_forall` dependent-Π relation over the `Fin n`-indexed limb
@@ -279,21 +281,21 @@ def multiLimbFieldParam (n p : ℕ) [NeZero p] (hp : p ≤ 2 ^ (64 * n)) :
   bwd := ⟨fun x => toLimbs n x.val, …⟩
 ```
 
-Its crux is the recomposition law `limbVal_toLimbs`: splitting an in-range value
+Its central lemma is the recomposition law `limbVal_toLimbs`: splitting an in-range value
 into base-`2^64` digits and Horner-recomposing recovers it. A store refinement
 (`LimbStoreRefines` / `MultiLimbStoreRefines`) is then `R_forall` over the decoder
 fiber, and reading any variable is `hcongr_hetero` — the value-abstraction layer of
 a verified compiler's store refinement.
 
-The underlying compute layer is `ReprTransfer`: a protocol-agnostic
-proof-transfer layer for the recurring pattern where a proof quantifies over an
-abstract (often `noncomputable`) operation while the emitted artifact computes a
-byte-level one and an encoding ties them. It factors out the shared content — the
-relation structure and one generic transfer theorem — that hand-written CatCrypt
-bridges (KZG's byte↔group pairing, the ML-KEM / ML-DSA / STARK emit-realization
-ties) each re-derived. It identifies the minimal level for transferring a decidable
-equation: the domains need only a map, the codomain an embedding (an injective
-encoding) — no equivalence, no univalence.
+A recurring pattern in compiler verification has three parts: a proof quantifies
+over an abstract, often `noncomputable`, operation; the emitted artifact computes a
+byte-level operation; and an encoding relates the two. `ReprTransfer` is a
+protocol-agnostic proof-transfer layer for this pattern. It consists of the
+relation structure and one generic transfer theorem, which downstream
+byte-level realizations (a pairing on byte-encoded group elements, ML-KEM, ML-DSA
+and STARK operations) instantiate. For the transfer of a decidable equation it
+requires a map on each domain and an embedding (an injective encoding) on the
+codomain; it requires neither an equivalence nor univalence.
 
 ## Program verification
 
@@ -323,9 +325,9 @@ theorem absStep_spec {n : ℕ} (l : List ℤ) (v : Fin (n + 2) → ℤ)
   subst haa; rw [← h0, ← h1]; exact hc
 ```
 
-The `do` / `for` loops ride `RComp.forIn_list` (effects plus early
-exit), so a loop-shaped program transfers through one combinator lemma rather than
-an inline recursion translation. This is the mechanism for reasoning about
+The `do` / `for` loops transfer through `RComp.forIn_list` (effects and early
+exit), so a loop-shaped program transfers through one combinator lemma. This is the
+mechanism for reasoning about
 hax-extracted code up to its representation: the extracted `Std.Do` program and its
 abstract spec are related at value equality, and the triple transfers.
 
@@ -341,11 +343,11 @@ representation of a proof-oriented Mathlib object, related by a refinement acros
 which statements, terms, and computations transfer.
 
 The [`leanprover/hex`](https://github.com/leanprover/hex) retrofit models `hex`'s
-verified computational-algebra carriers and drives them through the engine, one file
-per axis. Dense storage
+verified computational-algebra carriers and transfers along them, one file per
+axis. Dense storage
 (`List ℤ` / `List (List ℤ)`) refines a Mathlib vector / matrix as a
-`Param .map0 .map2a`, and `param_transfer` _generates_ the correspondence rather
-than hand-proving it per operation (`HexMatrixCorrespondence`). The seq-polynomial
+`Param .map0 .map2a`, and `param_transfer` _generates_ the correspondence for each
+operation (`HexMatrixCorrespondence`). The seq-polynomial
 refinement is non-injective — trailing zeros mean `[1,2]` and `[1,2,0]` both denote
 `2X+1` — reaching `map2a` but provably not `map2b`, a refinement the graded engine
 accepts (`HexSeqPoly`). A modular side condition is discharged by computing on the
@@ -359,7 +361,7 @@ of the core graph. It ports the effective-algebra refinements — `SeqPoly`,
 `SeqMatrix`, `Strassen`, `Karatsuba`, `Gauss*`, `Bareiss` (`BareissDet`), `Rank`,
 `ToomCook`, `Multipoly`, and the `BinNat` / `BinInt` / `BinRat` number refinements
 — and, in `ComputePolynomial`, computes with Mathlib's `Polynomial` through
-CompPoly's `RingEquiv` (the CoqEAL / Kaliszyk–O'Connor "refinements for free" move).
+CompPoly's `RingEquiv` (the CoqEAL / Kaliszyk–O'Connor "refinements for free" construction).
 
 # Part IV — Reference
 
@@ -394,8 +396,8 @@ Each tactic reads the registered relation; they differ in direction and discharg
 
 ## Registration
 
-Transfer only knows what is registered; the following attributes and instances
-extend it.
+Transfer uses only registered relations and witnesses. The following attributes and
+instances register them.
 
 * `@[param]` — register a constant as transferable. Its presence lifts the
   constant's leaf to at least `map1` in level inference (`getParamDB`).
@@ -414,7 +416,7 @@ goal.
 
 ### A minimal single-relation registration (pedagogical)
 
-The smallest registration teaches the shape, not a real change of representation.
+The smallest registration illustrates the mechanics with an identity encoding.
 `Transfer/Examples/ExampleField.lean` sets `F = ZMod p` for the Baby Bear prime and
 registers two same-type operations that stand in for abstract `*` and `+`:
 
@@ -425,9 +427,9 @@ def bbFieldAdd (a b : F) : F := a + b
 
 These are `RelatedBinOp` witnesses (`bbFieldMul_eq` / `bbFieldAdd_eq` are the
 commuting squares). With them in scope, `param_solve`, `param_cc`, and synthesis all
-read the same relation on the same objects. This is a same-type op-renaming
-demo — the encoding is the identity — so it shows registration mechanics, not a
-cross-type encoding. For a cross-type encoding, see `MachineLimbField` (Part III).
+read the same relation on the same objects. The operations have the same type as
+the operations they realize, and the encoding is the identity. `MachineLimbField`
+(Part III) gives a cross-type encoding.
 
 ## Cookbook
 
@@ -476,14 +478,14 @@ The library is organized by role; `import Transfer` pulls in all of it.
   suite (`PeanoBinNat`, `ExampleField`, `ParamRetraction`, `Summable`), needing only
   Mathlib.
 
-The sibling layers `ReprTransfer` and `ReprTransferExpr` sit at the package root.
+The sibling layers `ReprTransfer` and `ReprTransferExpr` are modules at the package root.
 For per-declaration signatures and docstrings, the doc-gen4
 [API reference](api/index.html) (built from the `docbuild/` package) deploys
 alongside this manual under `api/`.
 
 ## Coverage
 
-The engine walks terms, not only type spines:
+The engine operates on terms as well as type spines:
 
 * level inference has a full-`Expr` front-end (`exprToTyShape` /
   `inferParamLevelsExpr`): it walks an actual Lean type — distinguishing
@@ -520,10 +522,12 @@ The engine walks terms, not only type spines:
 
 ## Provenance
 
-The framework synthesizes several lines of work:
+The framework draws on several lines of work:
 
 * [Trocq](https://arxiv.org/abs/2310.14022) (Cohen–Crance–Mahboubi, ESOP 2024 /
-  TOPLAS 2025) — the largest single influence: the parametricity lattice and
+  TOPLAS 2025; implementation at
+  [rocq-community/trocq](https://github.com/rocq-community/trocq)) — the largest
+  single influence: the parametricity lattice and
   combinators the engine's core adapts.
 * [CoqEAL](https://github.com/coq-community/coqeal) — relational transfer and data
   refinement.
