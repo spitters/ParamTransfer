@@ -122,42 +122,6 @@
       "subDir": null,
       "type": "git",
       "url": "https://github.com/leanprover/lean4-cli"
-    },
-    {
-      "configFile": "lakefile.toml",
-      "inherited": false,
-      "inputRev": "c0c923693fc827a41d17116579a0c16ed4873b19",
-      "manifestFile": "lake-manifest.json",
-      "name": "PolyFun",
-      "rev": "c0c923693fc827a41d17116579a0c16ed4873b19",
-      "scope": "",
-      "subDir": null,
-      "type": "git",
-      "url": "https://github.com/Verified-zkEVM/PolyFun.git"
-    },
-    {
-      "configFile": "lakefile.toml",
-      "inherited": false,
-      "inputRev": "2f65f311fae959c302586b07aa45390999b935d4",
-      "manifestFile": "lake-manifest.json",
-      "name": "loom2",
-      "rev": "2f65f311fae959c302586b07aa45390999b935d4",
-      "scope": "",
-      "subDir": null,
-      "type": "git",
-      "url": "https://github.com/quangvdao/loom2"
-    },
-    {
-      "configFile": "lakefile.toml",
-      "inherited": true,
-      "inputRev": "v4.33.1",
-      "manifestFile": "lake-manifest.json",
-      "name": "cslib",
-      "rev": "98e395a701f2027a413ad24729e1a11a6c772eb4",
-      "scope": "leanprover",
-      "subDir": null,
-      "type": "git",
-      "url": "https://github.com/leanprover/cslib"
     }
   ],
   "packagesDir": ".lake/packages",
