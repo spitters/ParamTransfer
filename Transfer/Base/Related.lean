@@ -96,6 +96,19 @@ instance composeBinOp {A α : Type u} (enc : A → α) (op : A → A → A) (bop
     Related enc (op a b) (bop a' b') where
   rel := (hop.comm a b).trans (by rw [ha.rel, hb.rel])
 
+/-- A registered realization of a unary operation: the commuting square
+    `enc (op x) = uop (enc x)`, the unary analogue of `RelatedBinOp`. -/
+class RelatedUnOp {A α : Type u} (enc : A → α) (op : A → A) (uop : α → α) : Prop where
+  /-- The commuting square for this operation. -/
+  comm : ∀ x, enc (op x) = uop (enc x)
+
+/-- Composition for unary operations. If `uop` realizes `op` and `a'` is the
+    encoding of `a`, then `uop a'` is the encoding of `op a`. -/
+instance composeUnOp {A α : Type u} (enc : A → α) (op : A → A) (uop : α → α)
+    (a : A) (a' : α) [hop : RelatedUnOp enc op uop] [ha : Related enc a a'] :
+    Related enc (op a) (uop a') where
+  rel := (hop.comm a).trans (by rw [ha.rel])
+
 /-- Leaf (generic encoding). The encoding of a value is related to it.
     Low priority so the structural `composeBinOp` is tried first and resolution
     terminates at leaves rather than looping. -/
