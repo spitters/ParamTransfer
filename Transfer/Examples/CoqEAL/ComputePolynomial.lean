@@ -88,7 +88,7 @@ open ReprTransfer in
     `toPoly`: decoding the computed product equals the Mathlib product of the
     decoded operands, on the whole domain. This is the map-level `BinOpHomOn` — the
     field-arithmetic realizations (STARK / Baby Bear) share this rung. -/
-noncomputable def polyMulRealization :
+theorem polyMulRealization :
     BinOpHomOn (CompPoly.CPolynomial.toPoly : CP → Polynomial ℤ) (fun _ => True)
       (· * ·) (· * ·) where
   app_eq := fun a b _ _ => toPoly_mul' a b

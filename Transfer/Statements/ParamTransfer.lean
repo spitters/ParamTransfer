@@ -107,7 +107,7 @@ is exactly the transfer `(∀ a, P a) → (∀ a', P' a')`. -/
     pointwise implications via `paramOfImpl`, then reflected back through
     `ULift`/`PLift`. It is univalence-free: only the domain backward `map2a`
     (a section `A' → A` + `map_in_R`) is used. -/
-def forallTransfer {A A' : Type u} (PA : Param .map0 .map2a A A')
+theorem forallTransfer {A A' : Type u} (PA : Param .map0 .map2a A A')
     {P : A → Prop} {P' : A' → Prop}
     (PB : ∀ a a', PA.R a a' → (P a → P' a')) :
     (∀ a, P a) → (∀ a', P' a') :=
@@ -186,7 +186,7 @@ def paramNumNat : Param .map0 .map2a Num ℕ where
 
     Concretely: any property of `Num` that, on related pairs, implies the `ℕ`
     property, lifts from `∀ n : Num` to `∀ k : ℕ`. -/
-def numForallTransfer {P : Num → Prop} {P' : ℕ → Prop}
+theorem numForallTransfer {P : Num → Prop} {P' : ℕ → Prop}
     (PB : ∀ (n : Num) (k : ℕ), (n : ℕ) = k → (P n → P' k)) :
     (∀ n : Num, P n) → (∀ k : ℕ, P' k) :=
   forallTransfer paramNumNat PB

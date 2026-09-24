@@ -983,7 +983,7 @@ run_cmd do
 example {A A' : Type} (P : Param .map3 .map3 A A') (a b : A) :
     castViaParam (RoseT.param_instance P) (RoseT.node a [RoseT.node b []])
       = RoseT.node (P.fwd.map a) [RoseT.node (P.fwd.map b) []] := by
-  simp [castViaParam, RoseT.param_instance, RoseT.paramMap]
+  simp [castViaParam, RoseT.paramMap]
 
 /-- The nested `map_in_R` graph inclusion holds on a concrete rose tree. -/
 example (a b : Nat) :

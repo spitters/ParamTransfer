@@ -89,7 +89,7 @@ instance instTransferDomNumNat : TransferDom Num ℕ where
     argument — it is resolved from `TransferDom A A'`. The only argument the
     caller supplies is the pointwise implication `PB`, stated against the
     resolved relation `(TransferDom.dom).R`. -/
-def forallTransferAuto {A A' : Type u} [TransferDom A A']
+theorem forallTransferAuto {A A' : Type u} [TransferDom A A']
     {P : A → Prop} {P' : A' → Prop}
     (PB : ∀ a a', (TransferDom.dom (A := A) (A' := A')).R a a' → (P a → P' a')) :
     (∀ a, P a) → (∀ a', P' a') :=

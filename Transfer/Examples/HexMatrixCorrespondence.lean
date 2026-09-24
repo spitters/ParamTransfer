@@ -110,7 +110,7 @@ by the engine. -/
 /-- Transfer across the dense-vector refinement: from any statement holding for
     all dense lists, obtain the abstract statement, given the pointwise step on
     related pairs `(l, v)` with `decV n l = v`. -/
-def hVecForallTransfer {n : ℕ} {P : HVec → Prop} {P' : AVec n → Prop}
+theorem hVecForallTransfer {n : ℕ} {P : HVec → Prop} {P' : AVec n → Prop}
     (PB : ∀ (l : HVec) (v : AVec n), decV n l = v → (P l → P' v)) :
     (∀ l : HVec, P l) → (∀ v : AVec n, P' v) :=
   forallTransfer (hVecDom n) PB

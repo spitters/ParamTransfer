@@ -108,7 +108,7 @@ obligation through the cast equation. -/
     the transfer yields `∀ x : ZMod p, P' x` whenever, on related pairs `(i, x)` with
     `(↑i : ZMod p) = x`, the integer property `P i` implies the modular property
     `P' x`. The domain `Param` is the retraction, resolved by `TransferDom`. -/
-def intZModForallTransfer {p : ℕ} [NeZero p] {P : ℤ → Prop} {P' : ZMod p → Prop}
+theorem intZModForallTransfer {p : ℕ} [NeZero p] {P : ℤ → Prop} {P' : ZMod p → Prop}
     (PB : ∀ (i : ℤ) (x : ZMod p), (Int.cast i : ZMod p) = x → (P i → P' x)) :
     (∀ i : ℤ, P i) → (∀ x : ZMod p, P' x) :=
   forallTransfer (intZModDom p) PB

@@ -83,7 +83,7 @@ open Transfer
     `(∀ b, P a b) → (∀ b', P' a' b')` is discharged by an inner
     `forallTransfer PB`, whose own per-pair obligation is `H` specialised at the
     outer relatedness witness. Univalence-free. -/
-def forallTransfer2 {A A' B B' : Type u}
+theorem forallTransfer2 {A A' B B' : Type u}
     (PA : Param .map0 .map2a A A') (PB : Param .map0 .map2a B B')
     {P : A → B → Prop} {P' : A' → B' → Prop}
     (H : ∀ a a' b b', PA.R a a' → PB.R b b' → (P a b → P' a' b')) :
@@ -104,7 +104,7 @@ a `forallTransfer2 PB PC`. -/
 /-- Three-binder dependent-Π transfer, by iterating once more: outer
     `forallTransfer PA` at the 2-binder motive `fun a => ∀ b c, P a b c`, inner
     obligation discharged by `forallTransfer2 PB PC`. -/
-def forallTransfer3 {A A' B B' C C' : Type u}
+theorem forallTransfer3 {A A' B B' C C' : Type u}
     (PA : Param .map0 .map2a A A') (PB : Param .map0 .map2a B B')
     (PC : Param .map0 .map2a C C')
     {P : A → B → C → Prop} {P' : A' → B' → C' → Prop}
@@ -166,7 +166,7 @@ cast, which the pointwise part consumes through the cast/round-trip lemmas. -/
     to the corresponding `∀ j k : ℕ`-statement, given the pointwise implication
     on related pairs `(m,j)`, `(n,k)` with `(m : ℕ) = j`, `(n : ℕ) = k`. The
     two-binder instance of the flagship. -/
-def numForallTransfer2 {P : Num → Num → Prop} {P' : ℕ → ℕ → Prop}
+theorem numForallTransfer2 {P : Num → Num → Prop} {P' : ℕ → ℕ → Prop}
     (H : ∀ (m : Num) (j : ℕ) (n : Num) (k : ℕ),
         (m : ℕ) = j → (n : ℕ) = k → (P m n → P' j k)) :
     (∀ m n : Num, P m n) → (∀ j k : ℕ, P' j k) :=

@@ -98,7 +98,7 @@ example (a a' b b' : ZMod 5) (h : a * b = a' * b') :
     injectivity) — the shape of `hex`'s fraction-free step, where a concrete
     result is *decoded* to its abstract meaning on a canonical subdomain
     (here total: `dom = fun _ => True`). -/
-def reduceHom (m : ℕ) :
+theorem reduceHom (m : ℕ) :
     BinOpHomOn (fun x : ℤ => (x : ZMod m)) (fun _ => True)
       (fun a b => a * b) (fun a b => a * b) where
   app_eq := fun a b _ _ => by push_cast; ring
