@@ -128,10 +128,10 @@ jobs:
         run: lake exe cache get || true
 
       - name: Build the API reference
-        # Both libraries: the core `Transfer` engine and the `TransferCoqEAL`
-        # example suite (a separate lib so its CompPoly dep stays out of the core
-        # graph). Their pages merge into the same .lake/build/doc/ output.
-        run: lake build Transfer:docs TransferCoqEAL:docs
+        # The core `Transfer` engine, the `TransferCoqEAL` example suite (a separate
+        # lib so its CompPoly dep stays out of the core graph) and the README examples
+        # (`TransferReadme`). Their pages merge into the same .lake/build/doc/ output.
+        run: lake build Transfer:docs TransferCoqEAL:docs TransferReadme:docs
 
       - name: Guard — every library module has an API page
         run: bash ../scripts/check-apidoc-coverage.sh .lake/build/doc
