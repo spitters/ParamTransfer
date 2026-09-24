@@ -34,7 +34,7 @@ jobs:
         run: lake exe cache get || true
 
       - name: Build the library
-        run: lake build Transfer ReprTransfer ReprTransferExpr TransferCoqEAL TransferReadme
+        run: lake build Transfer ReprTransfer ReprTransferExpr TransferExamples TransferCoqEAL TransferReadme
 
       - name: Axiom ledger (no sorry / no native_decide drift)
         run: lake build Transfer.Audit
@@ -131,7 +131,7 @@ jobs:
         # The core `Transfer` engine, the `TransferCoqEAL` example suite (a separate
         # lib so its CompPoly dep stays out of the core graph) and the README examples
         # (`TransferReadme`). Their pages merge into the same .lake/build/doc/ output.
-        run: lake build Transfer:docs TransferCoqEAL:docs TransferReadme:docs
+        run: lake build Transfer:docs TransferExamples:docs TransferCoqEAL:docs TransferReadme:docs
 
       - name: Guard — every library module has an API page
         run: bash ../scripts/check-apidoc-coverage.sh .lake/build/doc

@@ -20,7 +20,9 @@ its algebraic specification, and in program verification, to transfer `mvcgen` /
 `Std.Do` triples and to reason about code extracted from Rust by hax up to its
 representation.
 
-Single entry point: `import Transfer`. Released under **LGPL-3.0** (see `LICENSE`).
+Single entry point: `import Transfer`. The example suites are the separate library
+`TransferExamples` (`import Transfer.Examples`). Released under **LGPL-3.0** (see
+`LICENSE`).
 
 ## Documentation
 

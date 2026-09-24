@@ -63,22 +63,13 @@ public import Transfer.Integrations.ParamAutoWeaken -- auto-weakening of witness
 public import Transfer.Combinators.ParamCoherence   -- functor laws: cast_trans/cast_id + distributivity
 public import Transfer.Deriving.ParamDeriveHandler  -- @[derive Param] handler: IndDesc gen + variance
 public import Transfer.Deriving.ParamCongr          -- derive_param_congr: Related-kernel constructor congruence per structure
-public import Transfer.Examples.ParamCryptoExamples -- worked examples (cast_trans, derive, transfer)
 public import Transfer.Examples.ParamRetraction     -- non-diagonal ZMod p retraction domain (map3 map2a)
 public import Transfer.Examples.MachineLimbField     -- machine limbs ↔ prime field: strong non-diagonal heterogeneous dependent (multi-limb) example
-public import Transfer.Examples.StrongExamples       -- native-tactic-beating demos over non-diagonal domains
-public import Transfer.Examples.Trocq                -- the Trocq example suite (index + summable)
-public import Transfer.Examples.EffectfulTransfer    -- effectful triple transfer across a value-type change (ℕ↔ℤ), by mvcgen
-public import Transfer.Examples.RCompOkExamples    -- `RCompOk` over an ok/fail test monad: rcomp_ok demos, transfer, converse counterexample
 -- Instances over `leanprover/hex`'s verified computational algebra:
-public import Transfer.Examples.HexMatrixCorrespondence -- hex dense-storage ↔ Mathlib correspondence, generated
 public import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
-public import Transfer.Examples.HexEffectful            -- hex elimination-step triple transfer (RComp/Std.Do)
-public import Transfer.Examples.HexDecide               -- hex `decide +kernel` side condition via ReprTransfer
 public import Transfer.Examples.ZModDecide              -- decide_zmod: ground ZMod m ring identities by bounded residue
 public import Transfer.Examples.ZModPolyDecide          -- decide_zmod_poly: ZMod m polynomial identities by bounded seqpoly
-public import Transfer.Examples.ZModPowMod              -- powMod/invMod + Euler-criterion QR decider (binary modular exponentiation)
-public import Transfer.Examples.HexArrayCompute         -- hex `Array` carrier: refinement is carrier-agnostic + @[csimp] verified compute
+public import Transfer.Examples.ZModPowMod              -- powMod/invMod + Euler-criterion QR decider (binary modular exponentiation)-- The example suites are the `TransferExamples` library (`Transfer/Examples.lean`).
 
 /-!
 # ParamTransfer — the single entry point

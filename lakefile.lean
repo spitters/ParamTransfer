@@ -34,6 +34,10 @@ lean_lib Transfer where
 lean_lib ReprTransfer where
 lean_lib ReprTransferExpr where
 
+-- The example suites, kept out of `import Transfer`. Build with `lake build TransferExamples`.
+lean_lib TransferExamples where
+  roots := #[`Transfer.Examples]
+
 -- The examples of README.md, compiled so that every code block there checks.
 lean_lib TransferReadme where
   roots := #[`Transfer.Examples.Readme]
