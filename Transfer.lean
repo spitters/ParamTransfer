@@ -67,6 +67,7 @@ public import Transfer.Deriving.ParamDeriveHandler  -- @[derive Param] handler: 
 public import Transfer.Deriving.ParamCongr          -- derive_param_congr: Related-kernel constructor congruence per structure
 public import Transfer.Examples.ParamRetraction     -- non-diagonal ZMod p retraction domain (map3 map2a)
 public import Transfer.Examples.MachineLimbField     -- machine limbs ↔ prime field: strong non-diagonal heterogeneous dependent (multi-limb) example
+public import Transfer.Examples.PrimeWord            -- the canonical prime-word relation (ZMod p ↔ one 64-bit word) with total and guarded squares
 -- Instances over `leanprover/hex`'s verified computational algebra:
 public import Transfer.Examples.HexSeqPoly              -- hex dense-poly seqpoly refinement: non-injective, map2a
 public import Transfer.Examples.ZModDecide              -- decide_zmod: ground ZMod m ring identities by bounded residue
