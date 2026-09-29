@@ -7,6 +7,7 @@ module
 
 public import Transfer.Congruence.RCongr
 public import Transfer.Congruence.ParamCongrClosure
+public import Transfer.Base.RelatedOn
 
 /-!
 # `param_solve` — the common generalization of `rcongr` and `param_cc`
@@ -99,6 +100,27 @@ namespace Transfer
 open Transfer.ExampleField
 open Lean Elab Tactic Meta
 
+/-- One guarded descent step on a `Related` goal: apply `rcongrBinOpOn` (else
+    `rcongrUnOpOn`), run `recurse` on each operand goal, and close the guard with
+    `transfer_guard_disch`. Fails, leaving the goal unchanged, when no guarded
+    square matches, an operand goal is not closed, or the discharger does not close
+    the guard. -/
+meta def paramSolveGuardedStep (recurse : TacticM Unit) : TacticM Unit := do
+  let g ← getMainGoal
+  let gs ← Term.withoutErrToSorry <|
+    (evalTacticAt (← `(tactic| refine rcongrBinOpOn _ _ _ ?_ ?_ ?_)) g) <|>
+      (evalTacticAt (← `(tactic| refine rcongrUnOpOn _ _ _ ?_ ?_)) g)
+  let some guard := gs.getLast? | throwError "param_solve: no guard goal"
+  for sub in gs.dropLast do
+    setGoals [sub]
+    recurse
+    unless (← getUnsolvedGoals).isEmpty do throwError "param_solve: operand not closed"
+  guard.setType ((← instantiateMVars (← guard.getType)).headBeta)
+  setGoals [guard]
+  evalTactic (← `(tactic| transfer_guard_disch))
+  unless (← getUnsolvedGoals).isEmpty do throwError "param_solve: guard not closed"
+  setGoals []
+
 /-- The unified descent + closure-leaf driver. A `TacticM` recursion that
     runs the goal-directed cross-head descent of `rcongr` and discharges each leaf
     by the saturating closure of `param_cc`:
@@ -107,6 +129,8 @@ open Lean Elab Tactic Meta
   cross-head congruence rule `rcongrBinOp` and recurse on the two per-argument
   relatedness subgoals — the **descent**;
 * on a `Related` leaf, try the registry (`inferInstance`) / `rfl`; on failure,
+  try a guarded square (`paramSolveGuardedStep`, guard closed by
+  `transfer_guard_disch`); on failure,
   invoke `paramCCCore` — the **closure** — which surfaces context relatedness
   hypotheses as equations and saturates with `grind`, reaching transitivity /
   context chains the descent leaf cannot;
@@ -126,9 +150,12 @@ meta partial def paramSolveCore : TacticM Unit := withMainContext do
           allGoals paramSolveCore
           return
         catch _ => pure ()
-      -- Leaf: fast registry / `rfl`, else the saturating closure.
+      -- Leaf: fast registry / `rfl`, else a guarded square with its guard closed by
+      -- `transfer_guard_disch`, else the saturating closure.
       try transferRegistryLeaf
-      catch _ => paramCCCore
+      catch _ =>
+        try paramSolveGuardedStep paramSolveCore
+        catch _ => paramCCCore
   | (``Eq, #[_α, _, _]) =>
       -- Bridge an equation to a `Related id` descent; else close by closure.
       try
@@ -141,8 +168,9 @@ meta partial def paramSolveCore : TacticM Unit := withMainContext do
     `param_cc` (closure).
 
 Closes a relatedness goal `Related enc t t'` (or an `=` bridged to one) by
-goal-directed cross-head descent through the registered `RelatedBinOp` op-tree,
-discharging each leaf by the saturating relational congruence closure (context
+goal-directed cross-head descent through the registered `RelatedBinOp` op-tree
+and the guarded squares `RelatedBinOpOn`/`RelatedUnOpOn` (each guard closed by
+`transfer_guard_disch`, or the step fails), discharging each leaf by the saturating relational congruence closure (context
 relatedness hypotheses + registered squares, transitively to a fixpoint via
 `grind`). It closes the union of what `rcongr` and `param_cc` close — both the
 structural cross-head op-trees of the former and the transitivity / context

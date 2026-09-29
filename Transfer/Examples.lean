@@ -14,6 +14,7 @@ public import Transfer.Examples.HexMatrixCorrespondence
 public import Transfer.Examples.HexEffectful
 public import Transfer.Examples.HexDecide
 public import Transfer.Examples.HexArrayCompute
+public import Transfer.Examples.GuardedSquares
 
 /-!
 # Example suites
@@ -31,4 +32,6 @@ and their dependencies) stays imported by `Transfer`.
 * `RCompOkExamples`: `RCompOk` over a test monad with failure.
 * `HexMatrixCorrespondence`, `HexEffectful`, `HexDecide`, `HexArrayCompute`: instances
   over the verified computational algebra of `hex`.
+* `GuardedSquares`: guarded squares between saturating `ℕ` operations and wrapping
+  64-bit words, composed by `param_guard` and `param_solve`.
 -/

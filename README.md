@@ -194,6 +194,34 @@ reference: [`TACTICS.md`](TACTICS.md)):
 | `rcongr` / `hgcongr` | top-down **descent** | a registered cross-head op-tree, leaving per-argument relatedness subgoals |
 | `param_cc` | bottom-up **closure** (via `grind`) | transitivity / context-hypothesis chains |
 | `param_solve` | **descent + closure-leaf** | the union of the above — the default |
+| `param_guard` | **descent through guarded squares** | op-trees whose squares hold only under a side condition; open guards are returned as goals |
+
+### Guarded squares
+
+A square that holds only on a range is registered with its guard, a proposition
+on the abstract operands (`Base/RelatedOn.lean`): the class
+`RelatedBinOpOn enc P op bop` has the single field
+`comm : ∀ x y, P x y → enc (op x y) = bop (enc x) (enc y)`, with `P` an `outParam`.
+`RelatedUnOpOn enc P op uop` and `RelatedRelOn enc P r br`
+(`P x y → (r x y ↔ br (enc x) (enc y))`) are the unary and relation forms. Every
+total `RelatedBinOp`/`RelatedUnOp` is a guarded square with guard `True`
+(`RelatedBinOp.toOn`), and `BinOpHomOn.toRelatedBinOpOn` converts a
+`ReprTransfer.BinOpHomOn`. The guard of a node is stated on that node's
+operands, so the guards of a composite are ordinary side conditions:
+
+```lean
+-- truncated `ℕ` subtraction and shift against wrapping 64-bit words
+example (a b s : ℕ) (ha : a < 2 ^ 64) (hb : b ≤ a) (hs : s < 64) :
+    enc64 ((a - b) >>> s) = (enc64 a - enc64 b) >>> enc64 s := by
+  param_guard          -- guards `b ≤ a` and `a - b < 2 ^ 64 ∧ s < 64`, closed by omega
+```
+
+`param_guard` discharges each guard with `transfer_guard_disch`
+(`first | trivial | assumption | omega | bv_omega | decide`, extensible by
+`macro_rules`) or with `param_guard (disch := tac)`, and returns the guards it
+cannot close as goals. When a subterm has no square, the error names that subterm
+and its head pair. `param_solve` also descends through guarded squares, with the
+default discharger. Examples: `Examples/GuardedSquares.lean`.
 
 `hgcongr` is the **heterogeneous generalization of `gcongr`**. It is
 attribute-driven (`@[hgcongr]`) and keyed on a *pair* of heads, so it relates
@@ -344,6 +372,7 @@ level and tactic substrate the engine reuses.
 | `ParamCompose` | `param_compose`: descend-and-dispatch congruence |
 | `ParamCongrClosure` | `param_cc`: relational congruence closure over `Related` |
 | `ParamSolve` | `param_solve`: the common generalization of `rcongr` and `param_cc` |
+| `ParamGuard` | `param_guard`: descent through guarded squares, open guards returned as goals |
 | `RCongr` | `rcongr`: relational (cross-head) congruence descent |
 
 **`Deriving/`**

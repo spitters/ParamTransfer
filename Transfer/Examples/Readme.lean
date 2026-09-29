@@ -4,6 +4,7 @@ Released under the GNU Lesser General Public License v3.0 (LGPL-3.0) as describe
 Authors: Bas Spitters
 -/
 import Transfer
+import Transfer.Examples.GuardedSquares
 open Transfer Transfer.Param Transfer.ExampleField
 
 /-!
@@ -81,5 +82,17 @@ inductive Pair (A B : Type) | mk : A → B → Pair A B deriving Param
 example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by param_solve
 
 end QuickStart
+
+/-! ## Guarded squares -/
+
+section Guarded
+open Transfer.GuardedSquares
+
+-- truncated `ℕ` subtraction and shift against wrapping 64-bit words
+example (a b s : ℕ) (ha : a < 2 ^ 64) (hb : b ≤ a) (hs : s < 64) :
+    enc64 ((a - b) >>> s) = (enc64 a - enc64 b) >>> enc64 s := by
+  param_guard          -- guards `b ≤ a` and `a - b < 2 ^ 64 ∧ s < 64`, closed by omega
+
+end Guarded
 
 end Transfer.Readme

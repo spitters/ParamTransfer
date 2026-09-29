@@ -512,8 +512,51 @@ shape of what closes the goal.
 5. **Gotchas.** Same encoding-relation collapse as `param_cc` (the closure leaf
    is `grind`). The descent backend is hardwired to `rcongrBinOp`
    (`Related`/`RelatedBinOp`); swapping in an `hgcongr` head-pair lookup is the
-   pluggable general form but is not the default.
-6. **File.** `ParamSolve.lean` (`param_solve`, `paramSolveCore`).
+   pluggable general form but is not the default. A leaf the registry does not
+   close is tried against the guarded squares (`paramSolveGuardedStep`) before the
+   closure; the step succeeds only when `transfer_guard_disch` closes the guard.
+6. **File.** `ParamSolve.lean` (`param_solve`, `paramSolveCore`,
+   `paramSolveGuardedStep`).
+
+### `param_guard`
+
+1. **Purpose.** Descent through op-trees whose squares hold only under a side
+   condition (no overflow, `b ≤ a`, a shift below the width).
+2. **Applies to / produces.** A goal `Related enc t t'`, an equation `enc t = t'`
+   (reshaped to `Related enc t t'` when `enc` changes the type, else bridged to
+   `Related id`), or `r a b ↔ br a' b'`. At each node it tries the registry leaf,
+   then `rcongrBinOpOn`, `rcongrUnOpOn` (or `rcongrRelOn` on an `↔`), recurses on
+   the operands, and runs the discharger on the guard. Total squares take part
+   with guard `True`. The guards the discharger does not close are the goals left.
+3. **Example.**
+   ```lean
+   instance subRelatedOn : RelatedBinOpOn enc64 (fun x y => y ≤ x) (· - ·) (· - ·) := …
+   instance shrRelatedOn :
+       RelatedBinOpOn enc64 (fun x s => x < 2 ^ 64 ∧ s < 64) (· >>> ·) (· >>> ·) := …
+   example (a b s : ℕ) (ha : a < 2 ^ 64) (hb : b ≤ a) (hs : s < 64) :
+       enc64 ((a - b) >>> s) = (enc64 a - enc64 b) >>> enc64 s := by
+     param_guard
+   example (a b : ℕ) (h : b ≤ a) : enc64 (a - b) = enc64 a - enc64 b := by
+     param_guard (disch := fail)   -- leaves the goal `b ≤ a`
+     exact h
+   ```
+4. **Discharger.** `transfer_guard_disch`, by default
+   `first | trivial | assumption | omega | bv_omega | decide`. A client adds an
+   alternative with `macro_rules | `(tactic| transfer_guard_disch) => `(tactic| tac)`,
+   tried before the default; `param_guard (disch := tac)` replaces it for one call.
+5. **Failure.** A `Related` subgoal with no square and no leaf raises
+   `param_guard: no registered square or leaf closes Related enc t t'`, followed by
+   the abstract head, the encoded head and the encoding of that subgoal, not of
+   the root.
+6. **Gotchas.** The guard `P` of `RelatedBinOpOn`/`RelatedUnOpOn` is an
+   `outParam`, so one guarded square is found per `(enc, op, bop)`; in
+   `RelatedRelOn` the encoding is an `outParam` too, because an `↔` goal does not
+   mention it. The guard of an inner node mentions the abstract subterms (for
+   example `a - b < 2 ^ 64`), so the discharger reasons about abstract operations,
+   not about encodings.
+7. **File.** `Base/RelatedOn.lean` (classes, `rcongr*On`, `transfer_guard_disch`),
+   `ParamGuard.lean` (`param_guard`, `paramGuardCore`); examples in
+   `Examples/GuardedSquares.lean`.
 
 ### `param_leaf`
 
@@ -960,6 +1003,7 @@ Notes:
 | a fixed equation between two representations (cross-head op-tree) | `rcongr` (or `param_solve`) |
 | a relatedness goal needing transitivity / context-hypothesis chaining | `param_cc` (or `param_solve`) |
 | a goal that might need either descent or chaining (don't know which) | `param_solve` |
+| an op-tree whose squares hold only on a range (overflow, `b ≤ a`, shift width) | `param_guard` |
 | cross-head congruence with attribute-tagged, relation-generic lemmas | `hgcongr` |
 | transfer a `∀`-statement to another representation | `param_transfer` |
 | transfer a `∀`-statement *or* an `R_arrow` `app`-goal, one entry | `transfer_auto` |
