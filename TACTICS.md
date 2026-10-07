@@ -557,6 +557,18 @@ shape of what closes the goal.
 7. **File.** `Base/RelatedOn.lean` (classes, `rcongr*On`, `transfer_guard_disch`),
    `ParamGuard.lean` (`param_guard`, `paramGuardCore`); examples in
    `Examples/GuardedSquares.lean`.
+8. **Reading a container.** `Base/RelatedFamily.lean` relates a family
+   `s : Fin n → A` to a container entry by entry: `RelatedArray enc s a` (the array
+   `a` holds `enc (s i)` at position `i`) and `RelatedFamily enc s f` (the reader
+   `f : ℕ → α` returns `enc (s i)` at `i`). After the operation squares,
+   `param_guard` tries `transfer_guard_leaf`, by default `refine rcongrGetElem ?_`,
+   which closes `Related enc (s i) a[k]` under the guard `k = i`. A client registers
+   the reading rule of another reader with
+   `macro_rules | `(tactic| transfer_guard_leaf) => `(tactic| refine myRule ?_)`,
+   where `myRule` is an instance of `rcongrFamily`. For rewriting from the encoded
+   side, `RelatedFamily.apply_eq` and `RelatedArray.getElem_eq` give
+   `f k = enc (s ⟨k, hk⟩)`; the encoding and the family are `outParam`s, found
+   from the container.
 
 ### `param_leaf`
 

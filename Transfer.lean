@@ -49,6 +49,7 @@ public import Transfer.Congruence.HGCongr           -- hgcongr correspondences +
 public import Transfer.Congruence.ParamCongrClosure -- param_cc: relational congruence closure
 public import Transfer.Congruence.ParamSolve        -- param_solve: descent + closure-leaf (the union)
 public import Transfer.Base.RelatedOn               -- guarded squares: RelatedBinOpOn/RelatedUnOpOn/RelatedRelOn
+public import Transfer.Base.RelatedFamily           -- element-wise related families and arrays; reading rules
 public import Transfer.Congruence.ParamGuard        -- param_guard: descent through guarded squares, open guards as goals
 public import Transfer.Congruence.ParamAuto         -- param_auto: one coordinator dispatching to every surface
 public import Transfer.Congruence.ParamCompose      -- param_compose: descend-and-dispatch (two extensions on one goal)

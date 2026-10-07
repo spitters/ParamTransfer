@@ -7,6 +7,7 @@ module
 
 public import Transfer.Congruence.ParamSolve
 public import Transfer.Base.RelatedOn
+public import Transfer.Base.RelatedFamily
 
 /-!
 # `param_guard` — descent through guarded squares
@@ -16,7 +17,9 @@ equation bridged to `Related id`), or an equivalence `r a b ↔ br a' b'` by
 descending through the registered squares, total and guarded
 (`Transfer.Base.RelatedOn`). At each node it applies `rcongrBinOpOn`,
 `rcongrUnOpOn` or `rcongrRelOn`; the total squares take part through the
-instances `RelatedBinOp.toOn` and `RelatedUnOp.toOn` with guard `True`.
+instances `RelatedBinOp.toOn` and `RelatedUnOp.toOn` with guard `True`. A read of
+an element-wise related container (`Transfer.Base.RelatedFamily`) is closed by the
+leaf rules of `transfer_guard_leaf`, whose guard identifies the position read.
 
 The guard of each node is a proposition about the abstract operands of that node,
 for example `b ≤ a` at `a - b` or `(a - b) < 2 ^ 64 ∧ s < 64` at `(a - b) >>> s`.
@@ -108,6 +111,8 @@ meta partial def paramGuardCore (disch : Syntax) (g : MVarId) : TacticM (List MV
       if let some gs ← paramGuardApply (← `(tactic| refine rcongrBinOpOn _ _ _ ?_ ?_ ?_)) g then
         return ← node gs
       if let some gs ← paramGuardApply (← `(tactic| refine rcongrUnOpOn _ _ _ ?_ ?_)) g then
+        return ← node gs
+      if let some gs ← paramGuardApply (← `(tactic| transfer_guard_leaf)) g then
         return ← node gs
       let s ← saveState
       try
