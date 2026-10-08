@@ -69,7 +69,7 @@ initialize paramExt :
     `c` and its transferred counterpart `c'` are the last two; their
     head-constant names are returned. -/
 def peelRArrow (ty : Expr) : MetaM (Name × Name) := do
-  -- NB: do not `whnf` — `RArrow` is a `def`, so reduction would unfold the head
+  -- NB: do not `whnf` — `RArrow` is an `abbrev`, so reduction would unfold the head
   -- away from the `RArrow` constant being matched.
   let ty ← instantiateMVars ty
   let args := ty.getAppArgs

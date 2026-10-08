@@ -113,17 +113,17 @@ partial def translateOp (opdb : OpDB)
             let (a', aR) ← translateOp opdb ctx db av
             let (b', bR) ← translateOp opdb ctx db bv
             -- bop a' b'  with curried witness  witness a a' aR b b' bR
-            return (mkApp2 bop a' b', ← mkAppM' witness #[av, a', aR, bv, b', bR])
+            return (mkApp2 bop a' b', mkAppN witness #[av, a', aR, bv, b', bR])
           else
             -- not the operator's value arity: fall back to the plain `app` rule
             let (f', fR) ← translateOp opdb ctx db f
             let (a', aR) ← translateOp opdb ctx db a
-            return (.app f' a', ← mkAppM' fR #[a, a', aR])
+            return (.app f' a', mkAppN fR #[a, a', aR])
       | none =>
           -- ordinary application: the parametricity application rule
           let (f', fR) ← translateOp opdb ctx db f
           let (a', aR) ← translateOp opdb ctx db a
-          return (.app f' a', ← mkAppM' fR #[a, a', aR])
+          return (.app f' a', mkAppN fR #[a, a', aR])
   | .lam nm ty b bi =>
       -- same-domain (Eq) binder rule, recursing through `translateOp`
       withLocalDecl nm bi ty fun x =>

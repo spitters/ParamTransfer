@@ -75,18 +75,18 @@ partial def translateAll (opdb : OpDB) (tdb : NameMap (Expr × Expr))
             let a := args[lead]!; let b := args[lead + 1]!
             let (a', aR) ← translateAll opdb tdb ctx db a
             let (b', bR) ← translateAll opdb tdb ctx db b
-            return (mkApp2 bop a' b', ← mkAppM' w #[a, a', aR, b, b', bR])
+            return (mkApp2 bop a' b', mkAppN w #[a, a', aR, b, b', bR])
           else
             let f := e.appFn!; let a := e.appArg!
             let (f', fR) ← translateAll opdb tdb ctx db f
             let (a', aR) ← translateAll opdb tdb ctx db a
-            return (.app f' a', ← mkAppM' fR #[a, a', aR])
+            return (.app f' a', mkAppN fR #[a, a', aR])
       | none =>
           -- ordinary parametricity application
           let f := e.appFn!; let a := e.appArg!
           let (f', fR) ← translateAll opdb tdb ctx db f
           let (a', aR) ← translateAll opdb tdb ctx db a
-          return (.app f' a', ← mkAppM' fR #[a, a', aR])
+          return (.app f' a', mkAppN fR #[a, a', aR])
     else match e with
       | .const n _ =>
           match db.find? n with

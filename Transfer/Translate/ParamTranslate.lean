@@ -33,8 +33,8 @@ rules:
 The `⟦·⟧` produces relatedness *proof terms* (validated: the demos below
 construct the proof and the kernel type-checks it). The `app` rule's
 `fR a a' aR` and the `lam` rule's abstraction are the parametricity
-combinators; the function relation `RArrow` here is `ParamArrow.R_arrow` specialized
-to bare `Prop`-relations.
+combinators; the function relation `RArrow` here is `Relator.LiftFun`, the relation
+`ParamArrow.R_arrow` places on the `R` fields of two `Param` witnesses.
 
 ## Scope
 
@@ -67,11 +67,13 @@ open Lean Meta
 
 namespace Transfer.Param
 
-/-- The function relation (Trocq `R_arrow`, bare-`Prop` form): `f`, `f'` send
-    `PA`-related arguments to `PB`-related results. -/
-def RArrow {A A' B B' : Type} (PA : A → A' → Prop) (PB : B → B' → Prop)
+/-- The function relation `Relator.LiftFun PA PB` on bare relations (Trocq
+    `R_arrow`): `f`, `f'` send `PA`-related arguments to `PB`-related results.
+    The `@[param]` attribute and the type translator build and match this
+    constant by name. -/
+abbrev RArrow {A A' B B' : Type} (PA : A → A' → Prop) (PB : B → B' → Prop)
     (f : A → B) (f' : A' → B') : Prop :=
-  ∀ a a', PA a a' → PB (f a) (f' a')
+  Relator.LiftFun PA PB f f'
 
 /-- The term-level parametricity translation `⟦·⟧`. Given a context mapping bound
     variables to their `(transferred var, relatedness proof)` and a database
@@ -90,7 +92,7 @@ partial def translate (ctx : Std.HashMap FVarId (Expr × Expr)) (db : NameMap (E
       let (f', fR) ← translate ctx db f
       let (a', aR) ← translate ctx db a
       -- parametricity application: fR a a' aR : PB (f a) (f' a')
-      return (.app f' a', ← mkAppM' fR #[a, a', aR])
+      return (.app f' a', mkAppN fR #[a, a', aR])
   | .lam nm ty b bi =>
       -- same-domain (Eq) binder rule
       withLocalDecl nm bi ty fun x =>

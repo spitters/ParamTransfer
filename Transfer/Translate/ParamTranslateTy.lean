@@ -124,7 +124,7 @@ partial def translateFull (tdb : NameMap (Expr × Expr))
       let (f', fR) ← translateFull tdb ctx db f
       let (a', aR) ← translateFull tdb ctx db a
       -- parametricity application: fR a a' aR : PB (f a) (f' a')
-      return (.app f' a', ← mkAppM' fR #[a, a', aR])
+      return (.app f' a', mkAppN fR #[a, a', aR])
   | .lam nm ty b bi => do
       -- type-directed binder: pick the transferred domain `ty'` and relation `PA`
       let (ty', PA) ← translateTy tdb ty

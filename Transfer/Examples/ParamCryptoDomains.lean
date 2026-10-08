@@ -135,16 +135,16 @@ example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c :=
 /-- Stack A (`@[param]` multiply witness). The registered `RArrow` witness
     `bbMulParam` is the transfer of `*` to `bbFieldMul`; applied at reflexive
     arguments it yields the field equation directly. -/
-example (a b : F) : a * b = bbFieldMul a b := bbMulParam a a rfl b b rfl
+example (a b : F) : a * b = bbFieldMul a b := @bbMulParam a a rfl b b rfl
 
 /-- Stack A (`@[param]` add witness). Likewise for `+`/`bbFieldAdd`. -/
-example (a b : F) : a + b = bbFieldAdd a b := bbAddParam a a rfl b b rfl
+example (a b : F) : a + b = bbFieldAdd a b := @bbAddParam a a rfl b b rfl
 
 /-- Stacks fused — one goal, both registries. The composite is closed by
     the Stack-A `RArrow` witnesses composed by hand, matching the Stack-B
     `Related` result above bit for bit (`bbFieldAdd (bbFieldMul a b) c`). -/
 example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c :=
-  bbAddParam (a * b) (bbFieldMul a b) (bbMulParam a a rfl b b rfl) c c rfl
+  @bbAddParam (a * b) (bbFieldMul a b) (@bbMulParam a a rfl b b rfl) c c rfl
 
 /-- `param_transfer` over the field `TransferDom`. A universally-quantified
     field statement transfers across the diagonal field domain, resolved
@@ -169,7 +169,7 @@ example : (∀ x : F, x * 1 = x) → (∀ x : F, x * 1 = x) := by
     — proof of one operation living in both registries. -/
 example (a b : F) :
     (transferRel (inferInstance : Related (id : F → F) (a * b) (bbFieldMul a b)))
-      = bbMulParam a a rfl b b rfl := by
+      = @bbMulParam a a rfl b b rfl := by
   rfl
 
 /-! ## Next domains (documented)
