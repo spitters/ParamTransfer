@@ -41,6 +41,7 @@ public import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp
 public import Transfer.Integrations.ParamRCompOk    -- `RCompOk`: success-restricted Kleisli relation, transfer, ArrayRel, `rcomp_ok`
 public import Transfer.Integrations.ParamRCompParam -- `RComp`/`RCompOk` as `Param` instances; `RComp.trans`/`RCompOk.trans` composition
 public import Transfer.Integrations.ParamPredTrans  -- `RRel`: relation of predicate transformers across two monads; `RComp`, `RCompOk` as instances
+public import Transfer.Integrations.ParamPredTransAbs -- `RRelPT`: `RRel` for abstract predicate transformers; `Param.rrel`
 -- Automation-tactic integrations:
 public import Transfer.Integrations.GrindIntegration -- foundation lemmas dual-tagged @[grind =]
 public import Transfer.Integrations.AesopIntegration -- opt-in `Transfer` aesop rule set (importer-split)

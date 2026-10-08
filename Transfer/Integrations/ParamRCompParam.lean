@@ -5,7 +5,7 @@ Authors: Bas Spitters
 -/
 module
 
-public import Transfer.Integrations.ParamRCompOk
+public import Transfer.Integrations.ParamPredTrans
 public import Transfer.Hierarchy.ParamHierarchy
 
 /-!
@@ -65,8 +65,9 @@ hypothesis and is out of the scope of `RCompOk`'s two-monad signature.
 ## Composition and identity
 
 `RComp.trans` composes two `RComp`s in the same monad along relation composition
-(`∃ b, Rα a b ∧ Rβ b c`), using only `WP` (no `Monad`/`WPMonad` needed — it is
-pure `wp`-entailment chaining through `SPred.exists`/`SPred.and`).
+(`∃ b, Rα a b ∧ Rβ b c`), using only `WP` (no `Monad`/`WPMonad` needed). It is
+`RRel.trans` (`Integrations/ParamPredTrans.lean`) at the identity assertion map,
+through `rcomp_iff_rrel`.
 
 `RCompOk.trans` composes `RCompOk Rα : M → N` with `RCompOk Rβ : N → P` when both
 `N` and `P` are total (`WP N .pure`, `WP P .pure`): at a `.pure` shape the
@@ -138,18 +139,14 @@ def Param.rcompOkTrivial {M : Type u → Type u} {ps : PostShape.{u}} [WP M ps]
 
 /-- **`RComp` composes along relation composition.** Sequencing two
     `RComp`-witnesses in the same monad gives a witness for the composed value
-    relation `∃ b, Rα a b ∧ Rβ b c`. Needs only `WP M ps` — no `Monad`/`WPMonad`,
-    since it chains `wp`-entailment through `SPred.exists`/`SPred.and` alone. -/
+    relation `∃ b, Rα a b ∧ Rβ b c`. Needs only `WP M ps`; it is `RRel.trans` at
+    the identity assertion map and equal exception postconditions. -/
 theorem RComp.trans {M : Type u → Type v} {ps : PostShape.{u}} [WP M ps]
     {A B C : Type u} {Rα : A → B → Prop} {Rβ : B → C → Prop}
     {c : M A} {c' : M B} {c'' : M C}
     (h1 : RComp (ps := ps) Rα c c') (h2 : RComp (ps := ps) Rβ c' c'') :
-    RComp (ps := ps) (fun a x => ∃ b, Rα a b ∧ Rβ b x) c c'' := by
-  intro Q Q'' E hQ
-  refine (h1 Q (fun b => spred(∃ a, ⌜Rα a b⌝ ∧ Q a)) E
-    (fun a b hab => SPred.exists_intro' a (SPred.and_intro (SPred.pure_intro hab) .rfl))).trans
-    (h2 _ Q'' E (fun b x hbx =>
-      SPred.exists_elim (fun a => SPred.pure_elim_l (fun hab => hQ a x ⟨b, hab, hbx⟩))))
+    RComp (ps := ps) (fun a x => ∃ b, Rα a b ∧ Rβ b x) c c'' := fun Q Q'' E hQ =>
+  (rcomp_iff_rrel.mp h1).trans (rcomp_iff_rrel.mp h2) Q Q'' E E hQ ⟨E, rfl, rfl⟩
 
 /-- **`RCompOk` composes across two total codomains.** `RCompOk Rα : M → N` and
     `RCompOk Rβ : N → P` compose to `RCompOk (∃ b, Rα a b ∧ Rβ b c) : M → P`
@@ -190,7 +187,7 @@ section AxiomAudit
 #guard_msgs in
 #print axioms Param.rcomp
 
-/-- info: 'Transfer.Param.RComp.trans' depends on axioms: [propext, Quot.sound] -/
+/-- info: 'Transfer.Param.RComp.trans' depends on axioms: [propext] -/
 #guard_msgs in
 #print axioms RComp.trans
 
