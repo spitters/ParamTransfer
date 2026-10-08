@@ -6,6 +6,7 @@ Authors: Bas Spitters
 module
 
 public import Transfer.Hierarchy.ParamHierarchy
+public import Mathlib.Logic.Relator
 
 /-!
 # The arrow (`app` / function) parametricity rule
@@ -54,13 +55,14 @@ variable {A A' B B' : Type u}
 /-! ## The function relation `R_arrow` -/
 
 /-- Trocq `R_arrow`: two functions are related when they send `PA`-related
-    inputs to `PB`-related outputs. Coq accesses only the `R` field, so the
-    level parameters stay fully polymorphic (the function relation does not
-    depend on how much structure each component carries). -/
+    inputs to `PB`-related outputs, the arrow relation `Relator.LiftFun PA.R PB.R`
+    of Mathlib. Coq accesses only the `R` field, so the level parameters stay
+    fully polymorphic (the function relation does not depend on how much
+    structure each component carries). -/
 def R_arrow {mA nA mB nB : MapClass}
     (PA : Param mA nA A A') (PB : Param mB nB B B') :
     (A → B) → (A' → B') → Prop :=
-  fun f f' => ∀ a a', PA.R a a' → PB.R (f a) (f' a')
+  Relator.LiftFun PA.R PB.R
 
 /-! ## `map0` — no structure -/
 
@@ -111,7 +113,7 @@ def Map2b_arrow (PA : Param .map0 .map2a A A') (PB : Param .map2b .map0 B B') :
     -- pointwise: `PB.map (f (PA.comap a')) = f' a'`, via `PB.R_in_map` on the
     -- relatedness `PB.R (f (PA.comap a')) (f' a')`, which `hR` supplies once
     -- `PA.comap_in_R` gives `PA.R (PA.comap a') a'`.
-    exact PB.fwd.R_in_map _ _ (hR (PA.bwd.map a') a' (PA.bwd.map_in_R a' _ rfl))
+    exact PB.fwd.R_in_map _ _ (hR (PA.bwd.map_in_R a' _ rfl))
 
 /-! ## `map3` — both inclusions (via funext) -/
 
@@ -131,7 +133,7 @@ def Map3_arrow (PA : Param .map0 .map3 A A') (PB : Param .map3 .map0 B B') :
   R_in_map := by
     intro f f' hR
     funext a'
-    exact PB.fwd.R_in_map _ _ (hR (PA.bwd.map a') a' (PA.bwd.map_in_R a' _ rfl))
+    exact PB.fwd.R_in_map _ _ (hR (PA.bwd.map_in_R a' _ rfl))
 
 /-! ## `map4` — `map3` plus the (free, proof-irrelevant) coherence -/
 
@@ -150,7 +152,7 @@ def Map4_arrow (PA : Param .map0 .map3 A A') (PB : Param .map3 .map0 B B') :
   R_in_map := by
     intro f f' hR
     funext a'
-    exact PB.fwd.R_in_map _ _ (hR (PA.bwd.map a') a' (PA.bwd.map_in_R a' _ rfl))
+    exact PB.fwd.R_in_map _ _ (hR (PA.bwd.map_in_R a' _ rfl))
   R_in_mapK := by intro a b r; rfl
 
 /-! ## The `Param`-level arrow combinator
@@ -204,7 +206,7 @@ def paramEqCod (S : Type u) : Param .map3 .map0 S S where
 example {T S : Type u} (f f' : T → S) :
     R_arrow (paramEqDom T) (paramEqCod S) f f' ↔ ∀ a, f a = f' a := by
   constructor
-  · intro h a; exact h a a rfl
+  · intro h a; exact h rfl
   · intro h a a' (haa' : a = a'); subst haa'; exact h a
 
 /-- `Map3_arrow` is constructible on the diagonals (all six obligations close),
