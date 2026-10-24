@@ -196,7 +196,12 @@ functions (`*`/`+` vs `bbFieldMul`/`bbFieldAdd`), so `gcongr` makes no progress
 — the `#guard_msgs` below pins the failure. This is the capability boundary
 `rcongr` crosses. -/
 
-/-- error: gcongr did not make progress -/
+/--
+error: `gcongr` did not make progress.
+
+a b c : F
+⊢ a * b + c = bbFieldAdd (bbFieldMul a b) c
+-/
 #guard_msgs in
 example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by gcongr
 

@@ -2,15 +2,15 @@ import Lake
 open Lake DSL
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "v4.33.1"
+  "https://github.com/leanprover-community/mathlib4" @ "v4.35.0"
 
 -- CompPoly provides a computable (array-backed `Raw`) univariate polynomial with a
 -- `RingEquiv` to Mathlib's noncomputable `Polynomial`. The `Examples/CoqEAL/` suite
 -- uses it to *compute* with `Polynomial` through the refinement — the CoqEAL /
 -- Kaliszyk–O'Connor "refinements for free" pattern. Pinned at the same tag as
--- Mathlib (v4.33.1).
+-- Mathlib (v4.35.0).
 require CompPoly from git
-  "https://github.com/Verified-zkEVM/CompPoly.git" @ "v4.33.1"
+  "https://github.com/Verified-zkEVM/CompPoly.git" @ "v4.35.0"
 
 -- Documentation lives in separate packages: the verso manual in `docs/`, the
 -- doc-gen4 API reference in `docbuild/`. This lakefile needs only mathlib + CompPoly.

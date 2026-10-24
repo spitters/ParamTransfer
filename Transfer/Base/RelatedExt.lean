@@ -89,11 +89,11 @@ def famCoeff {n : ℕ} (zero : A) (x : Fin n → A) (i : ℕ) : A :=
 
 /-- The reader of a family at an in-range position. -/
 theorem famCoeff_of_lt {n : ℕ} (zero : A) (x : Fin n → A) {i : ℕ} (h : i < n) :
-    famCoeff zero x i = x ⟨i, h⟩ := dif_pos h
+    famCoeff zero x i = x ⟨i, h⟩ := dite_eq_left h
 
 /-- The reader of a family at a position of `Fin n`. -/
 @[simp] theorem famCoeff_val {n : ℕ} (zero : A) (x : Fin n → A) (i : Fin n) :
-    famCoeff zero x i = x i := dif_pos i.isLt
+    famCoeff zero x i = x i := dite_eq_left i.isLt
 
 /-- The fold depends only on the summands below the bound. -/
 theorem sumOp_congr (add : A → A → A) (zero : A) (m : ℕ) {f g : ℕ → A}
@@ -190,7 +190,7 @@ theorem sum_binomMul_mul_pow (φ : F →+* R) (ξ : F) (r : R) (hr : r ^ n = φ 
     by_cases h : (i : ℕ) + j < n
     · rw [Finset.sum_eq_single ⟨(i : ℕ) + j, h⟩]
       · have h2 : ¬ (i : ℕ) + j = (i : ℕ) + j + n := by omega
-        simp only [h2, if_true, if_false, mul_zero, add_zero, map_mul, pow_add]
+        simp only [h2, ite_true, ite_false, mul_zero, add_zero, map_mul, pow_add]
         ring
       · intro k _ hk
         have h1 : ¬ (i : ℕ) + j = k := fun e => hk (Fin.ext e.symm)
@@ -203,7 +203,7 @@ theorem sum_binomMul_mul_pow (φ : F →+* R) (ξ : F) (r : R) (hr : r ^ n = φ 
         have h2 : (i : ℕ) + j = (i : ℕ) + j - n + n := by omega
         have h3 : r ^ (i : ℕ) * r ^ (j : ℕ) = φ ξ * r ^ ((i : ℕ) + j - n) := by
           rw [← pow_add, ← hr, ← pow_add]; congr 1; omega
-        simp only [h1, ← h2, if_true, if_false, zero_add, map_mul]
+        simp only [h1, ← h2, ite_true, ite_false, zero_add, map_mul]
         calc φ ξ * (φ (x i) * φ (y j)) * r ^ ((i : ℕ) + j - n)
             = φ (x i) * φ (y j) * (φ ξ * r ^ ((i : ℕ) + j - n)) := by ring
           _ = φ (x i) * r ^ (i : ℕ) * (φ (y j) * r ^ (j : ℕ)) := by rw [← h3]; ring

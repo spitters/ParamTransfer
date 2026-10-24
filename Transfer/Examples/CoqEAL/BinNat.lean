@@ -64,7 +64,7 @@ theorem toNat_binSucc (l : List Bool) : toNat (binSucc l) = toNat l + 1 := by
     cases b with
     | false => simp [toNat, binSucc]
     | true =>
-      simp only [binSucc, toNat, List.foldr_cons, if_true, if_false,
+      simp only [binSucc, toNat, List.foldr_cons, ite_true, ite_false,
         Bool.false_eq_true] at ih ⊢
       rw [ih]
       ring

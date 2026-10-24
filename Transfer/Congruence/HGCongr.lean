@@ -158,7 +158,12 @@ example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by hgcongr
 -- `gcongr` rejects the same goal — its two sides have different head
 -- functions, so it makes no progress. This is the capability boundary
 -- `hgcongr` crosses.
-/-- error: gcongr did not make progress -/
+/--
+error: `gcongr` did not make progress.
+
+a b c : F
+⊢ a * b + c = bbFieldAdd (bbFieldMul a b) c
+-/
 #guard_msgs in
 example (a b c : F) : a * b + c = bbFieldAdd (bbFieldMul a b) c := by gcongr
 

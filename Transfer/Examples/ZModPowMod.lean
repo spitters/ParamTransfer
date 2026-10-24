@@ -95,7 +95,7 @@ theorem powModGo_cast (m : ℕ) :
       rw [powModGo]
       by_cases h0 : e = 0
       · subst h0; simp
-      · simp only [h0, if_false]
+      · simp only [h0, ite_false]
         have hlt : e / 2 < 2 ^ fuel := by
           have : (2 : ℕ) ^ (fuel + 1) = 2 * 2 ^ fuel := by rw [pow_succ]; ring
           omega
@@ -106,7 +106,7 @@ theorem powModGo_cast (m : ℕ) :
         have hacc : (((if e % 2 = 1 then (acc * base) % m else acc) : ℕ) : ZMod m)
               = (acc : ZMod m) * (base : ZMod m) ^ (e % 2) := by
           by_cases h1 : e % 2 = 1
-          · simp only [h1, if_true]; rw [ZMod.natCast_mod]; push_cast; ring
+          · simp only [h1, ite_true]; rw [ZMod.natCast_mod]; push_cast; ring
           · have : e % 2 = 0 := by omega
             simp [this]
         rw [hacc, ← pow_mul, mul_assoc, ← pow_add]
@@ -130,7 +130,7 @@ theorem powModGo_lt (m : ℕ) (hm : 0 < m) :
       rw [powModGo]
       by_cases h0 : e = 0
       · simp [h0, h]
-      · simp only [h0, if_false]
+      · simp only [h0, ite_false]
         apply ih
         split
         · exact Nat.mod_lt _ hm
