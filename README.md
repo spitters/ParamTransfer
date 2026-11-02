@@ -309,7 +309,7 @@ level and tactic substrate the engine reuses.
 | `TransferInduction` | transported induction, the equiv-level combinator |
 | `TransferLevel` | the level-aware `transfer!` elaborator |
 | `TransferTactic` | the `transfer` tactic (automatic binder translation) |
-| `UnivalenceStatus` | univalence in Lean 4 and the Trocq `map4` cap |
+| `UnivalenceStatus` | univalence in Lean 4 and the relation between universes |
 
 **`Hierarchy/`**
 

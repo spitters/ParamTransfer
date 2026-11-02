@@ -40,9 +40,9 @@ the caller's `H a a' b b'`, specialised at the *outer* relatedness witness
 `aR : PA.R a a'`. Iterating once more (motive a 2-binder `∀`) gives the
 3-binder rule with no new ideas.
 
-This stays at the `Prop` motive, so it is univalence-free: each layer only
-consumes the corresponding domain `Param`'s backward `map2a` structure, exactly
-as `forallTransfer`/`Map1_forall` require — no `map4`/`Map2a_forall`.
+This stays at the `Prop` motive: each layer only consumes the corresponding domain
+`Param`'s backward `map2a` structure, exactly as `forallTransfer`/`Map1_forall`
+require.
 
 ## What this delivers
 
@@ -52,9 +52,8 @@ combinators here are the `n = 2`, `n = 3` cases, and `numForallTransfer2`
 below extends the flagship to a binary `Num`-statement. The residual is
 unchanged from `ParamTransfer.lean`:
 
-* the `Type`-valued motive (`B : A → Type`, not `Prop`), needing
-  `Map2a_forall` whose domain `Param` must be `Param04` = univalence — localized
-  in `ParamForall.lean`;
+* a statement quantifying over a `Type`-valued motive `P : A → Type`, whose binder
+  needs a relation on `Type` (`UnivalenceStatus`);
 * the full term-level abstraction theorem `⟦t⟧ : R_T t ⟦t⟧` for arbitrary
   `t` — the `MetaM` synthesizer's job (Trocq's `param`/`trocq` tactic).
 

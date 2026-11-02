@@ -49,8 +49,8 @@ its `PathP A a b` is the **univalent** identity, and a varying type-family path
 motive along an equivalence-as-equality. Lean's built-in `Eq` cannot be that
 identity — `univalence_inconsistent` (`UnivalenceStatus.lean`) shows UA stated
 via `Eq` is `False`, because `Eq`'s definitional proof irrelevance makes type
-equality a subsingleton. This is the same boundary that caps the Param port at
-`map3` and forces `Map2a_forall` to require `map4`.
+equality a subsingleton. This is the boundary of the relation between universes,
+where `LevelRefusal` refuses `equiv`.
 
 But the constant type-family-path fragment of `hcongr_ideal` — where the
 ambient path `A i ≡ A`, `C i ≡ C` is reflexivity, so the only motion is in the

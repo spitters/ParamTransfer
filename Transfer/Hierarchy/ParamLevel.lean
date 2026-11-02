@@ -18,9 +18,9 @@ module supplies the solver's mathematical core:
 * the `MapClass` lattice order `≤` (not linear — `map2a`/`map2b` are incomparable,
   both below `map3`), with `Decidable`, the partial-order laws, and the meet (`⊓`)
   = greatest lower bound (the "least common level");
-* the level-arithmetic decision tables `arrowReq`/`forallReq`: for a desired output
-  level, the exact input levels each `Map_k_arrow`/`Map_k_forall` requires (read off
-  `ParamArrow.lean`/`ParamForall.lean`). A level-directed resolution or a
+* the level-arithmetic decision table `arrowReq`, with `forallReq` in `ParamForall.lean`: for a
+  desired output level, the exact input levels each `Map_k_arrow`/`Map_k_forall` requires. A
+  level-directed resolution or a
   `MetaM` solver consults these to dispatch the right combinator — the Lean analogue of
   Trocq's Elpi `param-class` constraint solver.
 
@@ -113,25 +113,14 @@ def arrowReq : MapClass → Option (MapClass × MapClass × MapClass × MapClass
   | .map3  => some (.map0, .map3, .map3, .map0)
   | .map4  => some (.map0, .map3, .map3, .map0)   -- map4 via map3 inputs (Prop coherence free)
 
-/-- Required *domain* level for `Map_k_forall` at a given output forward level (the
-    codomain family is at `(k, map0)`). From `ParamForall.lean`: `Map1_forall` needs the
-    domain at `Param02a` (backward `map2a`); `Map2a_forall` needs the domain at
-    `Param04` (backward `map4` = univalence) — the localized UA boundary. -/
-def forallReq : MapClass → Option MapClass
-  | .map0  => some .map0
-  | .map1  => some .map2a      -- domain backward map2a (univalence-free)
-  | .map2a => some .map4       -- domain backward map4 = UNIVALENCE (the cap)
-  | _      => none             -- higher levels: not in the univalence-free fragment
+/-- The table of the dependent-Π rule (`forallReq`, defined with `mapHas_forall` in
+    `ParamForall.lean`) asks for at most `map3` of the domain at every output level. -/
+theorem forallReq_le_map3 (t : MapClass) : forallReq t ⊑ .map3 := by
+  cases t <;> rfl
 
-/-- The univalence-free forall fragment: output levels whose domain requirement stays
-    below `map4`. Exactly `{map0, map1}` — matching the localization in `ParamForall`. -/
-def forallUnivalenceFree (k : MapClass) : Bool :=
-  match forallReq k with
-  | some d => MapClass.le d .map2a    -- domain requirement ≤ map2a ⇒ no univalence
-  | none   => false
-
-/-- `Map1_forall` is univalence-free; `Map2a_forall` is not (needs `map4` domain). -/
-theorem forall_ua_free_map1 : forallUnivalenceFree .map1 = true := rfl
-theorem forall_not_ua_free_map2a : forallUnivalenceFree .map2a = false := rfl
+/-- The table of the dependent-Π rule asks for at most `map3` of the codomain family at
+    every output level. -/
+theorem forallFiberReq_le_map3 (t : MapClass) : forallFiberReq t ⊑ .map3 := by
+  cases t <;> rfl
 
 end Transfer.Param

@@ -56,11 +56,11 @@ Not implemented here:
 * the full abstraction theorem `⟦t⟧ : R_T t (⟦t⟧)` for arbitrary terms `t`
   — the `MetaM` synthesizer's job (Trocq's `param`/`trocq` tactic), which infers
   the `Param` witnesses and the `(m,n)` levels per subterm;
-* the `Type`-valued motive — transferring `∀ a, B a` with `B : A → Type`
-  (not `Prop`) needs `Map2a_forall`, whose domain `Param` must be at `map4`
-  (`Param04` = an equivalence), i.e. **univalence**. That step is
-  localized and named in `ParamForall.lean`; here we stay at the `Prop` motive,
-  which is univalence-free.
+* a statement quantifying over a `Type`-valued motive `P : A → Type`, whose binder
+  needs a relation on `Type` (`UnivalenceStatus`). A dependent function `∀ a, B a`
+  over a given family `B` with a given `Param` family is `paramForallAt` in
+  `ParamForall.lean`, at every output level from a domain at `map3`; this module
+  stays at the `Prop` motive.
 -/
 
 @[expose] public section

@@ -26,44 +26,38 @@ translation. Where the arrow rule (`ParamArrow.lean`) relates `f : A → B` and
 
 Coq's `std` variant gates the `map2b`/`map3` forall combinators on a
 `` `{Funext} `` instance. Lean has `funext` as a theorem, so those gates
-are unnecessary. The forward map of the dependent-Π rule —
-`Map1_forall` below — is *univalence-free*: it only needs the domain's
-backward structure at level `map2a` (a map plus `map a' = a → R a a'`),
-which `Param02a`/`Param04` all provide. This is the axiom-free part:
-the dependent motive's forward transfer.
+are unnecessary.
 
-## Where univalence enters (`Map2a_forall`)
+## The level table
 
-The forward map `Map1_forall` instantiates the codomain family at the *single*
-related pair `(PA.bwd.map a', a')` reachable from the backward map applied to
-`a'`. That is enough to *produce* an element of `B' a'` from `f`, i.e. to build
-the `map` field of `Map2aHas`. But the next level `Map2a_forall` also needs
-the `map_in_R` field:
+The rule holds at every output level. `forallReq` gives the backward level the
+domain must carry and `forallFiberReq` the forward level of the codomain family:
 
-  `map_in_R : ∀ f g, (Map1_forall …).map f = g → R_forall PA PB f g`,
+| output `t` | domain backward | family forward |
+|---|---|---|
+| `map0` | `map0` | `map0` |
+| `map1` | `map2a` | `map1` |
+| `map2a` | `map3` | `map2a` |
+| `map2b` | `map2a` | `map2b` |
+| `map3` | `map3` | `map3` |
+| `map4` | `map3` | `map3` |
 
-i.e. for an *arbitrary* related pair `(a, a')` with witness `aR : PA.R a a'`, it
-must relate `(map f) a' : B' a'` — which was built using the *specific* witness
-`PA.bwd.map_in_R a' (PA.bwd.map a') rfl` at the input `PA.bwd.map a'` — to
-`f a : B a` at the *given* `a`. Reconciling the two requires identifying the
-input `a` with `PA.bwd.map a'` **and transporting the codomain family `PB`
-along that identification coherently**. Over a general `Param`, the only data
-that delivers a *coherent* such transport — `bwd.map a' = a` reflecting back to
-`R a a'` *and* round-tripping (`R_in_mapK`) — is the domain backward relation at
-`map4`, i.e. a univalent equivalence. Hence `Map2a_forall` requires
-`PA : Param04` (domain backward `map4`), and that `map4` coherence is where
-the dependent-Π rule requires univalence: the dependent-Π output at level `≥ map2a`
-needs the domain relation to be an equivalence so the motive transports.
+The forward map at `a'` applies the family at the pair `(PA.bwd.map a', a')`, with
+the witness `PA.bwd.map_in_R a' _ rfl`; so every level from `map1` up reads the
+domain backward at `map2a` at least. `map2b` asks for nothing more: a relation
+`R_forall PA PB f g` is used only at that witness, and `funext` concludes.
 
-Concretely, the signature not implemented here (would require the
-`map4`/univalence machinery; stated as a comment, no `sorry`):
+`map2a` also asks for `R_in_map` of the domain, to identify an arbitrary `a` related
+to `a'` with `PA.bwd.map a'`. Substituting this equation transports the family, and
+the witness that results and the given `aR` are proofs of one proposition, so they
+are equal by proof irrelevance. Relations here are `Prop`-valued, which is why no
+`map4` of the domain is used; Trocq's `map4` requirement comes from `Type`-valued
+relations, where the two witnesses must be related by `R_in_mapK`. Output `map4` is
+output `map3` with a coherence between proofs of a proposition.
 
-  `def Map2a_forall (PA : Param .map0 .map4 A A')`
-  `    (PB : ∀ a a', PA.R a a' → Param .map2a .map0 (B a) (B' a')) :`
-  `    Map2aHas (R_forall PA PB)`
-
-with the `map` field reusing `Map1_forall`'s, and the `map_in_R` field the part
-that consumes the `map4` coherence (`PA.bwd.R_in_mapK`) to transport `PB`.
+The rule uses no univalence at any output level. The boundary is the relation
+between universes (`UnivalenceStatus`), which is outside this rule: here the family
+`PB` is given.
 
 ## Accessor dictionary (Coq → Lean), backward direction of `PA`
 
@@ -105,10 +99,9 @@ def Map0_forall {mA nA mB nB : MapClass}
     (PB : ∀ a a', PA.R a a' → Param mB nB (B a) (B' a')) :
     Map0Has (R_forall PA PB) := ⟨⟩
 
-/-! ## `map1` — the univalence-free dependent-Π forward map
+/-! ## `map1` — the dependent-Π forward map
 
-The dependent motive's forward transfer, axiom-free (only `PA`
-backward-`map2a`, no `map4`/univalence).
+The dependent motive's forward transfer, axiom-free (only `PA` backward-`map2a`).
 
 For each `a' : A'`, set `a := PA.bwd.map a'`. The backward `map_in_R` at `rfl`
 gives a witness `aR : PA.R a a'`. The codomain family at that pair has a
@@ -121,12 +114,184 @@ def Map1_forall
     (PB (PA.bwd.map a') a' (PA.bwd.map_in_R a' (PA.bwd.map a') rfl)).fwd.map
       (f (PA.bwd.map a'))⟩
 
-/-! ## `Param`-level assembly: the dependent-Π annotated relation at `(map1, map0)` -/
+/-! ## The forward map and its two inclusions, over relations
+
+These three are stated for a relation `AR` on the domain and a family `BR` of
+relations over its witnesses, with no level attached. -/
+
+section Relational
+
+variable {AR : A → A' → Prop} {BR : ∀ a a', AR a a' → B a → B' a' → Prop}
+
+/-- The map of a dependent function: the backward map of the domain, then the fiber
+    map at its witness. -/
+def forallMap (imap : A' → A) (wit : ∀ a', AR (imap a') a')
+    (fmap : ∀ a a', AR a a' → B a → B' a') : (∀ a, B a) → ∀ a', B' a' :=
+  fun f a' => fmap _ _ (wit a') (f (imap a'))
+
+/-- The graph of `forallMap` lies in the relation of dependent functions, when the
+    domain's backward map contains its relation and the graph of each fiber map lies
+    in the fiber relation. Substituting `imap a' = a` transports the family; the
+    witnesses agree by proof irrelevance. -/
+theorem forallMap_in_R (imap : A' → A) (wit : ∀ a', AR (imap a') a')
+    (fmap : ∀ a a', AR a a' → B a → B' a') (hA : ∀ a a', AR a a' → imap a' = a)
+    (hB : ∀ a a' h x, BR a a' h x (fmap a a' h x)) (f : ∀ a, B a) (g : ∀ a', B' a')
+    (e : forallMap imap wit fmap f = g) (a : A) (a' : A') (h : AR a a') :
+    BR a a' h (f a) (g a') := by
+  subst e
+  obtain rfl := hA a a' h
+  exact hB _ _ _ _
+
+/-- The relation of dependent functions lies in the graph of `forallMap`, when each
+    fiber map contains its relation. -/
+theorem R_in_forallMap (imap : A' → A) (wit : ∀ a', AR (imap a') a')
+    (fmap : ∀ a a', AR a a' → B a → B' a')
+    (hB : ∀ a a' h x y, BR a a' h x y → fmap a a' h x = y) (f : ∀ a, B a) (g : ∀ a', B' a')
+    (r : ∀ a a' h, BR a a' h (f a) (g a')) : forallMap imap wit fmap f = g :=
+  funext fun a' => hB _ _ _ _ _ (r _ a' (wit a'))
+
+end Relational
+
+/-! ## `map2a`, `map2b`, `map3`, `map4` — the rule above the forward map
+
+Only the backward structure of the domain and the forward structure of the family
+are used, so the other two levels stay free. -/
+
+/-- Output `map2a`: the domain backward at `map3`, the family forward at `map2a`.
+    The domain's `R_in_map` identifies an arbitrary related input with the image of
+    the backward map. -/
+def Map2a_forall {mA nB : MapClass}
+    (PA : Param mA .map3 A A')
+    (PB : ∀ a a', PA.R a a' → Param .map2a nB (B a) (B' a')) :
+    Map2aHas (R_forall PA PB) :=
+  ⟨forallMap (AR := PA.R) PA.bwd.map (fun a' => PA.bwd.map_in_R a' _ rfl)
+      fun a a' h => (PB a a' h).fwd.map,
+    fun f g e a a' h => forallMap_in_R (BR := fun a a' h => (PB a a' h).R) _ _ _
+      (fun a a' h => PA.bwd.R_in_map a' a h)
+      (fun a a' h x => (PB a a' h).fwd.map_in_R x _ rfl) f g e a a' h⟩
+
+/-- Output `map2b`: the domain backward at `map2a`, the family forward at `map2b`.
+    A related pair of functions is read at the witness of the backward map, and
+    `funext` concludes. -/
+def Map2b_forall {mA nB : MapClass}
+    (PA : Param mA .map2a A A')
+    (PB : ∀ a a', PA.R a a' → Param .map2b nB (B a) (B' a')) :
+    Map2bHas (R_forall PA PB) :=
+  ⟨forallMap (AR := PA.R) PA.bwd.map (fun a' => PA.bwd.map_in_R a' _ rfl)
+      fun a a' h => (PB a a' h).fwd.map,
+    fun f g r => R_in_forallMap (BR := fun a a' h => (PB a a' h).R) _ _ _
+      (fun a a' h => (PB a a' h).fwd.R_in_map) f g r⟩
+
+/-- Output `map3`: the domain backward at `map3`, the family forward at `map3`. -/
+def Map3_forall {mA nB : MapClass}
+    (PA : Param mA .map3 A A')
+    (PB : ∀ a a', PA.R a a' → Param .map3 nB (B a) (B' a')) :
+    Map3Has (R_forall PA PB) :=
+  ⟨forallMap (AR := PA.R) PA.bwd.map (fun a' => PA.bwd.map_in_R a' _ rfl)
+      fun a a' h => (PB a a' h).fwd.map,
+    fun f g e a a' h => forallMap_in_R (BR := fun a a' h => (PB a a' h).R) _ _ _
+      (fun a a' h => PA.bwd.R_in_map a' a h)
+      (fun a a' h x => (PB a a' h).fwd.map_in_R x _ rfl) f g e a a' h,
+    fun f g r => R_in_forallMap (BR := fun a a' h => (PB a a' h).R) _ _ _
+      (fun a a' h => (PB a a' h).fwd.R_in_map) f g r⟩
+
+/-- Output `map4`: the inputs of `map3`. The coherence `R_in_mapK` is an equation
+    between proofs of a proposition. -/
+def Map4_forall {mA nB : MapClass}
+    (PA : Param mA .map3 A A')
+    (PB : ∀ a a', PA.R a a' → Param .map3 nB (B a) (B' a')) :
+    Map4Has (R_forall PA PB) :=
+  let h := Map3_forall PA PB
+  ⟨h.map, h.map_in_R, h.R_in_map, fun _ _ _ => rfl⟩
+
+/-! ## The level table -/
+
+/-- The backward level of the domain required by the dependent-Π rule at an output
+    forward level. -/
+def forallReq : MapClass → MapClass
+  | .map0 => .map0
+  | .map1 => .map2a
+  | .map2a => .map3
+  | .map2b => .map2a
+  | .map3 => .map3
+  | .map4 => .map3
+
+/-- The forward level of the codomain family required by the dependent-Π rule at an
+    output forward level. -/
+def forallFiberReq : MapClass → MapClass
+  | .map0 => .map0
+  | .map1 => .map1
+  | .map2a => .map2a
+  | .map2b => .map2b
+  | .map3 => .map3
+  | .map4 => .map3
+
+/-- No output level asks for `map4` of the domain. -/
+theorem forallReq_ne_map4 (t : MapClass) : forallReq t ≠ .map4 := by
+  cases t <;> decide
+
+/-- No output level asks for `map4` of the family. -/
+theorem forallFiberReq_ne_map4 (t : MapClass) : forallFiberReq t ≠ .map4 := by
+  cases t <;> decide
+
+/-- The dependent-Π rule at every output forward level, with the inputs the tables
+    `forallReq` and `forallFiberReq` give. -/
+def mapHas_forall {mA nB : MapClass} : (t : MapClass) →
+    (PA : Param mA (forallReq t) A A') →
+    (PB : ∀ a a', PA.R a a' → Param (forallFiberReq t) nB (B a) (B' a')) →
+    MapHas t (R_forall PA PB)
+  | .map0, _, _ => (⟨⟩ : Map0Has _)
+  | .map1, PA, PB =>
+    let PA : Param mA .map2a A A' := PA
+    let PB : ∀ a a', PA.R a a' → Param .map1 nB (B a) (B' a') := PB
+    (⟨forallMap (AR := PA.R) PA.bwd.map (fun a' => PA.bwd.map_in_R a' _ rfl)
+      fun a a' h => (PB a a' h).fwd.map⟩ : Map1Has _)
+  | .map2a, PA, PB => Map2a_forall (mA := mA) PA PB
+  | .map2b, PA, PB => Map2b_forall (mA := mA) PA PB
+  | .map3, PA, PB => Map3_forall (mA := mA) PA PB
+  | .map4, PA, PB => Map4_forall (mA := mA) PA PB
+
+/-! ## `Param`-level assembly -/
+
+/-- Structure of level `m` of a relation is structure of level `m` of a logically
+    equivalent relation, with the same map. -/
+def MapHas.ofIff {α β : Type u} {R S : α → β → Prop} (hRS : ∀ a b, R a b ↔ S a b) :
+    (m : MapClass) → MapHas m R → MapHas m S
+  | .map0, _ => (⟨⟩ : Map0Has S)
+  | .map1, h => (⟨(h : Map1Has R).map⟩ : Map1Has S)
+  | .map2a, h =>
+    let h : Map2aHas R := h
+    (⟨h.map, fun a b e => (hRS a b).1 (h.map_in_R a b e)⟩ : Map2aHas S)
+  | .map2b, h =>
+    let h : Map2bHas R := h
+    (⟨h.map, fun a b r => h.R_in_map a b ((hRS a b).2 r)⟩ : Map2bHas S)
+  | .map3, h =>
+    let h : Map3Has R := h
+    (⟨h.map, fun a b e => (hRS a b).1 (h.map_in_R a b e),
+      fun a b r => h.R_in_map a b ((hRS a b).2 r)⟩ : Map3Has S)
+  | .map4, h =>
+    let h : Map4Has R := h
+    (⟨h.map, fun a b e => (hRS a b).1 (h.map_in_R a b e),
+      fun a b r => h.R_in_map a b ((hRS a b).2 r), fun _ _ _ => rfl⟩ : Map4Has S)
+
+/-- The dependent-Π `Param` at every pair of output levels `(t, s)`: the domain at
+    `(forallReq s, forallReq t)` and the family at
+    `(forallFiberReq t, forallFiberReq s)`. The backward direction is the rule applied
+    to the flipped domain and the flipped family. -/
+def paramForallAt (t s : MapClass)
+    (PA : Param (forallReq s) (forallReq t) A A')
+    (PB : ∀ a a', PA.R a a' → Param (forallFiberReq t) (forallFiberReq s) (B a) (B' a')) :
+    Param t s (∀ a, B a) (∀ a', B' a') where
+  R := R_forall PA PB
+  fwd := mapHas_forall t PA PB
+  bwd := MapHas.ofIff (fun _ _ => ⟨fun r a a' h => r a' a h, fun r a' a h => r a a' h⟩) s
+    (mapHas_forall (B := B') (B' := B) s PA.symm fun a' a h => (PB a a' h).symm)
+
+/-! ## `Param`-level assembly at `(map1, map0)` from a domain at `(map0, map2a)` -/
 
 /-- Assemble the dependent-Π `Param` from a domain `Param02a` and a `Param10`
     codomain family: forward structure `map1` (via `Map1_forall`), backward
-    structure `map0` (trivial). This is the level the univalence-free forward
-    map supports — no `map4`/univalence used. -/
+    structure `map0` (trivial). `paramForallAt` is the rule at the other levels. -/
 def paramForall
     (PA : Param .map0 .map2a A A')
     (PB : ∀ a a', PA.R a a' → Param .map1 .map0 (B a) (B' a')) :

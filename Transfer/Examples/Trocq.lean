@@ -9,6 +9,7 @@ public import Transfer.Examples.PeanoBinNat
 public import Transfer.Examples.ExampleField
 public import Transfer.Examples.ParamRetraction
 public import Transfer.Examples.Trocq.Summable
+public import Transfer.Examples.Trocq.DependentForall
 
 /-!
 # The Trocq example suite
@@ -27,6 +28,8 @@ Members (Trocq upstream example → module):
   reaching `map2a` (a retraction, not an equivalence).
 * `summable` → `Examples/Trocq/Summable` — summability transferred across an
   equivalence.
+* dependent functions → `Examples/Trocq/DependentForall` — the dependent-Π rule at the top level
+  on a nontrivial family.
 
 Three further Trocq examples are exercised inside the engine rather than as separate
 files: `nat_ind` by `Base/TransferInduction` (`natEquivInduction`), `list_option` by

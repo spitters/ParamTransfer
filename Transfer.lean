@@ -111,9 +111,10 @@ Full overview, file map and usage: [`README.md`](./README.md).
 
 `UnivalenceStatus.univalence_inconsistent : Univalence → False`. Type-level
 univalence is inconsistent in Lean (`Eq : … → Prop` is proof-irrelevant), so the
-`map4`/`Type`-motive level is unreachable. The univalence-free fragment realized
-here is therefore the entire consistent space — and, since Lean's `funext` is
-free, it is wider than Coq's univalence-free cap.
+relation between universes stays out of reach: an equivalence of types is not an
+equality of types. Between values the rules reach every level up to `map4` without
+univalence, and, since Lean's `funext` is free, the fragment is wider than Coq's
+univalence-free cap.
 -/
 
 @[expose] public section

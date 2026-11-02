@@ -176,7 +176,8 @@ emitted constraints implement the `arrowReq`/`forallReq` tables:
   where `fCod v := (arrowReq v).codFwd`. (The domain slot is a *backward* class,
   which the forward-only shape carries trivially as `map0`.)
 * `forallT`: at output forward class `v`, the domain backward class is `forallReq v`
-  — modeled as `geqVar dom v fDom` with `fDom v := forallReq v`.
+  — modeled as `geqVar dom v forallReq` — and the codomain's forward class is
+  `forallFiberReq v` — modeled as `geqVar cod v forallFiberReq`.
 
 A node's own user lower bound `lb` (on `base`) emits `geq id c`. -/
 
@@ -203,24 +204,13 @@ def arrowRootFromCod (c : MapClass) : MapClass :=
   | some v => v
   | none   => .map4
 
-/-- The domain (backward) requirement of `forallReq` as a total function (`map0`
-    where the output is outside the univalence-free table — those outputs are never
-    minimal). At output forward class `v`, the `∀`-domain must carry backward class
-    `forallReq v`. -/
-def forallDom (v : MapClass) : MapClass :=
-  match forallReq v with
-  | some d => d
-  | none => .map0
-
-/-- The inverse of `forallDom`: the least `∀` output class whose domain
-    requirement covers a given domain demand `d`. Used to lift a domain's lower
-    bound into the `∀`-root's lower bound. Only `{map0, map1}` are univalence-free
-    outputs, so anything beyond a `map2a` domain demand is outside the safe fragment
-    and pins to `map4` (never selected, since such a demand never arises in the
-    univalence-free shapes). -/
+/-- The inverse of `forallReq`: the least `∀` output class whose domain requirement
+    covers a given domain demand `d` (the smallest `v` with `d ⊑ forallReq v`). Used to
+    lift a domain's lower bound into the `∀`-root's lower bound. `forallReq` never
+    returns `map4`, so a `map4` demand has no such `v` and pins the root to `map4`. -/
 def forallRootFromDom (d : MapClass) : MapClass :=
   let ascending : List MapClass := [.map0, .map1, .map2a, .map2b, .map3, .map4]
-  match ascending.find? (fun v => MapClass.le d (forallDom v)) with
+  match ascending.find? (fun v => MapClass.le d (forallReq v)) with
   | some v => v
   | none   => .map4
 
@@ -250,11 +240,16 @@ def genFrom : Nat → TyShape → (Nat × Nat × List Constraint)
   | start, .forallT dom cod =>
     let v := start
     let (did, n1, cd) := genFrom (start + 1) dom
-    let (_, n2, cc) := genFrom n1 cod
-    -- downward: `v` requires domain backward class `forallDom v`;
-    -- upward: domain's class demands root ≥ `forallRootFromDom domClass`.
-    let edges := [Constraint.geqVar did v forallDom,
-                  Constraint.geqVar v did forallRootFromDom]
+    let (cid, n2, cc) := genFrom n1 cod
+    -- downward: `v` requires domain backward class `forallReq v` and codomain forward
+    -- class `forallFiberReq v`;
+    -- upward: domain's class demands root ≥ `forallRootFromDom domClass`, codomain's
+    -- class demands root ≥ `arrowRootFromCod codClass` (`forallFiberReq` and
+    -- `arrowCodFwd` are the same table).
+    let edges := [Constraint.geqVar did v forallReq,
+                  Constraint.geqVar v did forallRootFromDom,
+                  Constraint.geqVar cid v forallFiberReq,
+                  Constraint.geqVar v cid arrowRootFromCod]
     (v, n2, edges ++ cd ++ cc)
 
 /-- Total number of variables a shape allocates (its node count). -/
@@ -370,9 +365,11 @@ example : inferRootClass demoCodMap3 = .map3 := by native_decide
 
 A `forallT` whose domain is unconstrained and whose codomain is an `arrow` with a
 `map2a`-registered codomain. The inner arrow's root must cover the `map2a` demand
-(minimal: `map2a`, since `arrowReq map2a = (map0, map2b, map2a, map0)`), while the
-outer `∀`'s domain and the inner arrow's domain stay at `map0` — demonstrating the
-solver minimizes *per subterm* rather than globally lifting everything. -/
+(minimal: `map2a`, since `arrowReq map2a = (map0, map2b, map2a, map0)`). The family of
+the outer `∀` is that arrow, so the `∀`-root is `map2a` and its domain is `map3`
+(`forallReq map2a = map3`), while the inner arrow's domain stays at `map0` —
+demonstrating the solver minimizes *per subterm* rather than globally lifting
+everything. -/
 
 /-- `∀ (_ : base). (base → base(map2a))`. -/
 def demoNested : TyShape :=
@@ -381,12 +378,13 @@ def demoNested : TyShape :=
 -- Per-occurrence minima. Ids (pre-order): 0 = ∀-root, 1 = ∀-domain,
 -- 2 = inner-arrow-root, 3 = inner-domain, 4 = inner-codomain.
 -- inner codomain (id 4) ≥ its registered map2a; inner arrow root (id 2) minimizes
--- to exactly map2a; the unconstrained domains (ids 1, 3) stay at the bottom.
+-- to exactly map2a, and so does the ∀-root (id 0), whose domain (id 1) is map3; the
+-- inner arrow's unconstrained domain (id 3) stays at the bottom.
 #guard
   let (_, a) := inferParamLevels demoNested
   (MapClass.le .map2a (a.get 4))
-    && (a.get 2 == .map2a)
-    && (a.get 1 == .map0) && (a.get 3 == .map0)
+    && (a.get 2 == .map2a) && (a.get 0 == .map2a)
+    && (a.get 1 == .map3) && (a.get 3 == .map0)
 
 -- The inner arrow root is `map2a`, not lifted to `map3`/`map4`.
 #guard

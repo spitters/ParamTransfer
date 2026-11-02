@@ -5,15 +5,16 @@ place in the source where each one can be extended.
 
 ## Scope and extension points
 
-* **The `map4` / universe-valued boundary.** The engine is univalence-free and
-  stops at `map3`. Transfer into a `Type`-valued motive (rather than `Prop`) needs
-  `Map2a_forall`, whose domain `Param` sits at `map4`; universe-valued fibers of
-  heterogeneous congruence sit there too. The `equiv` level (`map4`) is refused
-  with a report (`Base/LevelRefusal.lean`), because type-level univalence stated
-  through Lean's `Eq` is inconsistent (`UnivalenceStatus.univalence_inconsistent`).
-  The levels `map0`–`map3` therefore form the whole consistent space. This space is
-  wider than Coq's univalence-free cap, because `funext` is a theorem in Lean.
-  Recovering `map4` in Lean would need an internal bridge or parametric interval in
+* **The universe-valued boundary.** The engine is univalence-free. Between values, the
+  arrow and dependent-Π rules reach every level up to `map4` with inputs at `map3` at
+  most (`arrowReq`, `forallReq`), because the relations are `Prop`-valued. A statement
+  quantifying over a motive `P : A → Type` needs a relation on `Type`; universe-valued
+  fibers of heterogeneous congruence sit there too. The `equiv` level (`map4`) is
+  refused with a report (`Base/LevelRefusal.lean`), because type-level univalence
+  stated through Lean's `Eq` is inconsistent
+  (`UnivalenceStatus.univalence_inconsistent`). The fragment is wider than Coq's
+  univalence-free cap, because `funext` is a theorem in Lean.
+  Relating universes in Lean would need an internal bridge or parametric interval in
   place of `Eq`, as in the internal-parametricity line of work (Cavallo–Harper,
   `agda --bridges`).
 * **Level inference** runs over a type spine and an `Expr` front end

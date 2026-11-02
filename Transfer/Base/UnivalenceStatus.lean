@@ -8,12 +8,11 @@ module
 public import Mathlib.Logic.Equiv.Basic
 
 /-!
-# Univalence in Lean 4 and the Trocq `map4` cap
+# Univalence in Lean 4 and the relation between universes
 
-The Univalence Axiom is inconsistent in Lean 4 (`univalence_inconsistent`). The
-`map4` / universe-relation cap in this Trocq port — `ParamForall`'s `Map2a_forall`
-requiring `Param04`, and `LevelRefusal` refusing `equiv` — is therefore a boundary of
-Lean's type theory, not a configurable limit.
+The Univalence Axiom is inconsistent in Lean 4 (`univalence_inconsistent`). The port
+does not use an equivalence of types as an equality of types, and `LevelRefusal`
+refuses the level `equiv`, which asks for that use.
 
 ## The axiom landscape
 
@@ -43,13 +42,23 @@ makes `propext` safe makes `Type`-level univalence contradictory.
 
 ## Consequences for the Param engine
 
-* The univalence-free fragment `map0`–`map3` is the entire consistent space in Lean;
-  the `map4` universe relation has no sound inhabitant.
 * The port is `Prop`-valued. It relates values by `Prop` relations, whose univalence
   analogue is `propext`, and never relates types by equivalence-as-equality, so the
   inconsistency does not arise in proof transfer.
-* No additional axiom completes `Map2a_forall` or the `Type`-valued motive. The cap is
-  forced, and `LevelRefusal` refusing `equiv` follows from it.
+* Between values every level is reached without univalence. `Map4Has` over a
+  `Prop`-valued relation is `Map3Has` with a coherence between proofs of a proposition.
+  The arrow rule reaches `map4` from inputs at `map3` (`Map4_arrow`), and the dependent-Π
+  rule reaches `map4` from a domain and a family at `map3` (`Map4_forall`).
+* The boundary is the relation between universes. A statement that quantifies over a
+  motive `P : A → Type` has the binder domain `A → Type`, so transferring it needs a
+  relation on `Type`. A `Prop`-valued relation on `Type` cannot hand back a `Param`
+  between the related types, since `Param` is not a proposition; and an `R_in_map` for
+  it would produce an equality of types from an equivalence, the direction of univalence.
+  A dependent function over a given family with a given `Param` at each related pair
+  does not meet this boundary (`paramForallAt`).
+* `LevelRefusal` classifies a needed level and refuses `map4`, reading it as the level
+  `equiv`. The classifier does not distinguish a level needed between values from one
+  needed between universes.
 -/
 
 @[expose] public section
@@ -81,7 +90,7 @@ def Univalence : Prop := ∀ (A B : Type), Nonempty ((A = B) ≃ (A ≃ B))
 /-- Univalence is inconsistent in Lean 4. `A = B` is a subsingleton (`Eq` targets
     the definitionally proof-irrelevant `Prop`), so `id` and `not` in `Bool ≃ Bool`,
     having equal images under the injective `e.symm`, are equal — contradicting
-    `notEquiv_ne_refl`. The `map4` universe cap follows. -/
+    `notEquiv_ne_refl`. -/
 theorem univalence_inconsistent (ua : Univalence) : False := by
   obtain ⟨e⟩ := ua Bool Bool
   -- `e.symm : (Bool ≃ Bool) → (Bool = Bool)` is injective (half of an equivalence).
