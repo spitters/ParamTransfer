@@ -328,7 +328,7 @@ level and tactic substrate the engine reuses.
 | `ParamArrow` | the arrow (`app` / function) parametricity rule |
 | `ParamCoherence` | the coherence-law suite (functor laws) |
 | `ParamData` | the data-type (`×` / `Option` / `List`) parametricity rules |
-| `ParamForall` | the dependent-Π (`∀`) parametricity rule |
+| `ParamForall` | the dependent-Π (`∀`) parametricity rule; `mapHas_forall` and `paramForallAt` give it at every output level, with the inputs the tables `forallReq` and `forallFiberReq` compute, none of which asks for `map4` |
 | `ParamSigma` | the dependent-pair (`Σ`) parametricity rule |
 | `ParamTrans` | relation composition (`Param_trans`) |
 
