@@ -31,9 +31,11 @@ and distinguishes this cap from full Coq-Trocq.
 
 The permitted `(m,n)` slice on the lattice is `map0`–`map3`; in the 3-point
 view: `map` (transfers `=` forward), `embedding` (`+ injective`, transfers `=`
-both ways), and the refused `equiv` (image `map4`, needs UA). The crypto
-encodings (point/`Fp¹²`/word serializations) are embeddings, not bijections,
-so a goal that would need `equiv` is one this layer declines.
+both ways), and the refused `equiv` (image `map4`). Between universes `map4`
+needs univalence; a `∀` reaches `map4` from `map3` inputs (`Map4_forall`), so
+the cap at `map3` is the choice of this fragment. The crypto encodings
+(point/`Fp¹²`/word serializations) are embeddings that are not onto, so a
+backward `∀` over one lacks the domain backward at `map3` and is declined.
 -/
 
 @[expose] public section
@@ -85,16 +87,22 @@ inductive TransferOutcome
     refused (report : String)
   deriving DecidableEq, Repr
 
-/-- **Primary.** Classify a needed lattice level: refuse exactly the `map4`
-    universe witness, reporting it; every univalence-free level is permitted
-    at its 3-point view. -/
+/-- **Primary.** Classify a needed lattice level: refuse exactly `map4`, the
+    level outside the fragment `map0`–`map3`, reporting it; every level of the
+    fragment is permitted at its 3-point view. The cap is a decision of the
+    fragment. A relation between universes at `map4` turns an equivalence of
+    types into an equality of types, which is univalence
+    (`UnivalenceStatus.univalence_inconsistent`). A relation between values
+    reaches `map4` from `map3` without it: the dependent-Π rule builds output
+    `map4` from a domain and a family at `map3` (`Param.Map4_forall`). -/
 def classifyMapClass : Param.MapClass → TransferOutcome
   | .map4 =>
       .refused
-        "transfer needs level `equiv` (the `map4` universe witness, \
-         equivalence-as-equality): would require univalence. Refused and \
-         reported rather than importing UA — the encoding is an embedding, \
-         not a bijection, so the backward direction is unavailable."
+        "transfer needs level `map4` (3-point view `equiv`), and the \
+         univalence-free fragment stops at `map3`. Between universes, `map4` \
+         is equivalence-as-equality and would need univalence. Between values, \
+         a `∀` reaches `map4` from `map3` inputs without univalence \
+         (`Param.Map4_forall`); the guard refuses `map4` there as well."
   | m => .ok m.view3
 
 /-- Classify a needed level: the lattice classifier through `toMapClass` —
@@ -148,7 +156,9 @@ example (lvl : RelLevel) : Decidable (permitted lvl = true) := inferInstance
 The classifier above takes the needed level as given and only classifies it. This
 inferencer computes the level from a small, hand-rolled goal-shape AST and feeds
 the inferred level to `classify`, so `classify` is reached with `equiv` when the
-shape forces it rather than when a level is supplied.
+shape forces it rather than when a level is supplied. A shape whose backward `∀`
+lacks its domain input is refused with the missing input level named
+(`LevelNeed.lacks`).
 
 This is a minimal model. It walks a `GoalShape` — a small model of the cases the
 level discipline turns on — not a real `Expr`. The full engine traverses a Lean
@@ -165,17 +175,24 @@ dataflow: level ← shape, then refuse-or-permit.
   reverse needs UA).
 * A forward `∀` (`forallFwd`) transfers in the `map` direction only: it adds
   no strength, so `inferLevel (forallFwd d) = inferLevel d`.
-* A backward `∀` (`forallBwd`) needs the reverse direction over its domain.
-  - Over a surjective domain the backward direction is available at the
-    `embedding` strength, so `inferLevel` is `max (inferLevel d) embedding`.
-  - Over a non-surjective domain at level `embedding` (the crypto encodings)
-    the reverse needs a bijection, so `inferLevel` is `equiv`. This is the one
-    place the inferencer produces `equiv`, exactly when a subterm lacks the
-    backward direction — matching the classifier's discipline that `equiv` is refused.
-  - A `forallBwd` whose domain already needs `equiv` stays at `equiv`.
-* A composite (`compose a b`) supports only its weakest part, so
-  `inferLevel (compose a b) = RelLevel.meet (inferLevel a) (inferLevel b)`
-  (using `meet` from `Levels.lean`).
+* A backward `∀` (`forallBwd`) asks for output level
+  `max (level of d) embedding`, whose image `t` in the lattice is `map3` or
+  `map4`. The dependent-Π rule then needs the domain backward at `forallReq t`
+  (`Param.forallReq`, which is `map3` at both). The backward level a domain
+  carries is `bwdAvail`: an onto leaf carries its forward level, a leaf that is
+  not onto carries `map0` (no decoder, as for `Param.paramOfEmbedding`), and a
+  composite domain is taken to carry `map3`.
+  - When `forallReq t ⊑ bwdAvail d` the shape needs the output level.
+  - Otherwise `inferLevel` returns `lacks (forallReq t) (bwdAvail d)`: the
+    domain input the rule lacks and the level the domain carries. For the
+    crypto encodings (injective, not onto) this is `lacks map3 map0`.
+  - A `lacks` of the domain propagates.
+* A composite (`compose a b`) supports only its weakest part, so two needed
+  levels meet (`RelLevel.meet`); a part that lacks an input drops out when the
+  other part needs a level, and two lacking parts report the first.
+
+`inferAndClassify` hands a needed level to `classify` and turns `lacks` into a
+refusal that names the missing input level.
 -/
 
 /-- A tiny goal-shape AST: the cases the minimal-level inferencer reasons about.
@@ -189,7 +206,7 @@ inductive GoalShape
   | /-- A `∀` transferred in the forward (`map`) direction: adds no strength. -/
     forallFwd (dom : GoalShape)
   | /-- A `∀` needing the backward direction over `dom`: needs at least
-        `embedding`, and forces `equiv` when `dom` is a non-surjective leaf. -/
+        `embedding`, and the domain backward at `Param.forallReq` of that level. -/
     forallBwd (dom : GoalShape)
   | /-- A composite: level is the `meet` (weakest) of the parts. -/
     compose (a b : GoalShape)
@@ -200,29 +217,86 @@ inductive GoalShape
 def maxLevel (l₁ l₂ : RelLevel) : RelLevel :=
   if l₁.toNat ≤ l₂.toNat then l₂ else l₁
 
-/-- Whether a shape's domain is a leaf that is an embedding but not
-    surjective — the configuration whose reverse direction needs a
-    bijection, hence forces `equiv` under a backward `∀`. -/
-def needsEquivUnderBwd : GoalShape → Bool
-  | .leafEq .embedding false => true
-  | _ => false
+/-- The backward level a shape carries as the domain of a backward `∀`: an onto
+    leaf carries its forward level, a leaf that is not onto carries `map0` (no
+    decoder), and a composite domain is taken to carry `map3`. -/
+def bwdAvail : GoalShape → Param.MapClass
+  | .leafEq l true => l.toMapClass
+  | .leafEq _ false => .map0
+  | _ => .map3
 
-/-- Infer the minimal level a shape needs. The level is computed, then
-    handed to `classify`. See the section docstring above for the modeling
-    decisions behind each clause. -/
-def inferLevel : GoalShape → RelLevel
-  | .leafEq l _ => l
+/-- The result of level inference: the level a shape needs, or the domain input
+    level a backward `∀` lacks together with the level the domain carries. -/
+inductive LevelNeed
+  | /-- The shape needs this level. -/
+    needs (lvl : RelLevel)
+  | /-- The dependent-Π rule needs the domain backward at `input`; the domain
+        carries only `avail`. -/
+    lacks (input avail : Param.MapClass)
+  deriving DecidableEq, Repr
+
+/-- Infer the minimal level a shape needs, or the input level the `∀` rule
+    lacks. See the section docstring above for the modeling decisions behind
+    each clause. -/
+def inferLevel : GoalShape → LevelNeed
+  | .leafEq l _ => .needs l
   | .forallFwd d => inferLevel d
   | .forallBwd d =>
-      -- A backward `∀` over a non-surjective embedding leaf forces `equiv`;
-      -- otherwise it needs at least `embedding` on top of the domain level.
-      if needsEquivUnderBwd d then .equiv
-      else maxLevel (inferLevel d) .embedding
-  | .compose a b => RelLevel.meet (inferLevel a) (inferLevel b)
+      match inferLevel d with
+      | .needs l =>
+          let out := maxLevel l .embedding
+          let req := Param.forallReq out.toMapClass
+          if Param.MapClass.le req (bwdAvail d) then .needs out
+          else .lacks req (bwdAvail d)
+      | .lacks r a => .lacks r a
+  | .compose a b =>
+      match inferLevel a, inferLevel b with
+      | .needs la, .needs lb => .needs (RelLevel.meet la lb)
+      | .needs la, .lacks _ _ => .needs la
+      | .lacks _ _, .needs lb => .needs lb
+      | .lacks r av, .lacks _ _ => .lacks r av
 
 /-- The end-to-end guard: infer the level the shape needs, then refuse or
-    permit it. `classify` is called on a computed level. -/
-def inferAndClassify : GoalShape → TransferOutcome := classify ∘ inferLevel
+    permit it. A needed level goes to `classify`; a lacking input is refused
+    with a report that names the input level and the level available. -/
+def inferAndClassify (s : GoalShape) : TransferOutcome :=
+  match inferLevel s with
+  | .needs l => classify l
+  | .lacks r a =>
+      .refused
+        s!"the dependent-Π rule needs the domain backward at `{repr r}`; the \
+          domain carries `{repr a}` (an encoding that is not onto has no \
+          decoder)."
+
+/-- The label of a lacking input is correct: it is the domain level
+    `Param.forallReq` asks for at some output level, and the domain does not
+    carry it. -/
+theorem inferLevel_lacks_spec (s : GoalShape) (r a : Param.MapClass)
+    (h : inferLevel s = .lacks r a) :
+    (∃ t, r = Param.forallReq t) ∧ Param.MapClass.le r a = false := by
+  induction s generalizing r a with
+  | leafEq l b => simp [inferLevel] at h
+  | forallFwd d ih => exact ih r a h
+  | forallBwd d ih =>
+    simp only [inferLevel] at h
+    split at h
+    · split at h
+      · cases h
+      · rename_i hle
+        cases h
+        exact ⟨⟨_, rfl⟩, by simpa using hle⟩
+    · rename_i hd
+      cases h
+      exact ih _ _ hd
+  | compose x y ihx ihy =>
+    simp only [inferLevel] at h
+    split at h
+    · cases h
+    · cases h
+    · cases h
+    · rename_i hx _
+      cases h
+      exact ihx _ _ hx
 
 /-! ## The inferencer is exercised end-to-end -/
 
@@ -247,17 +321,16 @@ theorem inferAndClassify_forallBwd_surjective :
     inferAndClassify (.forallBwd (.leafEq .embedding true)) = .ok .embedding :=
   rfl
 
-/-- The central refusal. A backward `∀` over a non-surjective embedding leaf
-    (the crypto encoding case) infers `equiv`, so the end-to-end guard refuses
-    — the engine declines exactly when a subterm forces the equivalence level. -/
+/-- A backward `∀` over an embedding leaf that is not onto (the crypto encoding
+    case) is refused. -/
 theorem inferAndClassify_forallBwd_nonsurjective_refused :
     ∃ r, inferAndClassify (.forallBwd (.leafEq .embedding false)) = .refused r :=
   ⟨_, rfl⟩
 
-/-- The inferred level for that refused shape is exactly `equiv` — pinning down
-    why it was refused. -/
+/-- The refused shape lacks the domain backward at `map3`; the leaf carries
+    `map0`. -/
 theorem inferLevel_forallBwd_nonsurjective :
-    inferLevel (.forallBwd (.leafEq .embedding false)) = .equiv := rfl
+    inferLevel (.forallBwd (.leafEq .embedding false)) = .lacks .map3 .map0 := rfl
 
 /-- A composite drops to the weaker level: composing a `map` leaf with an
     `embedding` leaf infers `map` (the meet), and is permitted at `map`. -/
@@ -265,11 +338,8 @@ theorem inferAndClassify_compose_meet :
     inferAndClassify (.compose (.leafEq .map true) (.leafEq .embedding true))
       = .ok .map := rfl
 
-/-- A composite that contains a refusing part still composes down: meeting an
-    `equiv`-forcing backward-`∀` with a `map` leaf yields `map` — the composite
-    is permitted because its weakest part carries no UA need. So `meet` can
-    rescue a transfer, and refusal is level-driven (it occurs only when the
-    inferred level — after all meets — is `equiv`). -/
+/-- A composite of a `map` leaf and a backward `∀` that lacks its domain input
+    needs `map`, the level of the part that has one, and is permitted at `map`. -/
 theorem inferAndClassify_compose_rescues :
     inferAndClassify
       (.compose (.leafEq .map true) (.forallBwd (.leafEq .embedding false)))
@@ -283,8 +353,8 @@ example (s : GoalShape) : Decidable (inferAndClassify s = inferAndClassify s) :=
 /-! ## What this module is not
 
 The inferencer above is a minimal model over a hand-rolled `GoalShape`; the level it
-computes is faithful to the discipline (forward adds nothing; backward over a
-non-surjective embedding forces `equiv`; composites meet), but the full engine
+computes follows the discipline (forward adds nothing; backward over a
+non-surjective embedding lacks the domain backward at `map3`; composites meet), but the full engine
 walks a real `Expr`, threads `RelatedAt` levels through actual binders, and
 infers the least level that makes the whole transfer go through. That
 level-annotated parametricity translation is the heart of the Trocq paper and
