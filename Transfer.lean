@@ -35,6 +35,7 @@ public import Transfer.Integrations.ParamConv       -- conv-mode sub-term transf
 -- from `→`/`∀` to data types).
 public import Transfer.Combinators.ParamData
 public import Transfer.Combinators.ParamSigma       -- dependent-pair (Σ) former + AdapTT cast law (Adapt Σ = Σ Adapt)
+public import Transfer.Combinators.ParamLevelsModel -- Σ at every level, unit and Eq at map4, universe relation (levels of the relational model)
 public import Transfer.Combinators.ParamArray      -- Array container rule + relational foldl transfer (combinator lemma)
 public import Transfer.Integrations.ParamForIn      -- forIn/do-loop transfer: foldlR meets RComp (early exit + effects)
 public import Transfer.Integrations.ParamRComp      -- `rcomp`: structural RComp-witness assembly, folded into `param_transfer`
