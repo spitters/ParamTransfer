@@ -10,6 +10,7 @@ public import Transfer.Hierarchy.ParamLevel
 public import Transfer.Hierarchy.ParamWeaken
 public import Transfer.Hierarchy.ParamEquiv
 public import Transfer.Combinators.ParamArrow
+public import Transfer.Combinators.ParamArrowLevels
 public import Transfer.Combinators.ParamForall
 public import Transfer.Synthesis.ParamSynth
 public import Transfer.Synthesis.ParamSynthExt

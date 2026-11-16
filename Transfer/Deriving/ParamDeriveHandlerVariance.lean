@@ -9,6 +9,7 @@ public meta import Transfer.Deriving.ParamDeriveHandler
 public import Transfer.Deriving.ParamDeriveHandler
 public import Transfer.Deriving.ParamDerive
 public import Transfer.Combinators.ParamArrow
+public import Transfer.Combinators.ParamArrowLevels
 public import Transfer.Combinators.ParamForall
 public import Transfer.Hierarchy.ParamWeaken
 public import Transfer.Synthesis.ParamInfer
@@ -107,14 +108,6 @@ inductive VShape
   /-- A covariant type former (`List`, or a type with a derived relation) at its arguments. -/
   | cont (args : List VShape)
   deriving Repr, Inhabited, BEq
-
-/-- The position requirement of the arrow rule at an output level: the backward level of the
-domain in `arrowReq`. -/
-def arrowDomReq (t : MapClass) : MapClass := ((arrowReq t).map fun r => r.2.1).getD .map0
-
-/-- The value requirement of the arrow rule at an output level: the forward level of the
-codomain in `arrowReq`. -/
-def arrowCodReq (t : MapClass) : MapClass := ((arrowReq t).map fun r => r.2.2.1).getD .map0
 
 /-- The requirement of no structure on any of `k` parameters. -/
 def reqBot (k : Nat) : List (MapClass × MapClass) := List.replicate k (.map0, .map0)
@@ -404,17 +397,6 @@ initialize
   registerDerivingHandler ``Param mkVarianceHandler
 
 /-! ## Level rules on relations -/
-
-/-- The arrow rule at every output level, on relations: `Map_k_arrow` dispatched on the level. -/
-def mapHasLiftFun {D D' V V' : Type u} {PR : D → D' → Prop} {VR : V → V' → Prop} :
-    (t : MapClass) → MapHas (arrowDomReq t) (symRel PR) → MapHas (arrowCodReq t) VR →
-      MapHas t (Relator.LiftFun PR VR)
-  | .map0, _, _ => (⟨⟩ : Map0Has _)
-  | .map1, hP, hV => Map1_arrow (⟨PR, ⟨⟩, hP⟩ : Param .map0 .map1 D D') ⟨VR, hV, ⟨⟩⟩
-  | .map2a, hP, hV => Map2a_arrow (⟨PR, ⟨⟩, hP⟩ : Param .map0 .map2b D D') ⟨VR, hV, ⟨⟩⟩
-  | .map2b, hP, hV => Map2b_arrow (⟨PR, ⟨⟩, hP⟩ : Param .map0 .map2a D D') ⟨VR, hV, ⟨⟩⟩
-  | .map3, hP, hV => Map3_arrow (⟨PR, ⟨⟩, hP⟩ : Param .map0 .map3 D D') ⟨VR, hV, ⟨⟩⟩
-  | .map4, hP, hV => Map4_arrow (⟨PR, ⟨⟩, hP⟩ : Param .map0 .map3 D D') ⟨VR, hV, ⟨⟩⟩
 
 /-- Equality has structure of every level, with the identity map. -/
 def mapHasEq {X : Type u} : (t : MapClass) → MapHas t (@Eq X)
