@@ -268,11 +268,8 @@ theorem univRel_of_mapHas {m n : MapClass} {A B : Type u} (R : A → B → Prop)
 theorem univRel_iff {m n : MapClass} {A B : Type u} :
     univRel m n A B ↔
       ∃ R : A → B → Prop, Nonempty (MapHas m R) ∧ Nonempty (MapHas n (symRel R)) := by
-  constructor
-  · rintro ⟨P⟩
-    exact ⟨P.R, ⟨P.fwd⟩, ⟨P.bwd⟩⟩
-  · rintro ⟨R, ⟨hf⟩, ⟨hb⟩⟩
-    exact univRel_of_mapHas R hf hb
+  exact ⟨fun ⟨P⟩ => ⟨P.R, ⟨P.fwd⟩, ⟨P.bwd⟩⟩,
+    fun ⟨R, ⟨hf⟩, ⟨hb⟩⟩ => univRel_of_mapHas R hf hb⟩
 
 /-- The universe relation is reflexive, by the identity relation. -/
 theorem univRel_refl (m n : MapClass) (A : Type u) : univRel m n A A :=

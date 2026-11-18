@@ -509,11 +509,7 @@ theorem EndoV.levels (t s : MapClass) :
 /-- The derived relation of `EndoV` is the function relation of the field. -/
 theorem EndoV.r_iff {A A' : Type} (P : A → A' → Prop) (u : EndoV A) (v : EndoV A') :
     EndoV.R_param P u v ↔ Relator.LiftFun P P u.f v.f := by
-  constructor
-  · rintro ⟨h⟩
-    exact fun a a' haa => h a a' haa
-  · intro h
-    exact .mk (fun a a' haa => h haa)
+  exact ⟨fun ⟨h⟩ a a' haa => h a a' haa, fun h => .mk fun a a' haa => h haa⟩
 
 /-- `EndoV` at output level `t` from a parameter with forward structure `arrowCodReq t` and
 backward structure `arrowDomReq t`. -/
@@ -543,11 +539,8 @@ theorem Sel.levels (t : MapClass) : inductiveReq 1 selShape t = [(arrowCodReq t,
 /-- The derived relation of `Sel` is the function relation of the field. -/
 theorem Sel.r_iff {A A' : Type} (P : A → A' → Prop) (u : Sel A) (v : Sel A') :
     Sel.R_param P u v ↔ Relator.LiftFun (Relator.LiftFun P Eq) P u.g v.g := by
-  constructor
-  · rintro ⟨h⟩
-    exact fun y y' hy => h y y' (fun a a' haa => hy haa)
-  · intro h
-    exact .mk (fun y y' hy => h (fun a a' haa => hy a a' haa))
+  exact ⟨fun ⟨h⟩ y y' hy => h y y' fun a a' haa => hy haa,
+    fun h => .mk fun y y' hy => h fun a a' haa => hy a a' haa⟩
 
 /-- A doubly negative occurrence asks no more than the positive one. -/
 theorem arrowDomReq_arrowDomReq_le (t : MapClass) :
