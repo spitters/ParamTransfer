@@ -6,6 +6,7 @@ Authors: Bas Spitters
 module
 
 public import Transfer.Examples.ZModPolyDecide
+public meta import Transfer.Examples.ZModPolyDecide
 
 /-!
 # BLS12-381 hash-to-curve isogeny identity: bounded per-coefficient probe
