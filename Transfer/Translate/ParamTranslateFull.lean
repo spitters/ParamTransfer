@@ -31,9 +31,11 @@ Combines the three extensions into one parametricity translation:
 `translateAll` is the single function with all rules; `#transfer t` runs it against
 the ambient registry. This is the term-level `⟦·⟧` for the first-order fragment
 (`const`/`var`/`app`/`lam`/operators, registry-driven, with change-of-representation
-binders). The remaining case — dependent `Π`/recursors and the `Type`-valued
-motive — is the univalence cap, which `UnivalenceStatus.univalence_inconsistent`
-proves is unreachable in Lean by necessity.
+binders). `translateAll` has no rule for a dependent `Π` or a recursor. Such a term
+over given families, with a `Param` or a relation at each related pair, needs no
+univalence (`paramForallAt`). Univalence bounds the relation between universes,
+which a term that quantifies over a motive `A → Type` needs at `map4`
+(`UnivalenceStatus`).
 -/
 
 public section
