@@ -1,0 +1,44 @@
+# Builds the package on the newest Lean release candidate. The job reports breakage ahead of a
+# toolchain bump; it is not a required check and says nothing about the pinned toolchain.
+name: Lean RC canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      lean:
+        description: "Lean version tag (default: the newest release candidate or release)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "23 4 * * 1,4"
+  pull_request:
+    paths:
+      - ".github/workflows/rc-canary.yml"
+      - ".github/scripts/rc_canary.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canary:
+    name: Build on the newest Lean
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build on the newest Lean
+        env:
+          LEAN_TARGET: ${{ inputs.lean }}
+        run: python3 .github/scripts/rc_canary.py
