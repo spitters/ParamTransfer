@@ -6,7 +6,7 @@ open Lake DSL
 -- (e.g. CatCrypt requires `paramTransfer`, and must not be made to resolve verso).
 -- Build the manual locally with:  cd docs && lake build && lake exe transfer-manual --output _out
 require verso from git
-  "https://github.com/leanprover/verso.git" @ "v4.35.0"
+  "https://github.com/leanprover/verso.git" @ "v4.36.0"
 
 package paramTransferDocs where
   leanOptions := #[⟨`pp.unicode.fun, true⟩]
