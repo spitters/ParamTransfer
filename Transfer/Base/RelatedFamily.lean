@@ -6,6 +6,7 @@ Authors: Bas Spitters
 module
 
 public import Transfer.Base.RelatedOn
+public import Transfer.Base.GuardLeaf
 
 /-!
 # Element-wise related families and arrays
@@ -140,12 +141,8 @@ theorem rcongrGetElem {A α : Type u} {n : ℕ} {enc : A → α} {s : Fin n → 
     subst hg
     exact (RelatedArray.getElem_eq (enc := enc) (s := s) i.val i.isLt).symm
 
-/-- The leaf rules of the guarded descent for reading a container. Each
-    alternative closes a goal `Related enc (s i) t'` up to one guard goal.
-    Extensible: a `macro_rules` for `transfer_guard_leaf` adds an alternative
-    tried before the default one, `refine rcongrGetElem ?_`. -/
-syntax "transfer_guard_leaf" : tactic
-
+/-- Leaf rule of `transfer_guard_leaf` (`Transfer.Base.GuardLeaf`) for reading a
+    container: `rcongrGetElem`, whose one goal is the guard `k = i`. -/
 macro_rules
   | `(tactic| transfer_guard_leaf) => `(tactic| refine rcongrGetElem ?_)
 

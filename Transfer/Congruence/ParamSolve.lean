@@ -101,25 +101,15 @@ open Transfer.ExampleField
 open Lean Elab Tactic Meta
 
 /-- One guarded descent step on a `Related` goal: apply `rcongrBinOpOn` (else
-    `rcongrUnOpOn`), run `recurse` on each operand goal, and close the guard with
-    `transfer_guard_disch`. Fails, leaving the goal unchanged, when no guarded
-    square matches, an operand goal is not closed, or the discharger does not close
-    the guard. -/
-meta def paramSolveGuardedStep (recurse : TacticM Unit) : TacticM Unit := do
-  let g ← getMainGoal
-  let gs ← Term.withoutErrToSorry <|
+    `rcongrUnOpOn`, else a leaf rule of `transfer_guard_leaf`), run `recurse` on
+    each operand goal, and close the guard with `transfer_guard_disch`
+    (`rcongrGuardedStep`). Fails, leaving the goal unchanged, when no rule applies,
+    an operand goal is not closed, or the discharger does not close the guard. -/
+meta def paramSolveGuardedStep (recurse : TacticM Unit) : TacticM Unit :=
+  rcongrGuardedStep (fun g => do
     (evalTacticAt (← `(tactic| refine rcongrBinOpOn _ _ _ ?_ ?_ ?_)) g) <|>
-      (evalTacticAt (← `(tactic| refine rcongrUnOpOn _ _ _ ?_ ?_)) g)
-  let some guard := gs.getLast? | throwError "param_solve: no guard goal"
-  for sub in gs.dropLast do
-    setGoals [sub]
-    recurse
-    unless (← getUnsolvedGoals).isEmpty do throwError "param_solve: operand not closed"
-  guard.setType ((← instantiateMVars (← guard.getType)).headBeta)
-  setGoals [guard]
-  evalTactic (← `(tactic| transfer_guard_disch))
-  unless (← getUnsolvedGoals).isEmpty do throwError "param_solve: guard not closed"
-  setGoals []
+      (evalTacticAt (← `(tactic| refine rcongrUnOpOn _ _ _ ?_ ?_)) g) <|>
+      rcongrGuardLeafRule g) recurse
 
 /-- The unified descent + closure-leaf driver. A `TacticM` recursion that
     runs the goal-directed cross-head descent of `rcongr` and discharges each leaf
@@ -161,6 +151,10 @@ meta partial def paramSolveCore : TacticM Unit := withMainContext do
       try
         evalTactic (← `(tactic| refine transferGround (h := ?_)))
         paramSolveCore
+      catch _ => paramCCCore
+  | (``Iff, #[_, _]) =>
+      -- A guarded relation square (the condition of a conditional), else closure.
+      try rcongrGuardedStep rcongrRelOnRule paramSolveCore
       catch _ => paramCCCore
   | _ => paramCCCore
 

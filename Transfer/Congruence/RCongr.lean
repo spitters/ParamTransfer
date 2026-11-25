@@ -7,6 +7,8 @@ module
 
 public meta import Transfer.Base.TransferTactic
 public import Transfer.Base.TransferTactic
+public import Transfer.Base.RelatedOn
+public import Transfer.Base.GuardLeaf
 public import Mathlib.Tactic.GCongr
 
 /-!
@@ -121,6 +123,37 @@ theorem rcongrBinOp {A α : Type u} (enc : A → α) (op : A → A → A) (bop :
     Related enc (op a b) (bop a' b') :=
   composeBinOp enc op bop a b a' b'
 
+/-- One guarded descent step on the main goal: apply `rule` to it, which leaves the
+    operand goals and then the guard as its last goal; run `recurse` on each operand
+    goal and close the guard with `transfer_guard_disch`. Fails when the rule does
+    not apply, an operand goal is not closed, or the discharger does not close the
+    guard. -/
+def rcongrGuardedStep (rule : MVarId → TacticM (List MVarId)) (recurse : TacticM Unit) :
+    TacticM Unit := do
+  let g ← getMainGoal
+  let gs ← Term.withoutErrToSorry (rule g)
+  let some guard := gs.getLast? | throwError "guarded step: the rule left no guard goal"
+  for sub in gs.dropLast do
+    if ← sub.isAssigned then continue
+    setGoals [sub]
+    recurse
+    unless (← getUnsolvedGoals).isEmpty do throwError "guarded step: operand not closed"
+  guard.setType ((← instantiateMVars (← guard.getType)).headBeta)
+  setGoals [guard]
+  evalTactic (← `(tactic| transfer_guard_disch))
+  unless (← getUnsolvedGoals).isEmpty do throwError "guarded step: guard not closed"
+  setGoals []
+
+/-- The leaf rules of `transfer_guard_leaf` on `g`, as a rule of
+    `rcongrGuardedStep`. -/
+def rcongrGuardLeafRule (g : MVarId) : TacticM (List MVarId) := do
+  evalTacticAt (← `(tactic| transfer_guard_leaf)) g
+
+/-- The guarded relation rule `rcongrRelOn` on an `Iff` goal `g`, as a rule of
+    `rcongrGuardedStep`; it descends into the condition goal of a conditional. -/
+def rcongrRelOnRule (g : MVarId) : TacticM (List MVarId) := do
+  evalTacticAt (← `(tactic| refine rcongrRelOn _ _ _ ?_ ?_ ?_)) g
+
 /-- Relational congruence descent. A `TacticM` recursion on the goal:
 
 * on `Related enc t t'` with `t = op a b` binary, apply `rcongrBinOp` (the
@@ -128,7 +161,11 @@ theorem rcongrBinOp {A α : Type u} (enc : A → α) (op : A → A → A) (bop :
   on each;
 * on a bare `Related` leaf (or when the binary rule does not apply), close it
   via the shared fast registry leaf `transferRegistryLeaf` (`inferInstance` — the
-  `leaf`/`leafId` instances — or `rfl`);
+  `leaf`/`leafId` instances — or `rfl`), else by a leaf rule of
+  `transfer_guard_leaf` (`rcongrGuardedStep`: recursion on the operand goals,
+  guard closed by `transfer_guard_disch`);
+* on an `Iff` goal, apply the guarded relation rule `rcongrRelOn` in the same way,
+  else close it by the registry leaf;
 * on an `=` goal, bridge through `transferGround` (`Related id a b → a = b`) and
   recurse on the resulting `Related` goal.
 
@@ -144,10 +181,16 @@ partial def rcongrCore : TacticM Unit := withMainContext do
           allGoals rcongrCore
           return
         catch _ => pure ()
-      transferRegistryLeaf
+      try transferRegistryLeaf
+      catch e =>
+        try rcongrGuardedStep rcongrGuardLeafRule rcongrCore
+        catch _ => throw e
   | (``Eq, #[_α, _, _]) =>
       evalTactic (← `(tactic| refine transferGround (h := ?_)))
       rcongrCore
+  | (``Iff, #[_, _]) =>
+      try rcongrGuardedStep rcongrRelOnRule rcongrCore
+      catch _ => transferRegistryLeaf
   | _ =>
       transferRegistryLeaf
 
