@@ -569,6 +569,22 @@ shape of what closes the goal.
    side, `RelatedFamily.apply_eq` and `RelatedArray.getElem_eq` give
    `f k = enc (s ⟨k, hk⟩)`; the encoding and the family are `outParam`s, found
    from the container.
+9. **Changing carriers.** `Base/RelatedFun.lean` relates `f : A → B` to
+   `g : α → β` along an argument encoding and a result encoding:
+   `RelatedFun encA encB f g` (`encB (f a) = g (encA a)`), `RelatedFun2` and
+   `RelatedFun3` for two and three arguments, and the guarded forms
+   `RelatedFunOn`, `RelatedFun2On`, `RelatedFun3On`. The argument encodings and
+   the guard are `outParam`s. Their rules `rcongrFunOn`, `rcongrFun2On`,
+   `rcongrFun3On` and `rcongrIteLeaf` are alternatives of `transfer_guard_leaf`,
+   so `param_guard` applies them at a `Related` goal that no same-carrier square
+   closes. Data squares cover `Option`, `Prod`, `Except` and lists. Tests:
+   `Base/RelatedFunTest.lean`.
+10. **Constructor equations.** An equation whose left-hand side is a fully
+    applied constructor is split into field equations (`paramGuardCtorSplit`):
+    by constructor congruence when the right-hand side has the same constructor,
+    by structure eta when it is no constructor application. `param_guard`
+    descends into each field equation and, when that descent fails, falls back
+    to the reshape of item 2. Tests: `Congruence/ParamGuardCtorTest.lean`.
 
 ### `param_leaf`
 

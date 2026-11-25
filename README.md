@@ -223,6 +223,18 @@ cannot close as goals. When a subterm has no square, the error names that subter
 and its head pair. `param_solve` also descends through guarded squares, with the
 default discharger. Examples: `Examples/GuardedSquares.lean`.
 
+A function whose argument and result have different encodings is related to its
+model by a carrier-changing square (`Base/RelatedFun.lean`):
+`RelatedFun encA encB f g` states `encB (f a) = g (encA a)`, and `RelatedFun2`,
+`RelatedFun3` are the forms with two and three arguments, each argument with its
+own encoding; `RelatedFunOn`, `RelatedFun2On` and `RelatedFun3On` are the guarded
+forms. The module also registers data squares for `Option`, `Prod`, `Except`,
+lists and `if`-`then`-`else`. Their rules are alternatives of
+`transfer_guard_leaf`, so `param_guard` descends through them. `param_guard` also
+splits an equation whose left-hand side is a constructor application into the
+equations of its fields, by constructor congruence or by structure eta, and
+descends into each.
+
 `hgcongr` is the **heterogeneous generalization of `gcongr`**. It is
 attribute-driven (`@[hgcongr]`) and keyed on a *pair* of heads, so it relates
 *different* head functions `f ≠ g`, a case `gcongr` rejects by construction.
@@ -306,6 +318,7 @@ level and tactic substrate the engine reuses.
 | `Levels` | relatedness levels: the three-point view of the Trocq lattice |
 | `Related` | `Related`: transfer by instance resolution |
 | `RelatedAt` | level-annotated relatedness |
+| `RelatedFun` | carrier-changing function squares `RelatedFun`, `RelatedFun2`, `RelatedFun3` and their guarded forms |
 | `TransferInduction` | transported induction, the equiv-level combinator |
 | `TransferLevel` | the level-aware `transfer!` elaborator |
 | `TransferTactic` | the `transfer` tactic (automatic binder translation) |
