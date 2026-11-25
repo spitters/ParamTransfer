@@ -90,9 +90,59 @@ meta def paramGuardReshape (g : MVarId) : MetaM MVarId := do
   g.assign (Expr.proj ``Related 0 m)
   return m.mvarId!
 
+/-- Split an equation `C ps a₁ … aₙ = rhs`, whose left-hand side is a fully applied
+    constructor `C` of an inductive type, into equations of its fields. When `rhs`
+    is an application of the same constructor, the goals are `aᵢ = bᵢ`
+    (constructor congruence); when `rhs` is not a constructor application and the
+    type is a structure, `rhs` is replaced by its eta expansion and the goals are
+    `aᵢ = projᵢ rhs`. Fields that are proofs, or that are syntactically equal on
+    both sides, leave no goal. Returns `none`, with `g` unchanged, in every other
+    case: another constructor, a non-structure against a non-constructor, or a
+    dependent field whose equation is not homogeneous. -/
+meta def paramGuardCtorSplit (g : MVarId) : MetaM (Option (List MVarId)) := g.withContext do
+  let some (_, lhs, rhs) := (← instantiateMVars (← g.getType)).cleanupAnnotations.eq?
+    | return none
+  let lhs := lhs.cleanupAnnotations
+  let rhs := rhs.cleanupAnnotations
+  let .const cname lvls := lhs.getAppFn | return none
+  let some (.ctorInfo cval) := (← getEnv).find? cname | return none
+  let nParams := cval.numParams
+  unless lhs.getAppNumArgs == nParams + cval.numFields do return none
+  let rhs' ← do
+    if rhs.getAppFn.isConstOf cname && rhs.getAppNumArgs == lhs.getAppNumArgs then
+      pure rhs
+    else
+      if let .const rname _ := rhs.getAppFn then
+        if let some (.ctorInfo _) := (← getEnv).find? rname then return none
+      unless isStructure (← getEnv) cval.induct do return none
+      let fields := getStructureFields (← getEnv) cval.induct
+      unless fields.size == cval.numFields do return none
+      let projs ← fields.mapM fun f => mkProjection rhs f
+      pure (mkAppN (.const cname lvls) (lhs.getAppArgs[:nParams].toArray ++ projs))
+  let s ← saveState
+  try
+    let g' ← g.replaceTargetDefEq (← mkEq lhs rhs')
+    let gs ← g'.congrN (depth := 1) (closePost := false)
+    if gs.contains g' then throwError "param_guard: no congruence step"
+    let mut out : List MVarId := []
+    for sub in gs do
+      let sub ← if (← instantiateMVars (← sub.getType)).cleanupAnnotations.isHEq then
+        sub.eqOfHEq else pure sub
+      unless (← instantiateMVars (← sub.getType)).cleanupAnnotations.isEq do
+        throwError "param_guard: heterogeneous field equation"
+      out := out ++ [sub]
+    return some out
+  catch _ =>
+    s.restore; return none
+
+mutual
+
 /-- The `param_guard` recursion on one goal. Returns the goals left open: the
     guards the discharger `disch` did not close. Throws the leaf error of
-    `paramGuardLeafError` on a `Related` subgoal that no rule closes. -/
+    `paramGuardLeafError` on a `Related` subgoal that no rule closes. An equation
+    whose left-hand side is a constructor application is first split into field
+    equations by `paramGuardCtorSplit`; when the descent of those fails, the
+    equation is treated by `paramGuardEqFallback`. -/
 meta partial def paramGuardCore (disch : Syntax) (g : MVarId) : TacticM (List MVarId) :=
   g.withContext do
   let tgt := (← instantiateMVars (← g.getType)).cleanupAnnotations
@@ -129,16 +179,36 @@ meta partial def paramGuardCore (disch : Syntax) (g : MVarId) : TacticM (List MV
       throwError (← paramGuardLeafError g)
   | (``Eq, _) =>
       let s ← saveState
-      let reshaped ← try
-          pure (some (← paramGuardReshape g))
-        catch _ => s.restore; pure none
-      if let some g' := reshaped then
-        return ← paramGuardCore disch g'
-      if let some [g'] ← paramGuardApply (← `(tactic| refine transferGround (h := ?_))) g then
-        return ← paramGuardCore disch g'
-      if ← paramGuardCloses (← `(tactic| rfl)) g then return []
-      throwError (← paramGuardLeafError g)
+      if let some gs ← paramGuardCtorSplit g then
+        try
+          let mut rest : List MVarId := []
+          for sub in gs do
+            rest := rest ++ (← paramGuardCore disch sub)
+          return rest
+        catch e =>
+          s.restore
+          try return ← paramGuardEqFallback disch g
+          catch _ => throw e
+      paramGuardEqFallback disch g
   | _ => throwError (← paramGuardLeafError g)
+
+/-- The `param_guard` treatment of an equation that `paramGuardCtorSplit` does not
+    split: reshape into `Related enc t t'`, or bridge through the identity
+    encoding (`transferGround`), or close by `rfl`. -/
+meta partial def paramGuardEqFallback (disch : Syntax) (g : MVarId) :
+    TacticM (List MVarId) := g.withContext do
+  let s ← saveState
+  let reshaped ← try
+      pure (some (← paramGuardReshape g))
+    catch _ => s.restore; pure none
+  if let some g' := reshaped then
+    return ← paramGuardCore disch g'
+  if let some [g'] ← paramGuardApply (← `(tactic| refine transferGround (h := ?_))) g then
+    return ← paramGuardCore disch g'
+  if ← paramGuardCloses (← `(tactic| rfl)) g then return []
+  throwError (← paramGuardLeafError g)
+
+end
 
 /-- Run `paramGuardCore` on the main goal and replace it by the open guards. -/
 meta def paramGuardMain (disch : Syntax) : TacticM Unit := do
